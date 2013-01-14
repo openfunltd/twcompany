@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+<body>
+<h2>Pix_Controller catch a exception</h2>
+Exception class: <strong><?= get_class($this->exception) ?></strong><br />
+Exception message: <strong><?= $this->escape($this->exception->getMessage()) ?></strong><br />
+Stack trace: <br />
+<table border="1">
+    <tr>
+        <td>File</td>
+        <td>Line</td>
+        <td>Function</td>
+        <td>Arguments</td>
+    </tr>
+    <?php foreach ($this->exception->getTrace() as $trace) { ?>
+    <tr>
+        <td><?= $this->escape($trace['file']) ?></td>
+        <td><?= intval($trace['line']) ?></td>
+        <td><?= $this->escape($trace['class'] . $trace['type'] . $trace['function']) ?></td>
+        <td>
+            <ol>
+                <?php foreach ($trace['args'] as $arg) { ?>
+                <li>
+                <?php if ('string' == gettype($arg)) { ?>
+                string: <?= $this->escape($arg) ?>
+                <?php } elseif ('array' == gettype($arg)) { ?>
+                array(<?= count($arg) ?>)
+                <?php } elseif ('object' == gettype($arg)) { ?>
+                <?= get_class($arg) ?>
+                <?php } else { ?>
+                <?= gettype($arg) ?>
+                <?php } ?>
+                </li>
+                <?php } ?>
+            </ol>
+        </td>
+    </tr>
+    <?php } ?>
+</table>
+<hr>
+<div>
+    This is Pix_Controller default error page. If you want to modify this, you can add ErrorController.php in webdata/controllers/<br>
+    <a href="http://framework.pixnet.net" target="_blank">Pix Framework</a>
+</div>
+</body>
+</html>

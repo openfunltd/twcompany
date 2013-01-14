@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript"><!--
+alert(<?= json_encode($this->message) ?>);
+document.location = <?= json_encode($this->url) ?>;
+//--></script>
+</head>
+<body>
+<h4><?= $this->escape($this->message) ?></h4>
+If you are not redirected to <a href="<?= $this->escape($this->url) ?>"><?= $this->escape($this->url) ?></a>, click <a href="<?= $this->escape($this->url) ?>">Here</a>
+</body>
+</html>
