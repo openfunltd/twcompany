@@ -1,0 +1,10 @@
+<?php if ('[' == $this->value[0]) { // array ?>
+<ul>
+    <?php foreach (json_decode($this->value) as $row) { ?>
+    <li><?= $this->escape(json_encode($row,  JSON_UNESCAPED_UNICODE)) ?></li>
+    <?php } ?>
+</ul>
+<?php } else { ?>
+<?= $this->escape($this->value) ?>
+<?php } ?>
+
