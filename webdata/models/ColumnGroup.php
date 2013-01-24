@@ -14,9 +14,19 @@ class ColumnGroup extends Pix_Table
     }
 
     protected static $_column_groups = null;
+    protected static $_column_names = null;
+
+    public static function getColumnName($id)
+    {
+        if (is_null(self::$_column_names)) {
+            self::$_column_names = ColumnGroup::search(1)->toArray('name');
+        }
+        return self::$_column_names[$id];
+    }
 
     public static function getColumnId($name)
     {
+        $name = trim($name);
         if (is_null(self::$_column_groups)) {
             self::$_column_groups = array();
             foreach (ColumnGroup::search(1) as $group) {
