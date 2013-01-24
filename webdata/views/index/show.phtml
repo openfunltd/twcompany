@@ -1,0 +1,37 @@
+<table border="1">
+    <tr>
+        <td>column</td>
+        <td>data</td>
+    </tr>
+    <tr>
+        <td>ID</td>
+        <td><?= $this->unit->id ?></td>
+    </tr>
+    <tr>
+        <td>Updated_at</td>
+        <td><?= date('c', $this->unit->updated_at) ?></td>
+    </tr>
+    <?php foreach (UnitData::search(array('id' => $this->unit->id)) as $unitdata) { ?>
+    <tr>
+        <td><?= ColumnGroup::getColumnName($unitdata->column_id) ?></td>
+        <td><?= $this->escape($unitdata->value) ?></td>
+    </tr>
+    <?php } ?>
+</table>
+<hr>
+<table border="1">
+    <tr>
+        <td>Time</td>
+        <td>column</td>
+        <td>old value</td>
+        <td>new value</td>
+    </tr>
+    <?php foreach (UnitChangeLog::search(array('id' => $this->unit->id)) as $unitchangelog) { ?>
+    <tr>
+        <td><?= date('c', $unitchangelog->updated_at) ?></td>
+        <td><?= ColumnGroup::getColumnName($unitchangelog->column_id) ?></td>
+        <td><?= $this->escape($unitchangelog->old_value) ?></tD>
+        <td><?= $this->escape($unitchangelog->new_value) ?></tD>
+    </tr>
+    <?php } ?>
+</table>
