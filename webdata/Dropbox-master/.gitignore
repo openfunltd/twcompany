@@ -1,0 +1,11 @@
+# Eclipse
+.settings
+.project
+.buildpath
+.project
+.settings
+!tests/.gitignore
+
+# Composer
+composer.lock
+vendor/
