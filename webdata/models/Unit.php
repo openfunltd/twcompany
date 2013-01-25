@@ -12,6 +12,13 @@ class UnitRow extends Pix_Table_Row
         );
     }
 
+    public function name()
+    {
+        if ($data = UnitData::search(array('id' => $this->id, 'column_id' => 2))->first()) { // 公司名稱
+            return $data->value;
+        }
+    }
+
     public function getNames()
     {
         $values = array();
