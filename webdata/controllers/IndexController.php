@@ -16,4 +16,18 @@ class IndexController extends Pix_Controller
 
         $this->view->unit = $unit;
     }
+
+    public function nameAction()
+    {
+        list(, /*name*/, $name) = explode('/', $this->getURI());
+
+        $name = urldecode($name);
+        if (!$namemap = NameMap::search(array('name' => $name))->first()) {
+            $unit_ids = array();
+        } else {
+            $unit_ids = NameTable::search(array('name_id' => $namemap->id))->toArray('unit_id');
+        }
+        $this->view->unit_ids = $unit_ids;
+        $this->view->name = $name;
+    }
 }

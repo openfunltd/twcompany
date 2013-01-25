@@ -1,0 +1,9 @@
+<h1><?= $this->escape($this->name) ?></h1>
+<ol>
+    <?php foreach ($this->unit_ids as $unit_id) { ?>
+    <?php if (!$unit = Unit::find($unit_id)) { continue; } ?>
+    <li>
+    <a href="/id/<?= $unit->id ?>"><?= $unit->id ?>. <?= $this->escape($unit->name()) ?></a>
+    </li>
+    <?php } ?>
+</ol>
