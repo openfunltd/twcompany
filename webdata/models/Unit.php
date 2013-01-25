@@ -2,6 +2,57 @@
 
 class UnitRow extends Pix_Table_Row
 {
+    public function getNames()
+    {
+        $values = array();
+        foreach (UnitData::search(array('id' => $this->id))->searchIn('column_id', array(5, 16, 12, 11)) as $unit_data) { 
+            $values[$unit_data->column_id] = json_decode($unit_data->value);
+        }
+
+        $names = array();
+        // 代表人姓名, 訴訟及非訴訟代理人姓名
+        foreach (array(5, 16) as $column_id) {
+            if (!array_key_exists($column_id, $values)) {
+                continue;
+            }
+            $value = $values[$column_id];
+
+            if (is_scalar($value)) {
+                $names[] = $value;
+            } elseif (is_array($value)) {
+                foreach ($value as $v) {
+                    if (!is_scalar($v)) {
+                        throw new Exception("unknown format, id={$this->id}, column_id={$column_id}");
+                    }
+                    $names[] = $v;
+                }
+            } else {
+                throw new Exception("unknown format, id={$this->id}, column_id={$column_id}");
+            }
+        }
+
+        // 經理人名單
+        foreach (array(11, 12) as $column_id) {
+            if (!array_key_exists($column_id, $values)) {
+                continue;
+            }
+            $value = $values[$column_id];
+
+            if (!is_array($value)) {
+                throw new Exception("unknown format, id={$this->id}, column_id={$column_id}");
+            }
+
+            foreach ($value as $row) {
+                if (!$row->{'姓名'}) {
+                    throw new Exception("unknown format, id={$this->id}, column_id={$column_id}");
+                }
+                $names[] = $row->{'姓名'};
+            }
+        }
+
+        return array_unique($names);
+    }
+
     public function updateData($data)
     {
         $data = (array)$data;
