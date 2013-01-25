@@ -1,4 +1,36 @@
-<?php if ('[' == $this->value[0]) { // array ?>
+<?php if (5 == $this->column_id) { // 代表人姓名 ?>
+<a href="/name/<?= urlencode(json_decode($this->value)) ?>"><?= $this->escape(json_decode($this->value)) ?></a>
+<?php } elseif (11 == $this->column_id) { // 董監事名單 ?>
+<ol>
+    <?php foreach (json_decode($this->value) as $row) { ?>
+    <li value="<?= $this->escape($row->{'序號'}) ?>">
+    <?= $this->escape($row->{'職稱'}) ?>
+    , 姓名: 
+    <a href="/name/<?= urlencode($row->{'姓名'}) ?>"><?= $this->escape($row->{'姓名'}) ?></a>
+    <?php if (is_array($row->{'所代表法人'})) { ?>
+    (所代表法人:
+    <a href="/id/<?= $this->escape($row->{'所代表法人'}[0]) ?>"><?= $this->escape(implode(', ', $row->{'所代表法人'})) ?></a>)
+    <?php } elseif ($row->{'所代表法人'}) { ?>
+    (所代表法人:
+    <?= $this->escape($row->{'所代表法人'}) ?>)
+    <?php } ?>
+    , 出資額:
+    <?= $this->escape($row->{'出資額'}) ?>
+    </li>
+    <?php } ?>
+</ol>
+<?php } elseif (12 == $this->column_id) { // 經理人名單 ?>
+<ol>
+    <?php foreach (json_decode($this->value) as $row) { ?>
+    <li value="<?= $this->escape($row->{'序號'}) ?>">
+    姓名: 
+    <a href="/name/<?= urlencode($row->{'姓名'}) ?>"><?= $this->escape($row->{'姓名'}) ?></a>
+    , 到職日期:
+    <?= $this->escape(json_encode($row->{'到職日期'}, JSON_UNESCAPED_UNICODE)) ?>
+    </li>
+    <?php } ?>
+</ol>
+<?php } elseif ('[' == $this->value[0]) { // array ?>
 <ul>
     <?php foreach (json_decode($this->value) as $row) { ?>
     <li><?= $this->escape(json_encode($row,  JSON_UNESCAPED_UNICODE)) ?></li>
@@ -7,4 +39,3 @@
 <?php } else { ?>
 <?= $this->escape($this->value) ?>
 <?php } ?>
-

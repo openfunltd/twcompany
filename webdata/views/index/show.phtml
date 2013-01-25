@@ -14,7 +14,7 @@
     <?php foreach (UnitData::search(array('id' => $this->unit->id)) as $unitdata) { ?>
     <tr>
         <td><?= ColumnGroup::getColumnName($unitdata->column_id) ?></td>
-        <td><?= $this->partial('/index/data_show.phtml', array('value' => $unitdata->value)) ?></td>
+        <td><?= $this->partial('/index/data_show.phtml', array('value' => $unitdata->value, 'column_id' => $unitdata->column_id)) ?></td>
     </tr>
     <?php } ?>
 </table>
@@ -30,8 +30,8 @@
     <tr>
         <td><?= date('c', $unitchangelog->updated_at) ?></td>
         <td><?= ColumnGroup::getColumnName($unitchangelog->column_id) ?></td>
-        <td><?= $this->partial('/index/data_show.phtml', array('value' => $unitchangelog->old_value)) ?></td>
-        <td><?= $this->partial('/index/data_show.phtml', array('value' => $unitchangelog->new_value)) ?></td>
+        <td><?= $this->partial('/index/data_show.phtml', array('value' => $unitchangelog->old_value, 'column_id' => $unitchangelog->column_id)) ?></td>
+        <td><?= $this->partial('/index/data_show.phtml', array('value' => $unitchangelog->new_value, 'column_id' => $unitchangelog->column_id)) ?></td>
     </tr>
     <?php } ?>
 </table>
