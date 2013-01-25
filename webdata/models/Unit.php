@@ -2,10 +2,20 @@
 
 class UnitRow extends Pix_Table_Row
 {
+    public function getNameColumns()
+    {
+        return array(
+            5, // 代表人姓名
+            16, // 訴訟及非訴訟代理人姓名
+            11, // 董監事名單
+            12, // 經理人名單
+        );
+    }
+
     public function getNames()
     {
         $values = array();
-        foreach (UnitData::search(array('id' => $this->id))->searchIn('column_id', array(5, 16, 12, 11)) as $unit_data) { 
+        foreach (UnitData::search(array('id' => $this->id))->searchIn('column_id', $this->getNameColumns()) as $unit_data) { 
             $values[$unit_data->column_id] = json_decode($unit_data->value);
         }
 
