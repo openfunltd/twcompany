@@ -15,7 +15,8 @@ class Pix_Loader
 	    return false;
 	}
 
-	$class = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
+        $class = str_replace('_', DIRECTORY_SEPARATOR, $class);
+	$class = str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
 
 	$paths = explode(PATH_SEPARATOR, get_include_path());
 	foreach ($paths as $path) {
