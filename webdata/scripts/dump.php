@@ -20,7 +20,7 @@ for ($i = 0; $i * $delta < 99999999; $i ++) {
     $unit = new StdClass;
     foreach (UnitData::search("`id` >= $start AND `id` <= $end")->order("`id`, `column_id`")->volumemode(10000) as $unit_data) {
         if (!is_null($unit_id) and $unit_data->id != $unit_id) {
-            fwrite($fp, $unit_id . ',' . json_encode($unit, JSON_UNESCAPED_UNICODE));
+            fwrite($fp, str_pad($unit_id, 8, '0', STR_PAD_LEFT) . ',' . json_encode($unit, JSON_UNESCAPED_UNICODE) . "\n");
             $unit = new StdClass;
         }
         $unit_id = $unit_data->id;
@@ -28,7 +28,7 @@ for ($i = 0; $i * $delta < 99999999; $i ++) {
         $unit->{$columns[$unit_data->column_id]} = json_decode($unit_data->value);
     }
     if (!is_null($unit_id)) {
-        fwrite($fp, $unit_id . ',' . json_encode($unit, JSON_UNESCAPED_UNICODE));
+        fwrite($fp, str_pad($unit_id, 8, '0', STR_PAD_LEFT) . ',' . json_encode($unit, JSON_UNESCAPED_UNICODE) . "\n");
     }
     fclose($fp);
     DropboxLib::putFile($tmpname, $file_name);
