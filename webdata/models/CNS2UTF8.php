@@ -8,7 +8,7 @@ class CNS2UTF8
     {
         $maps = self::_getMap();
 
-        if (!$unicode = $maps[intval($page)][strtolower($code)]) {
+        if (!$unicode = $maps[intval(hexdec($page))][strtolower($code)]) {
             return '';
         }
 
