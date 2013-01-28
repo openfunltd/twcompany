@@ -45,6 +45,59 @@ class Crawler
         return $ids;
     }
 
+    public function crawlerBussiness($year, $month)
+    {
+        $orginations = array(
+            '376570000A' => '基隆市政府',
+            '376410000A' => '新北市政府',
+            '379100000G' => '台北市政府',
+            '376430000A' => '桃園縣政府',
+            '376440000A' => '新竹縣政府',
+            '376580000A' => '新竹市政府',
+            '376450000A' => '苗栗縣政府',
+            '376460000A' => '台中縣政府',
+            '376590000A' => '台中市政府',
+            '376480000A' => '南投縣政府',
+            '376470000A' => '彰化縣政府',
+            '376490000A' => '雲林縣政府',
+            '376500000A' => '嘉義縣政府',
+            '376600000A' => '嘉義市政府',
+            '376510000A' => '台南縣政府',
+            '376610000A' => '台南市政府',
+            '376520000A' => '高雄縣政府',
+            '383100000G' => '高雄市政府',
+            '376530000A' => '屏東縣政府',
+            '376420000A' => '宜蘭縣政府',
+            '376550000A' => '花蓮縣政府',
+            '376540000A' => '台東縣政府',
+            '376560000A' => '澎湖縣政府',
+            '371010000A' => '金門縣政府',
+            '371030000A' => '連江縣政府',
+        );
+
+        $types = array(
+            'setup' => '設立',
+            'change' => '變更',
+            'rest' => '解散',
+        );
+
+        $ret = array();
+        foreach ($orginations as $ori_id => $type_name) {
+            foreach ($types as $type_id => $type_name) {
+                $yearmonth = sprintf("%03d%02d", $year, $month);
+                $url = "http://gcis.nat.gov.tw/moeadsBF/cmpy/reportAction.do?method=report&reportClass=bms&subPath={$yearmonth}&fileName={$ori_id}{$type_id}{$yearmonth}.pdf";
+                $file = self::fetch($url);
+                if (false === $file) {
+                    trigger_error("Fetch failed: {$ori_id}-{$type_id}-{$year}-{$month}", E_USER_WARNING);
+                    continue;
+                }
+                $ret += self::convert($file);
+                unlink($file);
+            }
+        }
+        return $ret;
+    }
+
     public function crawlerMonth($year, $month)
     {
         $orginations = array(
