@@ -4,6 +4,133 @@ class Updater
 {
     protected static $_last_fetch = null;
 
+    public function parseBranch($doc)
+    {
+        // 基本資料
+        $info = new StdClass;
+        $info->{'類型'} = '商業登記-分支機構';
+        $table_dom = $doc->getElementsByTagName('table');
+        $table_dom = $doc->getElementById('T1000');
+        if (!$table_dom) {
+            throw new Exception('不知道的 HTML');
+        }
+        $base_table_dom = $table_dom->getElementsByTagName('table')->item(2);
+        foreach ($base_table_dom->getElementsByTagName('tr') as $tr_dom) {
+            if (!$tr_dom->getElementsByTagName('td')->item(1)) {
+                continue;
+            }
+            $column = trim($tr_dom->getElementsByTagName('td')->item(1)->childNodes->item(0)->wholeText);
+
+            if (in_array($column, array('分支機構登記機關', '分支機構統一編號', '分支機構名稱', '分支機構經理人姓名', '分支機構現況'))) {
+                $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
+                $info->{$column} = trim(explode("\n", trim($value_dom->wholeText))[0]);
+            } elseif (in_array($column, array('總機構統一編號', '總機構名稱'))) {
+                $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
+                $info->{$column} = trim($value_dom->nodeValue);
+            } elseif (in_array($column, array('核准設立日期', '最近異動日期'))) {
+                $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
+                $value = trim(explode("\n", trim($value_dom->wholeText))[0]);
+                if (preg_match('#(.*)年(.*)月(.*)日#', $value, $matches)) {
+                    $value = new stdClass;
+                    $value->year = 1911 + intval($matches[1]);
+                    $value->month = intval($matches[2]);
+                    $value->day = intval($matches[3]);
+                    $info->{$column} = $value;
+                } else {
+                    $info->{$column} = null;
+                }
+            } elseif ('分支機構地址' == $column) {
+                $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
+                $terms = (explode(html_entity_decode('&nbsp;'), $value_dom->nodeValue));
+                $info->{$column} = preg_replace("/\s/", '', $terms[0]);
+            } elseif ($column == '' or preg_match('/查詢「/', $column)) {
+            } else {
+                $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
+                echo '[TODO1]' . $column . ' ' . $value_dom->nodeValue . "\n";
+                exit;
+            }
+        }
+
+        return $info;
+    }
+
+    public function parseBussinessFile($content)
+    {
+        $doc = new DOMDocument();
+        $content = str_replace('text/html; charset=MS950', 'text/html; charset=UTF-8', iconv('Big5', 'UTF-8//IGNORE', $content));
+        //<img src='http://gcis.nat.gov.tw/CNSServlet/KaiCGI1?page=3&code=3A62&size=12&background=ffffff&foreground=000000' onclick='javascript:this.src="http://gcis.nat.gov.tw/CNSServlet/KaiCGI1?page=3&code=3A62&size=36&background=ffffff&foreground=000000";' border='0' align='absmiddle' />
+        $content = preg_replace_callback(
+            '#<img src=\'http://gcis.nat.gov.tw/CNSServlet/KaiCGI1\?page=(\d+)&code=([^&]*)&([^\']*)\' onclick=\'([^\']*)\' border=\'0\' align=\'absmiddle\' />#',
+            function($matches){
+                return CNS2UTF8::convert($matches[1], $matches[2]);
+            },
+            $content
+        );
+        if (FALSE !== strpos($content, '很抱歉，您所存取的網頁系統暫時無法回應')) {
+            return null;
+        }
+        @$doc->loadHTML($content);
+        $title = $doc->getElementsByTagName('title')->item(0)->nodeValue;
+        if ('商業登記公示資料查詢(分支機構)(明細)' == $title) {
+            return $this->parseBranch($doc);
+        } elseif ('商業登記公示資料查詢(明細)' == $title) {
+        } elseif ('' == $content) {
+            return null;
+        } else {
+            throw new Exception('unknown title: ' . $title);
+        }
+
+        // 基本資料
+        $info = new StdClass;
+        $info->{'類型'} = '商業登記';
+        $table_dom = $doc->getElementsByTagName('table');
+        $table_dom = $doc->getElementById('T1000');
+        if (!$table_dom) {
+            throw new Exception('不知道的 HTML');
+        }
+        $base_table_dom = $table_dom->getElementsByTagName('table')->item(2);
+        foreach ($base_table_dom->getElementsByTagName('tr') as $tr_dom) {
+            if (!$tr_dom->getElementsByTagName('td')->item(1)) {
+                continue;
+            }
+            $column = trim($tr_dom->getElementsByTagName('td')->item(1)->childNodes->item(0)->wholeText);
+
+            if (in_array($column, array('登記機關', '商業統一編號', '商業名稱', '負責人姓名', '現況', '組織類型', '合夥人姓名', '分支機構登記機關', '分支機構統一編號'))) {
+                $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
+                $info->{$column} = trim(explode("\n", trim($value_dom->wholeText))[0]);
+            } elseif (in_array($column, array('資本額(元)'))) {
+                $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
+                $info->{$column} = trim($value_dom->nodeValue);
+            } elseif (in_array($column, array('營業項目'))) {
+                $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
+                $info->{$column} = trim($value_dom->nodeValue);
+            } elseif (in_array($column, array('核准設立日期', '最近異動日期'))) {
+                $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
+                $value = trim(explode("\n", trim($value_dom->wholeText))[0]);
+                if (preg_match('#(.*)年(.*)月(.*)日#', $value, $matches)) {
+                    $value = new stdClass;
+                    $value->year = 1911 + intval($matches[1]);
+                    $value->month = intval($matches[2]);
+                    $value->day = intval($matches[3]);
+                    $info->{$column} = $value;
+                } else {
+                    $info->{$column} = null;
+                }
+            } elseif ('地址' == $column) {
+                $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
+                $terms = (explode(html_entity_decode('&nbsp;'), $value_dom->nodeValue));
+                $info->{$column} = preg_replace("/\s/", '', $terms[0]);
+            } elseif ($column == '' or preg_match('/查詢「/', $column)) {
+            } else {
+                $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
+                echo '[TODO1]' . $column . ' ' . $value_dom->nodeValue . "\n";
+                exit;
+            }
+        }
+
+        return $info;
+    }
+
     public function parseChinaCompany($doc)
     {
         $info = new StdClass;
@@ -249,6 +376,53 @@ class Updater
         }
 
         return $info;
+    }
+
+    public function updateBussiness($id, $options = array())
+    {
+        $unit = Unit::find($id);
+        if (!$unit) {
+            // 找不到檔案就不用判斷了
+        } else {
+            $modified_at = $unit->updated_at;
+            if (array_key_exists('month', $options)) {
+                $query_time = strtotime('+1 month', mktime(0, 0, 0, $options['month'], 1, $options['year']));
+                if ($query_time < $modified_at) {
+                    return;
+                }
+            }
+        }
+        $url = "http://gcis.nat.gov.tw/moeadsBF/bms/bmsInfoAction.do?method=detail&banNo={$id}&lAgencyCode=&agencyCode=allbf&showGcisLocation=true&showBusi=true&showFact=true";
+        // 一秒只更新一個檔案
+        while (!is_null(self::$_last_fetch) and (microtime(true) - self::$_last_fetch) < 0.5) {
+            usleep(1000);
+        }
+        self::$_last_fetch = microtime(true);
+
+        $content = self::http($url);
+        if (!$content) {
+            trigger_error("找不到網頁內容: $url", E_USER_WARNING);
+            return;
+        }
+
+        $info = self::parseBussinessFile($content);
+        unset($info->{'類型'});
+
+        if (!$parsed_id = $info->{'商業統一編號'}) {
+            trigger_error("找不到統一編號: $id", E_USER_WARNING);
+            return;
+
+            throw new Exception('統一編號 not found?');
+        }
+        unset($info->{'商業統一編號'});
+
+        if (!$unit = Unit::find($id)) {
+            $unit = Unit::insert(array(
+                'id' => $id,
+                'type' => 2, // 商業登記
+            ));
+        }
+        $unit->updateData($info);
     }
 
     public function update($id, $options = array())
