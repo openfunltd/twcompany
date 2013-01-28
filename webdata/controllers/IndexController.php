@@ -30,4 +30,9 @@ class IndexController extends Pix_Controller
         $this->view->unit_ids = $unit_ids;
         $this->view->name = $name;
     }
+
+    public function redirectAction()
+    {
+        $this->view->id = intval($_GET['id']);
+    }
 }
