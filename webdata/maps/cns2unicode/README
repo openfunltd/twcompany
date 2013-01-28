@@ -1,0 +1,7 @@
+來源: http://gateway.cns11643.gov.tw/AIDB/download.do?name=%E5%80%8B%E4%BA%BA%E9%9B%BB%E8%85%A6%E9%80%A0%E5%AD%97%E8%99%95%E7%90%86%E5%B7%A5%E5%85%B7%3EUnicode%E5%B9%B3%E5%8F%B0
+
+1. 下載 全字庫單機版轉碼工具(Linux版)
+2. 用非 root 身份執行下載的 script ，會解出 cnscodeconvertor-99-1.bin.noarch.rpm, openfonttools-1.0.2-1.ossii.i386.rpm xdialog-2.3.1-3.ossii.i386.rpm 並且安裝失敗
+3. 用 rpm2cpio cnscodeconvertor-99-1.bin.noarch.rpm | cpio -idmv 解開 rpm 檔
+4. unzip usr/share/cnscodeconvertor/lib/CNSCodeConverter.jar
+5. cns 2 unicode 的檔案就放在 tw/gov/cns11643/transfer/cns_unicode1_1.txt 裡面了

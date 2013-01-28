@@ -1,0 +1,7 @@
+#online:false
+#name:UTF-8 Unicode 5.1,UTF-16LE Unicode 5.1,UTF-16BE Unicode 5.1
+#id:utf-8@unicode5_1,utf-16le@unicode5_1,utf-16be@unicode5_1
+#type:bin
+#pattern:
+#base:unicode5_0
+#description:Unicode 5.1

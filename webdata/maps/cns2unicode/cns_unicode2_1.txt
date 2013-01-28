@@ -1,0 +1,9 @@
+#online:false
+#name:UTF-8 Unicode 2.1,UTF-16LE Unicode 2.1,UTF-16BE Unicode 2.1
+#id:utf-8@unicode2_1,utf-16le@unicode2_1,utf-16be@unicode2_1
+#type:bin
+#pattern:
+#base:unicode2_0
+#description:2.1 版的 Unicode 規格包括在 0x20AC 字碼點的歐元符號。
+01-4242	20AC
+09-3556	FFFC
