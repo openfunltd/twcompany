@@ -60,7 +60,7 @@ class Updater
         $content = str_replace('text/html; charset=MS950', 'text/html; charset=UTF-8', iconv('Big5', 'UTF-8//IGNORE', $content));
         //<img src='http://gcis.nat.gov.tw/CNSServlet/KaiCGI1?page=3&code=3A62&size=12&background=ffffff&foreground=000000' onclick='javascript:this.src="http://gcis.nat.gov.tw/CNSServlet/KaiCGI1?page=3&code=3A62&size=36&background=ffffff&foreground=000000";' border='0' align='absmiddle' />
         $content = preg_replace_callback(
-            '#<img src=\'http://gcis.nat.gov.tw/CNSServlet/KaiCGI1\?page=(\d+)&code=([^&]*)&([^\']*)\' onclick=\'([^\']*)\' border=\'0\' align=\'absmiddle\' />#',
+            '#<img src=\'http://gcis.nat.gov.tw/CNSServlet/KaiCGI1\?page=([^&]*)&code=([^&]*)&([^\']*)\' onclick=\'([^\']*)\' border=\'0\' align=\'absmiddle\' />#',
             function($matches){
                 return CNS2UTF8::convert($matches[1], $matches[2]);
             },
@@ -256,7 +256,7 @@ class Updater
         $content = str_replace('text/html; charset=Big5', 'text/html; charset=UTF-8', iconv('Big5', 'UTF-8//IGNORE', $content));
         //<img src='http://gcis.nat.gov.tw/CNSServlet/KaiCGI1?page=3&code=3A62&size=12&background=ffffff&foreground=000000' onclick='javascript:this.src="http://gcis.nat.gov.tw/CNSServlet/KaiCGI1?page=3&code=3A62&size=36&background=ffffff&foreground=000000";' border='0' align='absmiddle' />
         $content = preg_replace_callback(
-            '#<img src=\'http://gcis.nat.gov.tw/CNSServlet/KaiCGI1\?page=(\d+)&code=([^&]*)&([^\']*)\' onclick=\'([^\']*)\' border=\'0\' align=\'absmiddle\' />#',
+            '#<img src=\'http://gcis.nat.gov.tw/CNSServlet/KaiCGI1\?page=([^&]*)&code=([^&]*)&([^\']*)\' onclick=\'([^\']*)\' border=\'0\' align=\'absmiddle\' />#',
             function($matches){
                 return CNS2UTF8::convert($matches[1], $matches[2]);
             },
