@@ -36,6 +36,8 @@
     <li><?= $this->escape(json_encode($row,  JSON_UNESCAPED_UNICODE)) ?></li>
     <?php } ?>
 </ul>
+<?php } elseif ('"' == $this->value[0]) { ?>
+<?= $this->escape(json_decode($this->value)) ?>
 <?php } else { ?>
 <?= $this->escape($this->value) ?>
 <?php } ?>
