@@ -1,3 +1,7 @@
 <script>
-document.location='http://gcis.nat.gov.tw/pub/cmpy/cmpyInfoAction.do?method=detail&banNo=' + <?= json_encode(str_pad($this->id, 8, '0', STR_PAD_LEFT)) ?>;
+<?php if (2 == $this->type) { // 商業登記 ?>
+    document.location='http://gcis.nat.gov.tw/moeadsBF/bms/bmsInfoAction.do?method=detail&banNo=' + <?= json_encode(str_pad($this->id, 8, '0', STR_PAD_LEFT)) ?> + '&lAgencyCode=&agencyCode=allbf&showGcisLocation=true&showBusi=true&showFact=false';
+<?php } else { ?>
+    document.location='http://gcis.nat.gov.tw/pub/cmpy/cmpyInfoAction.do?method=detail&banNo=' + <?= json_encode(str_pad($this->id, 8, '0', STR_PAD_LEFT)) ?>;
+<?php } ?>
 </script>

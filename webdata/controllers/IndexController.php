@@ -34,5 +34,6 @@ class IndexController extends Pix_Controller
     public function redirectAction()
     {
         $this->view->id = intval($_GET['id']);
+        $this->view->type = intval($_GET['type']);
     }
 }
