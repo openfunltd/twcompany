@@ -72,7 +72,7 @@ class Updater
         @$doc->loadHTML($content);
         $title = $doc->getElementsByTagName('title')->item(0)->nodeValue;
         if ('商業登記公示資料查詢(分支機構)(明細)' == $title) {
-            return $this->parseBranch($doc);
+            return self::parseBranch($doc);
         } elseif ('商業登記公示資料查詢(明細)' == $title) {
         } elseif ('' == $content) {
             return null;
