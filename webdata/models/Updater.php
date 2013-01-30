@@ -279,7 +279,7 @@ class Updater
             if (in_array($column, array('分公司統一編號', '分公司狀況', '分公司名稱', '分公司經理姓名', '分公司所在地', '總(本)公司統一編號'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
                 $info->{$column} = trim(explode("\n", trim($value_dom->wholeText))[0]);
-            } elseif (in_array($column, array('核准設立日期', '最後核准變更日期', '停業日期(起)', '停業日期(迄)', '延展開業日期(迄)'))) {
+            } elseif (in_array($column, array('核准設立日期', '最後核准變更日期', '停業日期(起)', '停業日期(迄)', '延展開業日期(迄)', '撤銷日期'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
                 $value = trim(explode("\n", trim($value_dom->wholeText))[0]);
                 if (preg_match('#(.*)年(.*)月(.*)日#', $value, $matches)) {
