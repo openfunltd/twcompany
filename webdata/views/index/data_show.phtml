@@ -30,6 +30,12 @@
     </li>
     <?php } ?>
 </ol>
+<?php } elseif (50 == $this->column_id) { // 總公司統編 ?>
+<?php if ($unit = Unit::find(json_decode($this->value))) { ?>
+<a href="/id/<?= $unit->id ?>"><?= $unit->id() ?>.<?= $this->escape($unit->name()) ?></a>
+<?php } else { ?>
+<?= $this->escape(json_decode($this->value)) ?>
+<?php } ?>
 <?php } elseif ('[' == $this->value[0]) { // array ?>
 <ul>
     <?php foreach (json_decode($this->value) as $row) { ?>
