@@ -12,10 +12,41 @@ class UnitRow extends Pix_Table_Row
         );
     }
 
+    public function id()
+    {
+        return str_pad($this->id, 8, '0', STR_PAD_LEFT);
+    }
+
     public function name()
     {
-        if ($data = UnitData::search(array('id' => $this->id, 'column_id' => 2))->first()) { // 公司名稱
-            return $data->value;
+        $prefix = '';
+        if (1 == $this->type) { // 公司
+            $column_id = 2;
+        } elseif (2 == $this->type) { // 商業登記
+            $column_id = 33;
+        } elseif (3 == $this->type) { // 分公司
+            // 先取總公司
+            $data = UnitData::search(array('id' => $this->id, 'column_id' => 50))->first();
+            if (!$data) {
+                return '';
+            }
+            $unit = Unit::find(json_decode($data->value));
+            if (!$unit) {
+                return '';
+            }
+            $prefix = $unit->name();
+            $column_id = 48;
+        } else {
+            $column_id = 43;
+        }
+
+        if ($data = UnitData::search(array('id' => $this->id, 'column_id' => $column_id))->first()) { // 公司名稱
+            $v = json_decode($data->value);
+            if (is_scalar($v)) {
+                return $prefix . $v;
+            } elseif (is_array($v)) {
+                return $prefix . $v[0];
+            }
         }
     }
 
