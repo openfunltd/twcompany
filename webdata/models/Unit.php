@@ -154,7 +154,7 @@ class Unit extends Pix_Table
         $this->_rowClass = 'UnitRow';
 
         $this->_columns['id'] = array('type' => 'int', 'unsigned' => true);
-        // 1 - 公司, 2 - 商業登記, 3 - 工廠登記
+        // 1 - 公司, 2 - 商業登記, 3 - 工廠登記, 4 - 教育部, 99 - 未知來源
         $this->_columns['type'] = array('type' => 'tinyint');
         $this->_columns['updated_at'] = array('type' => 'int');
     }
