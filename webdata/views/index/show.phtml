@@ -1,8 +1,9 @@
-<a href="/index/redirect?type=<?= $this->unit->type ?>&id=<?= $this->unit->id ?>&gcis.nat.gov.tw">Original</a>
+<?= $this->partial('/common/header.phtml', $this) ?>
+<a href="/index/redirect?type=<?= $this->unit->type ?>&id=<?= $this->unit->id ?>&gcis.nat.gov.tw">原始資料</a>
 <table border="1">
     <tr>
-        <td>column</td>
-        <td>data</td>
+        <td>欄位</td>
+        <td>值</td>
     </tr>
     <tr>
         <td>ID</td>
@@ -19,20 +20,4 @@
     </tr>
     <?php } ?>
 </table>
-<hr>
-<table border="1">
-    <tr>
-        <td>Time</td>
-        <td>column</td>
-        <td>old value</td>
-        <td>new value</td>
-    </tr>
-    <?php foreach (UnitChangeLog::search(array('id' => $this->unit->id)) as $unitchangelog) { ?>
-    <tr>
-        <td><?= date('c', $unitchangelog->updated_at) ?></td>
-        <td><?= ColumnGroup::getColumnName($unitchangelog->column_id) ?></td>
-        <td><?= $this->partial('/index/data_show.phtml', array('value' => $unitchangelog->old_value, 'column_id' => $unitchangelog->column_id)) ?></td>
-        <td><?= $this->partial('/index/data_show.phtml', array('value' => $unitchangelog->new_value, 'column_id' => $unitchangelog->column_id)) ?></td>
-    </tr>
-    <?php } ?>
-</table>
+<?= $this->partial('/common/footer.phtml', $this) ?>

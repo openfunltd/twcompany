@@ -1,4 +1,5 @@
-<table border="1">
+<?= $this->partial('/common/header.phtml', $this) ?>
+    <table border="1">
     <tr>
         <td>ID</td>
         <td>欄位名稱</td>
@@ -10,3 +11,4 @@
     </tr>
     <?php } ?>
 </table>
+<?= $this->partial('/common/footer.phtml', $this) ?>

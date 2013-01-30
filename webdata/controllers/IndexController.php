@@ -36,4 +36,13 @@ class IndexController extends Pix_Controller
         $this->view->id = intval($_GET['id']);
         $this->view->type = intval($_GET['type']);
     }
+
+    public function searchAction()
+    {
+        if ($id = intval($_GET['q'])) {
+            return $this->redirect('/id/' . str_pad($id, '0', 8, STR_PAD_LEFT));
+        }
+
+        return $this->redirect('/');
+    }
 }
