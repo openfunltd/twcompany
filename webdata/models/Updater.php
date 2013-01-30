@@ -423,6 +423,7 @@ class Updater
             ));
         }
         $unit->updateData($info);
+        return $unit;
     }
 
     public function update($id, $options = array())
@@ -469,6 +470,7 @@ class Updater
             ));
         }
         $unit->updateData($info);
+        return $unit;
     }
 
     public function http($url)
