@@ -163,13 +163,16 @@ class UnitRow extends Pix_Table_Row
         }
 
         foreach ($delete_data as $column_id) {
-            UnitChangeLog::insert(array(
-                'id' => $this->id,
-                'updated_at' => $now,
-                'column_id' => $column_id,
-                'old_value' => $old_data[$column_id],
-                'new_value' => '',
-            ));
+            try {
+                UnitChangeLog::insert(array(
+                    'id' => $this->id,
+                    'updated_at' => $now,
+                    'column_id' => $column_id,
+                    'old_value' => $old_data[$column_id],
+                    'new_value' => '',
+                ));
+            } catch (Pix_Table_DuplicateException $e) {
+            }
             UnitData::find(array($this->id, $column_id))->delete();
         }
         $this->update(array('updated_at' => $now));
