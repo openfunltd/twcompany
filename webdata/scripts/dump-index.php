@@ -13,24 +13,40 @@ $tmpname = tempnam('', '');
 $file_name = 'index.csv.gz';
 $fp = gzopen($tmpname, 'w');
 fwrite($fp, '#id,type,name' . PHP_EOL);
-foreach (UnitData::search(1)->searchIn('column_id', array(2, 33))->order('id')->volumemode(10000) as $unit_data) {
-    $rows = array();
-    # 統一編號
-    $rows[] = str_pad($unit_data->id, 8, '0', STR_PAD_LEFT);
-    # 公司 or 商業登記
-    if (2 == $unit_data->column_id) {
-        $rows[] = '公司';
-    } elseif (33 == $unit_data->column_id) {
-        $rows[] = '商業登記';
+$units = array();
+$type_names = array(1 => '公司', 2 => '商業登記', 4 => '教育部', 99 => '其他');
+foreach (Unit::search(1)->order('id')->volumemode(10000) as $unit) {
+    $units[$unit->type][] = $unit->id;
+    $unit_names[$unit->id] = '';
+    $types[$unit->id] = $unit->type;
+
+    if (count($unit_names) > 10000) {
+        // 1 - 公司
+        foreach (UnitData::search(array('column_id' => 2))->searchIn('id', $units[1]) as $unitdata) {
+            $unit_names[$unitdata->id] = $unitdata->value;
+        }
+        // 2 - 商業登記
+        foreach (UnitData::search(array('column_id' => 33))->searchIn('id', $units[2]) as $unitdata) {
+            $unit_names[$unitdata->id] = $unitdata->value;
+        }
+        // 4 - 教育部, 99 - 其他
+        foreach (UnitData::search(array('column_id' => 43))->searchIn('id', array_merge($units[4], $units[99])) as $unitdata) {
+            $unit_names[$unitdata->id] = $unitdata->value;
+        }
+
+        foreach ($unit_names as $id => $value) {
+            $rows = array();
+            $rows[] = str_pad($id, 8, '0', STR_PAD_LEFT);
+            $rows[] = $type_names[$types[$id]];
+            $v = json_decode($value);
+            if (is_array($v)) {
+                $rows[] = $v[0];
+            } else {
+                $rows[] = strval($v);
+            }
+            fputcsv($fp, $rows);
+        }
     }
-    # 公司名稱
-    $v = json_decode($unit_data->value);
-    if (is_array($v)) {
-        $rows[] = $v[0];
-    } else {
-        $rows[] = strval($v);
-    }
-    fputcsv($fp, $rows);
 }
 fclose($fp);
 DropboxLib::putFile($tmpname, $file_name);
