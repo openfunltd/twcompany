@@ -250,6 +250,59 @@ class Updater
         return $info;
     }
 
+    public function parseBranchFile($content)
+    {
+        $doc = new DOMDocument();
+        $content = str_replace('text/html; charset=BIG5', 'text/html; charset=UTF-8', Big52003::iconv($content));
+        //<img src='http://gcis.nat.gov.tw/CNSServlet/KaiCGI1?page=3&code=3A62&size=12&background=ffffff&foreground=000000' onclick='javascript:this.src="http://gcis.nat.gov.tw/CNSServlet/KaiCGI1?page=3&code=3A62&size=36&background=ffffff&foreground=000000";' border='0' align='absmiddle' />
+        $content = preg_replace_callback(
+            '#<img src=\'http://gcis.nat.gov.tw/CNSServlet/KaiCGI1\?page=([^&]*)&code=([^&]*)&([^\']*)\' onclick=\'([^\']*)\' border=\'0\' align=\'absmiddle\' />#',
+            function($matches){
+                return CNS2UTF8::convert($matches[1], $matches[2]);
+            },
+            $content
+        );
+        @$doc->loadHTML($content);
+
+        // 基本資料
+        $info = new StdClass;
+        $table_doms = $doc->getElementsByTagName('table');
+        $table_dom = $table_doms->item(4);
+        if (!$table_dom) {
+            throw new Exception('不知道的 HTML');
+        }
+        foreach ($table_dom->getElementsByTagName('tr') as $tr_dom) {
+            if (!$tr_dom->getElementsByTagName('td')->item(1)) {
+                continue;
+            }
+            $column = trim($tr_dom->getElementsByTagName('td')->item(1)->nodeValue);
+            if (in_array($column, array('分公司統一編號', '分公司狀況', '分公司名稱', '分公司經理姓名', '分公司所在地', '總(本)公司統一編號'))) {
+                $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
+                $info->{$column} = trim(explode("\n", trim($value_dom->wholeText))[0]);
+            } elseif (in_array($column, array('核准設立日期', '最後核准變更日期', '停業日期(起)', '停業日期(迄)', '延展開業日期(迄)'))) {
+                $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
+                $value = trim(explode("\n", trim($value_dom->wholeText))[0]);
+                if (preg_match('#(.*)年(.*)月(.*)日#', $value, $matches)) {
+                    $value = new stdClass;
+                    $value->year = 1911 + intval($matches[1]);
+                    $value->month = intval($matches[2]);
+                    $value->day = intval($matches[3]);
+                    $info->{$column} = $value;
+                } else {
+                    $info->{$column} = null;
+                }
+            } elseif (in_array($column, array('總(本)公司名稱'))) {
+                // skip
+            } else {
+                $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
+                echo '[TODO1]' . $column . ' ' . $value_dom->nodeValue . "\n";
+                exit;
+            }
+        }
+
+        return $info;
+    }
+
     public function parseFile($content)
     {
         $doc = new DOMDocument();
@@ -425,6 +478,56 @@ class Updater
         $unit->updateData($info);
         return $unit;
     }
+
+    public function updateBranch($id, $options = array())
+    {
+        $unit = Unit::find($id);
+        if (!$unit) {
+            // 找不到檔案就不用判斷了
+        } else {
+            $modified_at = $unit->updated_at;
+            if (array_key_exists('month', $options)) {
+                $query_time = strtotime('+1 month', mktime(0, 0, 0, $options['month'], 1, $options['year']));
+                if ($query_time < $modified_at) {
+                    return;
+                }
+            }
+        }
+        $url = 'http://gcis.nat.gov.tw/pub/cmpy/branInfoAction.do?method=detail&brBanNo=' . $id;
+        // 一秒只更新一個檔案
+        while (!is_null(self::$_last_fetch) and (microtime(true) - self::$_last_fetch) < 0.5) {
+            usleep(1000);
+        }
+        self::$_last_fetch = microtime(true);
+
+        $content = self::http($url);
+        if (!$content) {
+            trigger_error("找不到網頁內容: $url", E_USER_WARNING);
+            return;
+        }
+
+        $info = self::parseBranchFile($content);
+
+        if (!$parsed_id = $info->{'分公司統一編號'}) {
+            trigger_error("找不到統一編號: $id", E_USER_WARNING);
+            return;
+
+            throw new Exception('統一編號 not found?');
+        }
+        unset($info->{'分公司統一編號'});
+
+        if (!$unit = Unit::find($id)) {
+            $unit = Unit::insert(array(
+                'id' => $id,
+                'type' => 3,
+            ));
+        } else {
+            $unit->update(array('type' => 3));
+        }
+        $unit->updateData($info);
+        return $unit;
+    }
+
 
     public function update($id, $options = array())
     {
