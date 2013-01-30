@@ -1,3 +1,6 @@
+<?php
+$this->title = $this->unit->name() . ':' . $this->unit->id() . ':';
+?>
 <?= $this->partial('/common/header.phtml', $this) ?>
 <a href="/index/redirect?type=<?= $this->unit->type ?>&id=<?= $this->unit->id ?>&gcis.nat.gov.tw">原始資料</a>
 <table border="1">
@@ -7,7 +10,7 @@
     </tr>
     <tr>
         <td>ID</td>
-        <td><?= $this->unit->id ?></td>
+        <td><?= $this->unit->id() ?></td>
     </tr>
     <tr>
         <td>Updated_at</td>
