@@ -584,4 +584,35 @@ class Updater
         curl_setopt($curl, CURLOPT_REFERER, 'http://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do');
         return curl_exec($curl);
     }
+
+    public function searchBranch($id)
+    {
+        $tmpfile = tempnam('', '');
+        $url = 'http://gcis.nat.gov.tw/pub/cmpy/branInfoListAction.do?method=query&banNo=' . str_pad(intval($id), 8, '0', STR_PAD_LEFT) . '&from=';
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_REFERER, $url);
+        curl_setopt($curl, CURLOPT_COOKIEFILE, $tmpfile);
+        curl_setopt($curl, CURLOPT_URL, $url);
+        $content = curl_exec($curl);
+        $content = Big52003::iconv($content);
+
+        preg_match_all('#brBanNo=([0-9]{8})#', $content, $matches);
+        $ids = $matches[1];
+
+        preg_match('#([0-9]*)&nbsp;頁&nbsp;#', $content, $matches);
+        for ($i = 2; $i <= intval($matches[1]); $i ++) {
+            curl_setopt($curl, CURLOPT_COOKIEFILE, $tmpfile);
+            curl_setopt($curl, CURLOPT_URL, 'http://gcis.nat.gov.tw/pub/cmpy/branInfoListAction.do');
+            curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, 'method=goPage&goPage=' . $i);
+            $content = curl_exec($curl);
+            $content = Big52003::iconv($content);
+            preg_match_all('#brBanNo=([0-9]{8})#', $content, $matches);
+            $ids = array_merge($ids, $matches[1]);
+        }
+        unlink($tmpfile);
+
+        return (array_values(array_unique($ids)));
+    }
 }
