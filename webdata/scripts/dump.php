@@ -18,14 +18,14 @@ for ($i = 0; $i * $delta < 99999999; $i ++) {
     $tmpname2 = tempnam('', '');
     $file_name1 = 'files/' . str_pad($i * $delta, 8, '0', STR_PAD_LEFT) . '.json.gz';
     $file_name2 = 'files/bussiness-' . str_pad($i * $delta, 8, '0', STR_PAD_LEFT) . '.json.gz';
-    $fp[1] = gzopen($tmpname1, 'w');
+    $fp[1] = $fp[3] = gzopen($tmpname1, 'w');
     $fp[2] = gzopen($tmpname2, 'w');
 
     $unit_id = null;
     $unit = new StdClass;
     $unit_types = Unit::search("`id` >= $start AND `id` <= $end")->toArray('type');
     foreach (UnitData::search("`id` >= $start AND `id` <= $end")->order("`id`, `column_id`")->volumemode(10000) as $unit_data) {
-        if (!is_null($unit_id) and $unit_data->id != $unit_id) {
+        if (!is_null($unit_id) and $unit_data->id != $unit_id and array_key_exists($unit_types[$unit_id], $fp)) {
             fwrite($fp[$unit_types[$unit_id]], str_pad($unit_id, 8, '0', STR_PAD_LEFT) . ',' . json_encode($unit, JSON_UNESCAPED_UNICODE) . "\n");
             $unit = new StdClass;
         }
@@ -33,7 +33,7 @@ for ($i = 0; $i * $delta < 99999999; $i ++) {
 
         $unit->{$columns[$unit_data->column_id]} = json_decode($unit_data->value);
     }
-    if (!is_null($unit_id)) {
+    if (!is_null($unit_id) and array_key_exists($unit_types[$unit_id], $fp)) {
         fwrite($fp[$unit_types[$unit_id]], str_pad($unit_id, 8, '0', STR_PAD_LEFT) . ',' . json_encode($unit, JSON_UNESCAPED_UNICODE) . "\n");
     }
     fclose($fp[1]);
