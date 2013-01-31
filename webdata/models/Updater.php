@@ -571,8 +571,13 @@ class Updater
                 'id' => $id,
                 'type' => 1,
             ));
+        } else {
+            $unit->update(array('type' => 1));
         }
         $unit->updateData($info);
+        foreach (self::searchBranch($unit->id()) as $id) {
+            self::updateBranch($id);
+        }
         return $unit;
     }
 
@@ -601,9 +606,12 @@ class Updater
         $ids = $matches[1];
 
         preg_match('#([0-9]*)&nbsp;頁&nbsp;#', $content, $matches);
-        for ($i = 2; $i <= intval($matches[1]); $i ++) {
+        $total = intval($matches[1]);
+        for ($i = 2; $i <= $total; $i ++) {
+            sleep(1);
             curl_setopt($curl, CURLOPT_COOKIEFILE, $tmpfile);
             curl_setopt($curl, CURLOPT_URL, 'http://gcis.nat.gov.tw/pub/cmpy/branInfoListAction.do');
+            curl_setopt($curl, CURLOPT_REFERER, 'http://gcis.nat.gov.tw/pub/cmpy/branInfoListAction.do');
             curl_setopt($curl, CURLOPT_POST, true);
             curl_setopt($curl, CURLOPT_POSTFIELDS, 'method=goPage&goPage=' . $i);
             $content = curl_exec($curl);
