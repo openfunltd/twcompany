@@ -14,7 +14,7 @@ $file_name = 'index.csv.gz';
 $fp = gzopen($tmpname, 'w');
 fwrite($fp, '#id,type,name' . PHP_EOL);
 $units = $unit_names = $types = array();
-$type_names = array(1 => '公司', 2 => '商業登記', 4 => '教育部', 99 => '其他');
+$type_names = array(1 => '公司', 2 => '商業登記', 3 => '分公司', 4 => '教育部', 99 => '其他');
 foreach (Unit::search(1)->order('id')->volumemode(10000) as $unit) {
     $units[$unit->type][] = $unit->id;
     $unit_names[$unit->id] = '';
@@ -28,6 +28,11 @@ foreach (Unit::search(1)->order('id')->volumemode(10000) as $unit) {
         // 2 - 商業登記
         foreach (UnitData::search(array('column_id' => 33))->searchIn('id', $units[2]) as $unitdata) {
             $unit_names[$unitdata->id] = $unitdata->value;
+        }
+
+        // 3 - 分公司
+        foreach (Unit::search(1)->searchIn('id', $units[3]) as $unit) {
+            $unit_names[$unit->id] = json_encode($unit->name());
         }
         // 4 - 教育部, 99 - 其他
         foreach (UnitData::search(array('column_id' => 43))->searchIn('id', array_merge($units[4], $units[99])) as $unitdata) {
@@ -47,6 +52,9 @@ foreach (Unit::search(1)->order('id')->volumemode(10000) as $unit) {
             fputcsv($fp, $rows);
         }
         $units = $unit_names = $types = array();
+        foreach (array_keys($type_names) as $id) {
+            $units[$id] = array();
+        }
     }
 }
 if (count($unit_names)) {
@@ -57,6 +65,10 @@ if (count($unit_names)) {
     // 2 - 商業登記
     foreach (UnitData::search(array('column_id' => 33))->searchIn('id', $units[2]) as $unitdata) {
         $unit_names[$unitdata->id] = $unitdata->value;
+    }
+    // 3 - 分公司
+    foreach (Unit::search(1)->searchIn('id', $units[3]) as $unit) {
+        $unit_names[$unit->id] = json_encode($unit->name());
     }
     // 4 - 教育部, 99 - 其他
     foreach (UnitData::search(array('column_id' => 43))->searchIn('id', array_merge($units[4], $units[99])) as $unitdata) {
