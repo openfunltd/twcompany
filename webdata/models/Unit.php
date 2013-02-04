@@ -17,8 +17,14 @@ class UnitRow extends Pix_Table_Row
         return str_pad($this->id, 8, '0', STR_PAD_LEFT);
     }
 
+    protected static $_name_depth = 0;
+
     public function name()
     {
+        self::$_name_depth ++;
+        if (self::$_name_depth > 3) {
+            return '';
+        }
         $prefix = '';
         if (1 == $this->type) { // 公司
             $column_id = 2;
@@ -153,13 +159,16 @@ class UnitRow extends Pix_Table_Row
             $unitdata->update(array(
                 'value' => json_encode($data[ColumnGroup::getColumnName($column_id)], JSON_UNESCAPED_UNICODE),
             ));
-            UnitChangeLog::insert(array(
-                'id' => $this->id,
-                'updated_at' => $now,
-                'column_id' => $column_id,
-                'old_value' => $old_data[$column_id],
-                'new_value' => $value,
-            ));
+            try {
+                UnitChangeLog::insert(array(
+                    'id' => $this->id,
+                    'updated_at' => $now,
+                    'column_id' => $column_id,
+                    'old_value' => $old_data[$column_id],
+                    'new_value' => $value,
+                ));
+            } catch (Pix_Table_DuplicateException $e) {
+            }
         }
 
         foreach ($delete_data as $column_id) {
