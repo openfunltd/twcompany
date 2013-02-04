@@ -576,6 +576,10 @@ class Updater
         }
         $unit->updateData($info);
         foreach (self::searchBranch($unit->id()) as $id) {
+            // 跳過 branch 等同自己的
+            if ($id == $unit->id()) {
+                continue;
+            }
             self::updateBranch($id);
         }
         return $unit;
