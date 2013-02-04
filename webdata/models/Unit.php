@@ -17,14 +17,8 @@ class UnitRow extends Pix_Table_Row
         return str_pad($this->id, 8, '0', STR_PAD_LEFT);
     }
 
-    protected static $_name_depth = 0;
-
-    public function name()
+    public function name($depth = 0)
     {
-        self::$_name_depth ++;
-        if (self::$_name_depth > 3) {
-            return '';
-        }
         $prefix = '';
         if (1 == $this->type) { // 公司
             $column_id = 2;
@@ -40,7 +34,13 @@ class UnitRow extends Pix_Table_Row
             if (!$unit) {
                 return '';
             }
-            $prefix = $unit->name();
+            if ($depth) {
+                return false;
+            }
+            $prefix = $unit->name($depth + 1);
+            if (false === $prefix) {
+                return '';
+            }
             $column_id = 48;
         } else {
             $column_id = 43;
