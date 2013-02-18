@@ -1,0 +1,21 @@
+{
+    "mappings": {
+        "company" : {
+            "properties" : {
+                "公司名稱" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"},
+                "代表人姓名" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"},
+                "公司所在地" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"},
+                "公司所在地" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"},
+                "分公司名稱" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"},
+                "分公司所在地" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"},
+                "分公司經理姓名" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"},
+                "合夥人姓名" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"},
+                "商業名稱" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"},
+                "名稱" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"},
+                "地址" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"},
+                "負責人姓名" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"},
+                "辦事處所在地" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"}
+            }
+        }
+    }
+
