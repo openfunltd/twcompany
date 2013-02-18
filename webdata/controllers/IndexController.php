@@ -41,10 +41,23 @@ class IndexController extends Pix_Controller
 
     public function searchAction()
     {
-        if ($id = intval($_GET['q'])) {
-            return $this->redirect('/id/' . str_pad($id, '0', 8, STR_PAD_LEFT));
+        if (preg_match('#\d{8}#', $_GET['q'])) {
+            return $this->redirect('/id/' . $_GET['q']);
         }
 
-        return $this->redirect('/');
+        $page = intval($_GET['page']) ?: 1;
+        if (preg_match('#^address:(.*)$#', $_GET['q'], $matches)) {
+            $ret = (SearchLib::searchCompaniesByAddress($matches[1], $page));
+        } else {
+            $ret = (SearchLib::searchCompaniesByName($_GET['q'], $page));
+        }
+        if ($ret->hits->total == 1) {
+            return $this->redirect('/id/' . urlencode($ret->hits->hits[0]->_id));
+        }
+
+        $this->view->page = $page;
+        $this->view->max_page = ceil($ret->hits->total / 10);
+        $this->view->search_word = $_GET['q'];
+        $this->view->search_result = $ret;
     }
 }
