@@ -13,17 +13,7 @@ class ApiController extends Pix_Controller
             return $this->json($ret);
         }
 
-        $columns = array();
-        foreach (ColumnGroup::search(1) as $columngroup) {
-            $columns[$columngroup->id] = $columngroup->name;
-        }
-
-        $data = new StdClass;
-        foreach (UnitData::search(array('id' => $unit->id)) as $unitdata) {
-            $data->{$columns[$unitdata->column_id]} = json_decode($unitdata->value);
-        }
-
-        $ret->data = $data;
+        $ret->data = $unit->getData();
         return $this->json($ret);
     }
 
