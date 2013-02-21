@@ -16,4 +16,5 @@ class MyDispatcher extends Pix_Controller_Dispatcher
 }
 
 Pix_Controller::addDispatcher(new MyDispatcher);
+Pix_Controller::addCommonHelpers();
 Pix_Controller::dispatch(__DIR__ . '/webdata/');
