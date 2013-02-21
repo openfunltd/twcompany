@@ -30,7 +30,8 @@ class ApiController extends Pix_Controller
     public function searchAction()
     {
         $page = intval($_GET['page']) ?: 1;
-        $search_ret = SearchLib::searchCompaniesByName($_GET['q'], $page);
+        $alive_only = $_GET['alive_only'] ? true : false;
+        $search_ret = SearchLib::searchCompaniesByName($_GET['q'], $page, $alive_only);
         $ret = new StdClass;
         $data = array();
         foreach ($search_ret->hits->hits as $hit) {

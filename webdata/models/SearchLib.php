@@ -13,10 +13,14 @@ class SearchLib
         return json_decode($ret);
     }
 
-    public function searchCompaniesByName($name, $page = 1)
+    public function searchCompaniesByName($name, $page = 1, $alive_only = false)
     {
         $curl = curl_init();
-        $q = urlencode('商業名稱:"' . $name . '" OR 公司名稱:"' . $name. '"');
+        if ($alive_only) {
+            $q = urlencode("(現況:核准設立 AND 商業名稱:\"{$name}\") OR (公司狀況:核准設立 AND 公司名稱:\"{$name}\")");
+        } else {
+            $q = urlencode('商業名稱:"' . $name . '" OR 公司名稱:"' . $name. '"');
+        }
         $from = 10 * ($page - 1);
         curl_setopt($curl, CURLOPT_URL, getenv('SEARCH_URL') . '/company/_search?q=' . $q . '&from=' . $from);
         curl_setopt($curl, CURLOPT_HEADER, 0);
