@@ -627,4 +627,54 @@ class Updater
 
         return (array_values(array_unique($ids)));
     }
+
+    public function searchByKeyword($word)
+    {
+        $params = array();
+        $params['method'] = 'query';
+        $params['otherEnterFlag'] = 'false';
+        $params['useEUC'] = 'N';
+        $params['isShowEUC'] = 'Y';
+        $params['queryKey'] = 'sed4871';
+        $params['selCmpyType'] = 1;
+        $params['selQueryType'] = 1;
+        $params['queryStr'] = iconv('utf-8', 'big5', $word);
+        $params['brBanNo'] = '';
+        $params['imageCode'] = 'gx2k';
+        $params['imageFileName'] = 'D7gthA.jpg';
+
+        $tmpfile = tempnam('', '');
+        $url = 'http://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do';
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_REFERER, $url);
+        curl_setopt($curl, CURLOPT_COOKIEFILE, $tmpfile);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
+        curl_setopt($curl, CURLOPT_URL, $url);
+        $content = curl_exec($curl);
+        $content = Big52003::iconv($content);
+
+        preg_match_all('#banNo=([0-9]{8})#', $content, $matches);
+        $ids = $matches[1];
+
+        preg_match('#([0-9]*)&nbsp;頁&nbsp;#', $content, $matches);
+        $total = intval($matches[1]);
+        for ($i = 2; $i <= $total; $i ++) {
+            sleep(1);
+            curl_setopt($curl, CURLOPT_COOKIEFILE, $tmpfile);
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_REFERER, 'http://gcis.nat.gov.tw/pub/cmpy/branInfoListAction.do');
+            curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, 'isShowEUC=Y&otherEnterFlag=false&queryKey=sed4871&useEUC=N&method=goPage&goPage=' . $i);
+            $content = curl_exec($curl);
+            $content = Big52003::iconv($content);
+            preg_match_all('#banNo=([0-9]{8})#', $content, $matches);
+            $ids = array_merge($ids, $matches[1]);
+        }
+        unlink($tmpfile);
+
+        return (array_values(array_unique($ids)));
+
+    }
 }
