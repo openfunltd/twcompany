@@ -16,6 +16,18 @@ class UnitRow extends Pix_Table_Row
         return $data;
     }
 
+    public function updateSearch()
+    {
+        $curl = curl_init();
+        $url = getenv('SEARCH_URL') . '/company/company/' . $this->id();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
+        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($this->getData()));
+        $ret = curl_exec($curl);
+    }
+
     public function getNameColumns()
     {
         return array(
