@@ -34,6 +34,7 @@ class ApiController extends Pix_Controller
         $ret = new StdClass;
         $data = array();
         foreach ($search_ret->hits->hits as $hit) {
+            $hit->_source->{'統一編號'} = $hit->_id;
             $data[] = $hit->_source;
         }
 
