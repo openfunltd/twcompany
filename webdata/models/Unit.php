@@ -2,6 +2,20 @@
 
 class UnitRow extends Pix_Table_Row
 {
+    public function getData()
+    {
+        $columns = array();
+        foreach (ColumnGroup::search(1) as $columngroup) {
+            $columns[$columngroup->id] = $columngroup->name;
+        }
+
+        $data = new StdClass;
+        foreach (UnitData::search(array('id' => $this->id)) as $unitdata) {
+            $data->{$columns[$unitdata->column_id]} = json_decode($unitdata->value);
+        }
+        return $data;
+    }
+
     public function getNameColumns()
     {
         return array(
@@ -59,7 +73,7 @@ class UnitRow extends Pix_Table_Row
     public function getNames()
     {
         $values = array();
-        foreach (UnitData::search(array('id' => $this->id))->searchIn('column_id', $this->getNameColumns()) as $unit_data) { 
+        foreach (UnitData::search(array('id' => $this->id))->searchIn('column_id', $this->getNameColumns()) as $unit_data) {
             $values[$unit_data->column_id] = json_decode($unit_data->value);
         }
 
