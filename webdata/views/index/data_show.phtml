@@ -9,7 +9,7 @@
     <a href="/name/<?= urlencode($row->{'姓名'}) ?>"><?= $this->escape($row->{'姓名'}) ?></a>
     <?php if (is_array($row->{'所代表法人'})) { ?>
     (所代表法人:
-    <a href="/id/<?= $this->escape($row->{'所代表法人'}[0]) ?>"><?= $this->escape(implode(', ', $row->{'所代表法人'})) ?></a>)
+    <a href="/fund/<?= urlencode($row->{'所代表法人'}[1]) ?>"><?= $this->escape(implode(', ', $row->{'所代表法人'})) ?></a>)
     <?php } elseif ($row->{'所代表法人'}) { ?>
     (所代表法人:
     <?= $this->escape($row->{'所代表法人'}) ?>)

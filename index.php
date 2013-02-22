@@ -6,8 +6,10 @@ class MyDispatcher extends Pix_Controller_Dispatcher
 {
     public function dispatch($path)
     {
-        if (preg_match('#^/id/#', $path)) {
+        if (preg_match('#^/id/\d+$#', $path)) {
             return array('index', 'show');
+        } elseif (preg_match('#^/fund/#', $path)) {
+            return array('index', 'fund');
         } elseif (preg_match('#^/name/#', $path)) {
             return array('index', 'name');
         }
