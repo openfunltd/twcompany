@@ -2,14 +2,38 @@
 ?>
 <?= $this->partial('/common/header.phtml', $this) ?>
 <h2>搜尋，「<?= $this->escape($this->search_word) ?>」的結果，一共 <?= $this->search_result->hits->total ?> 筆</h2>
-<ol>
+<table class="table">
+    <tr>
+        <td>No.</td>
+        <td>名稱</td>
+        <td>負責人/代表人</td>
+        <td>地址</td>
+        <td>登記機關</td>
+        <td>狀況</td>
+    </tr>
     <?php foreach ($this->search_result->hits->hits as $hit) { ?>
     <?php $unit = Unit::find($hit->_id) ?>
-    <li>
-    <a href="/id/<?= $hit->_id ?>"><?= $this->escape($unit->name()) ?></a>
-    </li>
+    <tr>
+        <td><a href="/id/<?= $unit->id() ?>"><?= $unit->id() ?></a></td>
+        <td><?= $this->escape($unit->name()) ?></td>
+        <?php if (1 == $unit->type) { ?>
+        <td><?= $this->escape($unit->get('代表人姓名')) ?></td>
+        <td><?= $this->escape($unit->get('公司所在地')) ?></td>
+        <td><?= $this->escape($unit->get('登記機關')) ?></td>
+        <td><?= $this->escape($unit->get('公司狀況')) ?></td>
+        <?php } elseif (2 == $unit->type) { ?>
+        <td><?= $this->escape($unit->get('負責人姓名')) ?></td>
+        <td><?= $this->escape($unit->get('地址')) ?></td>
+        <td><?= $this->escape($unit->get('登記機關')) ?></td>
+        <td><?= $this->escape($unit->get('現況')) ?></td>
+        <?php } else { ?>
+        <td></td>
+        <td></td>
+        <td></td>
+        <?php } ?>
+    </tr>
     <?php } ?>
-</ol>
+</table>
 <?php if ($this->page > 1) { ?>
 <a href="/index/search?q=<?= urlencode($this->search_word) ?>&page=<?= $this->page - 1 ?>">上一頁</a>
 <?php } else { ?>
