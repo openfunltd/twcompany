@@ -82,6 +82,11 @@ class UnitRow extends Pix_Table_Row
         }
     }
 
+    public function get($column)
+    {
+        return json_decode(UnitData::search(array('id' => $this->id, 'column_id' => ColumnGroup::getColumnId($column)))->first()->value);
+    }
+
     public function getNames()
     {
         $values = array();
