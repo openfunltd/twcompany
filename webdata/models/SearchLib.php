@@ -2,6 +2,18 @@
 
 class SearchLib
 {
+    public function searchCompaniesByFund($name, $page = 1)
+    {
+        $curl = curl_init();
+        $q = urlencode('董監事名單.所代表法人:"' . $name . '"');
+        $from = 10 * ($page - 1);
+        curl_setopt($curl, CURLOPT_URL, getenv('SEARCH_URL') . '/company/_search?q=' . $q . '&from=' . $from);
+        curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        $ret = curl_exec($curl);
+        return json_decode($ret);
+    }
+
     public function searchCompaniesByPerson($name, $page = 1)
     {
         $curl = curl_init();
