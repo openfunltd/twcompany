@@ -14,8 +14,19 @@
                 "名稱" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"},
                 "地址" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"},
                 "負責人姓名" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"},
-                "辦事處所在地" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"}
+                "辦事處所在地" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"},
+                "經理人名單" : {
+                    "properties" : {
+                          "姓名" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk", "index_name" : "經理人姓名"}
+                    }
+                },
+                "董監事名單" : {
+                    "properties" : {
+                          "姓名" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk", "index_name" : "董監事姓名"}
+                    }
+                },
+
             }
         }
     }
-
+}
