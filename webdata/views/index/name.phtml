@@ -2,14 +2,7 @@
 ?>
 <?= $this->partial('/common/header.phtml', $this) ?>
 <h2>搜尋，「<?= $this->escape($this->search_word) ?>」的結果，一共 <?= $this->search_result->hits->total ?> 筆</h2>
-<ol>
-    <?php foreach ($this->search_result->hits->hits as $hit) { ?>
-    <?php $unit = Unit::find($hit->_id) ?>
-    <li>
-    <a href="/id/<?= $hit->_id ?>"><?= $this->escape($unit->name()) ?></a>
-    </li>
-    <?php } ?>
-</ol>
+<?= $this->partial('index/search_table.phtml', array('search_result' => $this->search_result)) ?>
 <?php if ($this->page > 1) { ?>
 <a href="/name/<?= urlencode($this->search_word) ?>?page=<?= $this->page - 1 ?>">上一頁</a>
 <?php } else { ?>
