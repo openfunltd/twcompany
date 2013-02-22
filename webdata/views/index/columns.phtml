@@ -1,0 +1,15 @@
+<?= $this->partial('/common/header.phtml', $this) ?>
+<h1>本站所有欄位</h1>
+    <table border="1">
+    <tr>
+        <td>ID</td>
+        <td>欄位名稱</td>
+    </tr>
+    <?php foreach (ColumnGroup::search(1) as $columngroup) { ?>
+    <tr>
+        <td><?= $columngroup->id ?></td>
+        <td><?= $this->escape($columngroup->name) ?></td>
+    </tr>
+    <?php } ?>
+</table>
+<?= $this->partial('/common/footer.phtml', $this) ?>

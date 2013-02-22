@@ -1,14 +1,4 @@
 <?= $this->partial('/common/header.phtml', $this) ?>
-    <table border="1">
-    <tr>
-        <td>ID</td>
-        <td>欄位名稱</td>
-    </tr>
-    <?php foreach (ColumnGroup::search(1) as $columngroup) { ?>
-    <tr>
-        <td><?= $columngroup->id ?></td>
-        <td><?= $this->escape($columngroup->name) ?></td>
-    </tr>
-    <?php } ?>
-</table>
+<h1>關於本站</h1>
+本站內資料來自<a href="http://gcis.nat.gov.tw/">經濟部商業司</a>，主要是提供另一個介面來讓大家更容易了解台灣的公司以及商業登記資訊。
 <?= $this->partial('/common/footer.phtml', $this) ?>

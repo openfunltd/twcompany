@@ -6,6 +6,10 @@ class IndexController extends Pix_Controller
     {
     }
 
+    public function columnsAction()
+    {
+    }
+
     public function showAction()
     {
         list(, /*id*/, $id) = explode('/', $this->getURI());
@@ -55,6 +59,12 @@ class IndexController extends Pix_Controller
 
     public function searchAction()
     {
+        if ($_GET['type'] == 'name') {
+            return $this->redirect('/name/' . urlencode($_GET['q']));
+        }
+        if ($_GET['type'] == 'fund') {
+            return $this->redirect('/fund/' . urlencode($_GET['q']));
+        }
         if (preg_match('#\d{8}#', $_GET['q'])) {
             return $this->redirect('/id/' . $_GET['q']);
         }

@@ -29,6 +29,9 @@ _gaq.push(['_trackPageview']);
             <a href="/">首頁</a>
             </li>
             <li>
+            <a href="/index/columns">所有欄位</a>
+            </li>
+            <li>
             <a href="https://www.dropbox.com/sh/42oyn4ustp4ilhy/FRQA56UbG0" target="_blank">資料打包</a>
             </li>
             <li>
@@ -40,6 +43,14 @@ _gaq.push(['_trackPageview']);
         </ul>
         <form class="navbar-search pull-left" method="get" action="/index/search">
             <input type="text" class="search-query" name="q" placeholder="請輸入統一編號或是公司名稱">
+        </form>
+        <form class="navbar-search pull-left" method="get" action="/index/search?type=name">
+            <input type="hidden" name="type" value="name">
+            <input type="text" class="search-query" name="q" placeholder="輸入人名找相關公司">
+        </form>
+        <form class="navbar-search pull-left" method="get" action="/index/search?type=fund">
+            <input type="hidden" name="type" value="fund">
+            <input type="text" class="search-query" name="q" placeholder="輸入公司名稱找相關持股公司">
         </form>
     </div>
 </div>
