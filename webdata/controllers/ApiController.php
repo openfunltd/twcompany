@@ -4,7 +4,7 @@ class ApiController extends Pix_Controller
 {
     public function showAction()
     {
-        list(, /*id*/, $id) = explode('/', $this->getURI());
+        list(, /*api*/, /*show*/, $id) = explode('/', $this->getURI());
 
         $ret = new StdClass;
         if (!$unit = Unit::find(intval($id))) {
