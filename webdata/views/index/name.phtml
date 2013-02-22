@@ -1,9 +1,24 @@
-<h1><?= $this->escape($this->name) ?></h1>
+<?php
+?>
+<?= $this->partial('/common/header.phtml', $this) ?>
+<h2>搜尋，「<?= $this->escape($this->search_word) ?>」的結果，一共 <?= $this->search_result->hits->total ?> 筆</h2>
 <ol>
-    <?php foreach ($this->unit_ids as $unit_id) { ?>
-    <?php if (!$unit = Unit::find($unit_id)) { continue; } ?>
+    <?php foreach ($this->search_result->hits->hits as $hit) { ?>
+    <?php $unit = Unit::find($hit->_id) ?>
     <li>
-    <a href="/id/<?= $unit->id ?>"><?= $unit->id ?>. <?= $this->escape($unit->name()) ?></a>
+    <a href="/id/<?= $hit->_id ?>"><?= $this->escape($unit->name()) ?></a>
     </li>
     <?php } ?>
 </ol>
+<?php if ($this->page > 1) { ?>
+<a href="/index/search?q=<?= urlencode($this->search_word) ?>&page=<?= $this->page - 1 ?>">上一頁</a>
+<?php } else { ?>
+上一頁
+<?php } ?>
+| <?= $this->page ?> |
+<?php if ($this->page < $this->max_page) { ?>
+<a href="/index/search?q=<?= urlencode($this->search_word) ?>&page=<?= $this->page + 1 ?>">下一頁</a>
+<?php } else { ?>
+下一頁
+<?php } ?>
+<?= $this->partial('/common/footer.phtml', $this) ?>

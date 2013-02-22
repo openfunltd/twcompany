@@ -20,15 +20,15 @@ class IndexController extends Pix_Controller
     public function nameAction()
     {
         list(, /*name*/, $name) = explode('/', $this->getURI());
-
         $name = urldecode($name);
-        if (!$namemap = NameMap::search(array('name' => $name))->first()) {
-            $unit_ids = array();
-        } else {
-            $unit_ids = NameTable::search(array('name_id' => $namemap->id))->toArray('unit_id');
-        }
-        $this->view->unit_ids = $unit_ids;
-        $this->view->name = $name;
+
+        $page = intval($_GET['page']) ?: 1;
+        $ret = (SearchLib::searchCompaniesByPerson($name, $page));
+
+        $this->view->page = $page;
+        $this->view->max_page = ceil($ret->hits->total / 10);
+        $this->view->search_word = $name;
+        $this->view->search_result = $ret;
     }
 
     public function redirectAction()
