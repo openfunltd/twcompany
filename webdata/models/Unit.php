@@ -130,7 +130,7 @@ class UnitRow extends Pix_Table_Row
             }
         }
 
-        return array_unique($names);
+        return array_values(array_unique($names));
     }
 
     public function updateData($data)
