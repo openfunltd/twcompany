@@ -28,16 +28,6 @@ class UnitRow extends Pix_Table_Row
         $ret = curl_exec($curl);
     }
 
-    public function getNameColumns()
-    {
-        return array(
-            5, // 代表人姓名
-            16, // 訴訟及非訴訟代理人姓名
-            11, // 董監事名單
-            12, // 經理人名單
-        );
-    }
-
     public function id()
     {
         return str_pad($this->id, 8, '0', STR_PAD_LEFT);
@@ -85,57 +75,6 @@ class UnitRow extends Pix_Table_Row
     public function get($column)
     {
         return json_decode(UnitData::search(array('id' => $this->id, 'column_id' => ColumnGroup::getColumnId($column)))->first()->value);
-    }
-
-    public function getNames()
-    {
-        $values = array();
-        foreach (UnitData::search(array('id' => $this->id))->searchIn('column_id', $this->getNameColumns()) as $unit_data) {
-            $values[$unit_data->column_id] = json_decode($unit_data->value);
-        }
-
-        $names = array();
-        // 代表人姓名, 訴訟及非訴訟代理人姓名
-        foreach (array(5, 16) as $column_id) {
-            if (!array_key_exists($column_id, $values)) {
-                continue;
-            }
-            $value = $values[$column_id];
-
-            if (is_scalar($value)) {
-                $names[] = $value;
-            } elseif (is_array($value)) {
-                foreach ($value as $v) {
-                    if (!is_scalar($v)) {
-                        throw new Exception("unknown format, id={$this->id}, column_id={$column_id}");
-                    }
-                    $names[] = $v;
-                }
-            } else {
-                throw new Exception("unknown format, id={$this->id}, column_id={$column_id}");
-            }
-        }
-
-        // 經理人名單
-        foreach (array(11, 12) as $column_id) {
-            if (!array_key_exists($column_id, $values)) {
-                continue;
-            }
-            $value = $values[$column_id];
-
-            if (!is_array($value)) {
-                throw new Exception("unknown format, id={$this->id}, column_id={$column_id}");
-            }
-
-            foreach ($value as $row) {
-                if (!$row->{'姓名'}) {
-                    throw new Exception("unknown format, id={$this->id}, column_id={$column_id}");
-                }
-                $names[] = $row->{'姓名'};
-            }
-        }
-
-        return array_values(array_unique($names));
     }
 
     public function updateData($data)
