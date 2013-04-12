@@ -10,11 +10,11 @@ class ApiController extends Pix_Controller
         if (!$unit = Unit::find(intval($id))) {
             $ret->error = true;
             $ret->message = "Company not found";
-            return $this->json($ret);
+            return $this->jsonp($ret, strval($_GET['callback']));
         }
 
         $ret->data = $unit->getData();
-        return $this->json($ret);
+        return $this->jsonp($ret, strval($_GET['callback']));
     }
 
     public function searchAction()
@@ -31,7 +31,7 @@ class ApiController extends Pix_Controller
 
         $ret->data = $data;
         $ret->found = $search_ret->hits->total;
-        return $this->json($ret);
+        return $this->jsonp($ret, strval($_GET['callback']));
     }
 
     public function fundAction()
@@ -47,6 +47,6 @@ class ApiController extends Pix_Controller
 
         $ret->data = $data;
         $ret->found = $search_ret->hits->total;
-        return $this->json($ret);
+        return $this->jsonp($ret, strval($_GET['callback']));
     }
 }
