@@ -628,6 +628,60 @@ class Updater
         return (array_values(array_unique($ids)));
     }
 
+    public function searchBussinessByKeyword($word)
+    {
+        $params = array();
+        $params['method'] = 'query';
+        $params['agencyCode'] = 'allbf';
+        $params['showGcisLocation'] = 'true';
+        $params['showBusi'] = 'true';
+        $params['showFact'] = 'false';
+        $params['otherEnterFlag'] = 'false';
+        $params['useEUC'] = 'N';
+        $params['selBusiType'] = '1';
+        $params['banno'] = '';
+        $params['brBanNo'] = '';
+        $params['cityCode1'] = 'XXX';
+        $params['cityCode2'] = '';
+        $params['busiAddr'] = '';
+        $params['busiName'] = iconv('utf-8', 'big5', $word);
+        $params['imageCode'] = '6fb7';
+        $params['imageFileName'] = 'S84rr1.jpg';
+
+        $tmpfile = tempnam('', '');
+        $url = 'http://gcis.nat.gov.tw/moeadsBF/bms/bmsInfoListAction.do';
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_REFERER, $url);
+        curl_setopt($curl, CURLOPT_COOKIEFILE, $tmpfile);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
+        curl_setopt($curl, CURLOPT_URL, $url);
+        $content = curl_exec($curl);
+        $content = Big52003::iconv($content);
+
+        preg_match_all('#banNo=([0-9]{8})#', $content, $matches);
+        $ids = $matches[1];
+
+        preg_match('#([0-9]*)&nbsp;頁&nbsp;#', $content, $matches);
+        $total = intval($matches[1]);
+        for ($i = 2; $i <= $total; $i ++) {
+            sleep(1);
+            curl_setopt($curl, CURLOPT_COOKIEFILE, $tmpfile);
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_REFERER, 'http://gcis.nat.gov.tw/moeadsBF/bms/bmsInfoListAction.do');
+            curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, 'method=nextPage&agencyCode=allbf&showGcisLocation=true&showBusi=true&showFact=false&otherEnterFlag=false&useEUC=N&goPage=' . $i);
+            $content = curl_exec($curl);
+            $content = Big52003::iconv($content);
+            preg_match_all('#banNo=([0-9]{8})#', $content, $matches);
+            $ids = array_merge($ids, $matches[1]);
+        }
+        unlink($tmpfile);
+
+        return (array_values(array_unique($ids)));
+    }
+
     public function searchByKeyword($word)
     {
         $params = array();
@@ -640,8 +694,8 @@ class Updater
         $params['selQueryType'] = 1;
         $params['queryStr'] = iconv('utf-8', 'big5', $word);
         $params['brBanNo'] = '';
-        $params['imageCode'] = 'gx2k';
-        $params['imageFileName'] = 'D7gthA.jpg';
+        $params['imageCode'] = 'jretd';
+        $params['imageFileName'] = 'oxQ22Z.jpg';
 
         $tmpfile = tempnam('', '');
         $url = 'http://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do';
