@@ -10,3 +10,13 @@ foreach ($ids as $id) {
     Updater::update($id);
     Unit::find($id)->updateSearch();
 }
+
+$ids = (Updater::searchBussinessByKeyword($_SERVER['argv'][1]));
+foreach ($ids as $id) {
+    if (Unit::find($id)) {
+        continue;
+    }
+    if ($u = Updater::updateBussiness($id)) {
+        $u->updateSearch();
+    }
+}
