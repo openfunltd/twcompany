@@ -595,6 +595,9 @@ class Updater
     {
         error_log('Fetching ' . $url);
         $curl = curl_init($url);
+        if (getenv('PROXY_URL')) {
+            curl_setopt($curl, CURLOPT_PROXY, getenv('PROXY_URL'));
+        }
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
         curl_setopt($curl, CURLOPT_REFERER, 'http://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do');
@@ -606,6 +609,9 @@ class Updater
         $tmpfile = tempnam('', '');
         $url = 'http://gcis.nat.gov.tw/pub/cmpy/branInfoListAction.do?method=query&banNo=' . str_pad(intval($id), 8, '0', STR_PAD_LEFT) . '&from=';
         $curl = curl_init();
+        if (getenv('PROXY_URL')) {
+            curl_setopt($curl, CURLOPT_PROXY, getenv('PROXY_URL'));
+        }
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
         curl_setopt($curl, CURLOPT_REFERER, $url);
@@ -659,6 +665,9 @@ class Updater
         $tmpfile = tempnam('', '');
         $url = 'http://gcis.nat.gov.tw/moeadsBF/bms/bmsInfoListAction.do';
         $curl = curl_init();
+        if (getenv('PROXY_URL')) {
+            curl_setopt($curl, CURLOPT_PROXY, getenv('PROXY_URL'));
+        }
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
         curl_setopt($curl, CURLOPT_REFERER, $url);
@@ -709,6 +718,9 @@ class Updater
         $tmpfile = tempnam('', '');
         $url = 'http://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do';
         $curl = curl_init();
+        if (getenv('PROXY_URL')) {
+            curl_setopt($curl, CURLOPT_PROXY, getenv('PROXY_URL'));
+        }
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
         curl_setopt($curl, CURLOPT_REFERER, $url);

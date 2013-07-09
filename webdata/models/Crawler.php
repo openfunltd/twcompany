@@ -9,6 +9,9 @@ class Crawler
         $fp = fopen($output_file, 'w');
         sleep(1);
         $curl = curl_init($url);
+        if (getenv('PROXY_URL')) {
+            curl_setopt($curl, CURLOPT_PROXY, getenv('PROXY_URL'));
+        }
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
         curl_setopt($curl, CURLOPT_FILE, $fp);
