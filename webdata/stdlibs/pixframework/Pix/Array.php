@@ -126,7 +126,9 @@ abstract class Pix_Array implements Countable, SeekableIterator, ArrayAccess
     public function filterBuiltIn($filter, $options = array())
     {
         $obj = clone $this;
-        $obj->addFilter(array("Pix_Array_Filter_$filter", 'filter'), $options);
+        $filter_name = 'Pix_Array_Filter_' . $filter;
+        $filter_obj = new $filter_name;
+        $obj->addFilter(array($filter_obj, 'filter'), $options);
         return $obj;
     }
 

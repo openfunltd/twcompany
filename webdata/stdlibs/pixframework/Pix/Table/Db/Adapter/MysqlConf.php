@@ -30,12 +30,18 @@ class Pix_Table_Db_Adapter_MysqlConf extends Pix_Table_Db_Adapter_MysqlCommon
         return array('force_master', 'immediate_consistency', 'check_table');
     }
 
-    protected function _getLink($type = 'master')
+    protected function _getLink($type = 'master', $with_ping = true)
     {
-        if (array_key_exists('master', $this->_link_pools) and ($link = $this->_link_pools['master']) and $this->_link_pool_version == self::$_connect_version and @$link->ping()) {
+        if (array_key_exists('master', $this->_link_pools) and ($link = $this->_link_pools['master']) and $this->_link_pool_version == self::$_connect_version) {
+            if ($with_ping) {
+                $link->ping();
+            }
             return $link;
         }
-        if (array_key_exists($type, $this->_link_pools) and ($link = $this->_link_pools[$type])  and $this->_link_pool_version == self::$_connect_version and @$link->ping()) {
+        if (array_key_exists($type, $this->_link_pools) and ($link = $this->_link_pools[$type])  and $this->_link_pool_version == self::$_connect_version) {
+            if ($with_ping) {
+                $link->ping();
+            }
             return $link;
         }
 

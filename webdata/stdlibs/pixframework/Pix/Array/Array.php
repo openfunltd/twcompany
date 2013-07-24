@@ -58,9 +58,12 @@ class Pix_Array_Array extends Pix_Array
     public function _sort($a, $b)
     {
 	$way_num = array('asc' => 1, 'desc' => -1);
-	foreach ($this->_order as $column => $way) {
-	    if (is_array($a)) {
-		if (strtolower($a[$column]) > strtolower($b[$column])) {
+        foreach ($this->_order as $column => $way) {
+            if (is_array($a)) {
+                if (!array_key_exists($column, $a) or !array_key_exists($column, $b)) {
+                    return 0;
+                }
+                if (strtolower($a[$column]) > strtolower($b[$column])) {
 		    return $way_num[$way];
 		}
 		if (strtolower($a[$column]) < strtolower($b[$column])) {
@@ -128,14 +131,14 @@ class Pix_Array_Array extends Pix_Array
     public function toArray($column = null)
     {
         $ret = array();
-        foreach ($this as $row) {
+        foreach ($this as $key => $row) {
             if (is_null($column)) {
-                $ret[] = $row;
+                $ret[$key] = $row;
             } else {
                 if (is_array($row) and array_key_exists($column, $row)) {
-                    $ret[] = $row[$column];
+                    $ret[$key] = $row[$column];
                 } elseif (is_object($row)) {
-                    $ret[] = $row->{$column};
+                    $ret[$key] = $row->{$column};
                 }
             }
         }

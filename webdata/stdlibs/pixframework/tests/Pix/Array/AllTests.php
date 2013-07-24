@@ -30,8 +30,9 @@ class Pix_Array_AllTests
     {
         $suite = new PHPUnit_Framework_TestSuite('Pix Framework - Pix');
 
-	// Start remaining tests...
-	$suite->addTestSuite('Pix_Array_ArrayTest');
+        // Start remaining tests...
+        $suite->addTestSuite('Pix_Array_ArrayTest');
+        $suite->addTestSuite('Pix_Array_MergerTest');
 
         return $suite;
     }

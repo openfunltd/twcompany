@@ -73,7 +73,7 @@ abstract class Pix_Table_Db_Adapter_MysqlCommon extends Pix_Table_Db_Adapter_SQL
             $column_sql[] = $s;
 	}
 
-	$sql .= " (\n" . implode(", \n", $column_sql) . ") ENGINE = InnoDB DEFAULT CHARACTER SET = utf8 \n";
+	$sql .= " (\n" . implode(", \n", $column_sql) . ") ENGINE = InnoDB\n";
 
 	return $this->query($sql, $table);
     }
@@ -216,7 +216,7 @@ abstract class Pix_Table_Db_Adapter_MysqlCommon extends Pix_Table_Db_Adapter_SQL
      */
     public function quoteWithColumn($table, $value, $column_name)
     {
-        $link = $this->_getLink('slave');
+        $link = $this->_getLink('slave', false);
 
 	if (is_null($column_name)) {
             return "'" . $link->real_escape_string(strval($value)) . "'";

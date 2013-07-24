@@ -29,7 +29,7 @@ class Pix_Controller_Helper_Json extends Pix_Helper
     public function jsonp($controller, $obj, $callback)
     {
         header('Content-Type: application/javascript');
-        if (!preg_match('/^[a-zA-Z0-9_]+$/', strval($callback))) {
+        if (!preg_match('/^[a-zA-Z0-9_\.]+$/', strval($callback))) {
             return $controller->json($obj);
         }
         echo $callback . '(' . @json_encode($obj) . ')';

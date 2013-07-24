@@ -551,6 +551,7 @@ class Pix_Array_ArrayTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($array->order('age')->after(array('age' => 19))->toArray('name'), array('alice', 'bob', 'carole'));
         $this->assertEquals($array->order('age')->after(array('age' => 24))->toArray('name'), array('bob', 'carole'));
         $this->assertEquals($array->order('age')->after(array('age' => 24), true)->toArray('name'), array('alice', 'bob', 'carole'));
+        $this->assertEquals($array->order('age, gender DESC')->after(array('age' => 24), true)->toArray('name'), array('alice', 'bob', 'carole'));
     }
 
     /**
