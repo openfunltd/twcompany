@@ -16,7 +16,11 @@ class UnitLocation extends Pix_Table
         $res = $db->query($sql);
         $ret = array();
         while ($row = $res->fetch_assoc()) {
-            $ret[] = $row;
+            $ret[] = array(
+                'id' => intval($row['id']),
+                'lat' => floatval($row['lat']),
+                'lng' => floatval($row['lng']),
+            );
         }
         $res->free_result();
 
