@@ -18,9 +18,11 @@ class Pix_Table_Db_Adapter_SQL extends Pix_Table_Db_Adapter_Abstract
      * @access public
      * @return array or null 
      */
-    public function fetchOne($table, $primary_values)
+    public function fetchOne($table, $primary_values, $select_columns = '*')
     {
-        $sql = 'SELECT * FROM ' . $this->column_quote($table->getTableName());
+        $select_expression = $this->_getSelectExpression($table, $select_columns);
+
+        $sql = 'SELECT ' . $select_expression . ' FROM ' . $this->column_quote($table->getTableName());
         $sql .= ' WHERE ';
         $terms = array();
         foreach (array_combine($table->getPrimaryColumns(), $primary_values) as $k => $v) {
@@ -34,7 +36,7 @@ class Pix_Table_Db_Adapter_SQL extends Pix_Table_Db_Adapter_Abstract
 
         $row = $res->fetch_assoc();
         $res->free_result();
-        return $row;
+        return $this->_filterRow($row);
     }
 
     /**
@@ -79,6 +81,81 @@ class Pix_Table_Db_Adapter_SQL extends Pix_Table_Db_Adapter_Abstract
     }
 
     /**
+     * filter database raw data to Pix_Table_Row data
+     *
+     * @param array $row
+     * @access protected
+     * @return array
+     */
+    protected function _filterRow($row)
+    {
+        if (!is_array($row)) {
+            return $row;
+        }
+        $return_row = array();
+
+        foreach ($row as $col => $value) {
+            if (FALSE === strpos($col, ':')) {
+                $return_row[$col] = $value;
+                continue;
+            }
+
+            list($col, $id) = explode(':', $col, 2);
+            $return_row[$col][$id] = $value;
+        }
+        return $return_row;
+    }
+
+    /**
+     * check $table has special column or not
+     *
+     * @param Pix_Table $table
+     * @access protected
+     * @return boolean
+     */
+    protected function _hasSpecialColumns($table)
+    {
+        foreach ($table->_columns as $options) {
+            if (in_array($options['type'], array('geography', 'geometry'))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * get select expression for SELECT
+     *
+     * @param Pix_Table $table
+     * @param string|array $select_columns
+     * @access protected
+     * @return string
+     */
+    protected function _getSelectExpression($table, $select_columns = '*')
+    {
+        if ('*' == $select_columns) {
+            if ($this->_hasSpecialColumns($table)) {
+                $select_columns = array_keys($table->_columns);
+            } else {
+                return '*';
+            }
+        } elseif (is_scalar($select_columns)) {
+            $select_columns = array($select_columns);
+        }
+
+        if (is_array($select_columns)) {
+            $cols = array();
+            foreach ($select_columns as $col) {
+                $cols[] = $this->column_quote($col, $table);
+            }
+            $select_expression = implode(', ', $cols);
+        }
+
+        return $select_expression;
+
+    }
+
+    /**
      * fetch 從 $table 找出符合 $search 的所有 column
      * 
      * @param Pix_Table $table 
@@ -89,11 +166,9 @@ class Pix_Table_Db_Adapter_SQL extends Pix_Table_Db_Adapter_Abstract
      */
     public function fetch($table, $search, $select_columns = '*')
     {
-        if (is_array($select_columns)) {
-            $select_columns = implode(', ', array_map(array($this, 'column_quote'), $select_columns));
-        }
+        $select_expression = $this->_getSelectExpression($table, $select_columns);
 
-        $sql = 'SELECT ' . $select_columns . ' FROM ' . $this->column_quote($table->getTableName());
+        $sql = 'SELECT ' . $select_expression . ' FROM ' . $this->column_quote($table->getTableName());
 	$sql .= ' WHERE ';
         $sql .= $this->_get_where_clause($search, $table);
         $sql .= $this->_get_clause($search);
@@ -101,7 +176,7 @@ class Pix_Table_Db_Adapter_SQL extends Pix_Table_Db_Adapter_Abstract
 	$res = $this->query($sql);
 	$rows = array();
 	while ($row = $res->fetch_assoc()) {
-	    $rows[] = $row;
+            $rows[] = $this->_filterRow($row);
 	}
 	$res->free_result();
 
@@ -189,6 +264,11 @@ class Pix_Table_Db_Adapter_SQL extends Pix_Table_Db_Adapter_Abstract
         return "`" . addslashes($a) . "`";
     }
 
+    public function getSQLConditionByTerm(Pix_Table_Search_Term $term, $table)
+    {
+        throw new Pix_Table_Exception('Unsupport Pix_Table_Search_Term: ' . $term->getType());
+    }
+
     /**
      * _get_where_clause 依照 $search 條件以及指定的 $table 回傳 WHERE 的 SQL 
      * 
@@ -207,6 +287,9 @@ class Pix_Table_Db_Adapter_SQL extends Pix_Table_Db_Adapter_Abstract
                 break;
             case 'string':
                 $terms[] = "(" . $condiction[1] . ")";
+                break;
+            case 'term':
+                $terms[] = $this->getSQLConditionByTerm($condiction[1], $table);
                 break;
             default:
                 throw new Pix_Table_Exception('不知名的狀態');

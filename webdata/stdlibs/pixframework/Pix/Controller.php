@@ -236,10 +236,12 @@ class Pix_Controller
 
             $className = ucfirst($controllerName) . 'Controller';
             $file = $baseDir . '/controllers/' . $className . '.php';
-            if (file_exists($file)) {
-                include($file);
-            } else {
-                throw new Pix_Controller_Dispatcher_Exception('404 Controller file not found: ' . $file);
+            if (!class_exists($className, false)) {
+                if (file_exists($file)) {
+                    include($file);
+                } else {
+                    throw new Pix_Controller_Dispatcher_Exception('404 Controller file not found: ' . $file);
+                }
             }
 
             if (!class_exists($className)) {

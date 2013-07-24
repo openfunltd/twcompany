@@ -1067,13 +1067,13 @@ abstract class Pix_Table
         if (is_null($table_name)) {
             while (true) {
                 $table_name = 'Pix_Table_EmptyTable_' . crc32(uniqid());
-                if (!class_exists($table_name)) {
+                if (!class_exists($table_name, false)) {
                     break;
                 }
             }
         }
 
-        if (class_exists($table_name)) {
+        if (class_exists($table_name, false)) {
             throw new Pix_Table_Exception("newEmptyTable failed, {$table_name} is existed.");
         }
 

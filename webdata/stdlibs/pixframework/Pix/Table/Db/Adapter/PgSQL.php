@@ -27,6 +27,21 @@ class Pix_Table_Db_Adapter_PgSQL extends Pix_Table_Db_Adapter_SQL
         $this->_pdo = new PDO("pgsql:" . implode(';', $config));
     }
 
+    public function getSQLConditionByTerm(Pix_Table_Search_Term $term, $table = null)
+    {
+        switch ($term->getType()) {
+        case 'location/distance-with-in':
+            $arguments = $term->getArguments();
+            $column = $arguments[0];
+            $latlon = $arguments[1];
+            $distance = $arguments[2];
+
+            return "ST_DWithin(" . $this->column_quote($column) . ", ST_GeographyFromText('POINT(" . floatval($latlon[1]) . " " . floatval($latlon[0]) . ")'), " . intval($distance) . ")";
+        }
+
+        throw new Pix_Table_Exception('Unsupport Pix_Table_Search_Term: ' . $term->getType());
+    }
+
     public function getSupportFeatures()
     {
         return array('immediate_consistency');
@@ -85,7 +100,7 @@ class Pix_Table_Db_Adapter_PgSQL extends Pix_Table_Db_Adapter_SQL
     public function createTable($table)
     {
         $sql = "CREATE TABLE \"" . $table->getTableName() . '"';
-        $types = array('bigint', 'tinyint', 'int', 'varchar', 'char', 'text', 'float', 'double', 'binary');
+        $types = array('bigint', 'tinyint', 'int', 'varchar', 'char', 'text', 'float', 'double', 'binary', 'geography');
         $primarys = is_array($table->_primary) ? $table->_primary : array($table->_primary);
         $pk_isseted = false;
 
@@ -103,6 +118,15 @@ class Pix_Table_Db_Adapter_PgSQL extends Pix_Table_Db_Adapter_SQL
                 $s .= 'INTEGER';
             } elseif ('binary' == $db_type) {
                 $s .= 'BYTEA';
+            } elseif ('geography' == $db_type) {
+                if (array_key_exists('modifier', $column)) {
+                    $type = in_array(strtoupper($column['modifier'][0]), array('POINT', 'LINESTRING', 'POLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'MULTIPOLYGON')) ? strtoupper($column['modifier'][0]) : 'POINT';
+                    $srid = array_key_exists(1, $column['modifier']) ? intval($column['modifier'][1]) : 0;
+                } else {
+                    $type = 'POINT';
+                    $srid = 0;
+                }
+                $s .= 'geography(' . $type . ',' . $srid . ')';
             } else {
                 $s .= strtoupper($db_type);
             }
@@ -177,11 +201,22 @@ class Pix_Table_Db_Adapter_PgSQL extends Pix_Table_Db_Adapter_SQL
      * column_quote 把 $a 字串加上 quote
      * 
      * @param string $a 
+     * @param Pix_Table $table
      * @access public
      * @return string
      */
-    public function column_quote($a)
+    public function column_quote($a, $table = null)
     {
+        if (is_null($table) or !array_key_exists($a, $table->_columns)) {
+            return '"' . addslashes($a) . '"';
+        }
+
+        $column_options = $table->_columns[$a];
+        if ('geography' == $column_options['type']) {
+            return 'ST_Y("' . addslashes($a) . '"::geometry) AS "' . addslashes($a) . ':0", ST_X("' . addslashes($a) . '"::geometry) AS "' . addslashes($a) . ':1"';
+
+        }
+
         return '"' . addslashes($a) . '"';
     }
 
@@ -192,7 +227,13 @@ class Pix_Table_Db_Adapter_PgSQL extends Pix_Table_Db_Adapter_SQL
 	}
 	if ($table->isNumbericColumn($column_name)) {
 	    return intval($value);
-	}
+        }
+        if ('geography' == $table->_columns[$column_name]['type']) {
+            if ('POINT' == $table->_columns[$column_name]['modifier'][0]) {
+                return "ST_GeographyFromText('POINT(" . floatval($value[1]) . ' ' . floatval($value[0]) . ")')";
+            }
+        }
+
 	if (!is_scalar($value)) {
             trigger_error("{$_SERVER['SERVER_NAME']}{$_SERVER['REQUEST_URI']} 的 column `{$column_name}` 格式不正確: " . gettype($value), E_USER_WARNING);
 	}
@@ -207,5 +248,22 @@ class Pix_Table_Db_Adapter_PgSQL extends Pix_Table_Db_Adapter_SQL
             }
         }
         return null;
+    }
+
+    /**
+     * get all tables in this db
+     *
+     * @access public
+     * @return array
+     */
+    public function getTables()
+    {
+        $res = $this->query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'");
+        $tables = array();
+        while ($row = $res->fetch_array()) {
+            $tables[] = $row[0];
+        }
+        $res->free_result();
+        return $tables;
     }
 }

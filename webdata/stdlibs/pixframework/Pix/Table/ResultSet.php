@@ -152,6 +152,26 @@ class Pix_Table_ResultSet extends Pix_Array // implements Pix_Array_Volumable
     }
 
     /**
+     * search a special Term
+     *
+     * @link http://framework.pixnet.net/group/table/search_term.html
+     * @param string $term_type
+     * @param mixed $term_arguments...
+     * @access public
+     * @return Pix_Table_ResultSet
+     */
+    public function searchTerm()
+    {
+        $args = func_get_args();
+        $term = new Pix_Table_Search_Term();
+        if (count($args)) {
+            $term->setType(array_shift($args));
+            $term->setArguments($args);
+        }
+        return $this->search($term);
+    }
+
+    /**
      * searchIn 搜尋 $column 的值是在 $values 裡面
      * 
      * @param mixed $column 
@@ -781,5 +801,16 @@ class Pix_Table_ResultSet extends Pix_Array // implements Pix_Array_Volumable
             }
 	}
 	return $terms;
+    }
+
+    /**
+     * Get Pix_Table_Search search object
+     *
+     * @access public
+     * @return Pix_Table_Search
+     */
+    public function getSearchObject()
+    {
+        return $this->_search_object;
     }
 }

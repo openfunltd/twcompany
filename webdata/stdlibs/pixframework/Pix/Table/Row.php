@@ -191,6 +191,25 @@ class Pix_Table_Row
     public function postUpdate($changed_fields = null) { }
     public function postDelete() { }
 
+    /**
+     * get changed columns-values assicoate array
+     *
+     * @access public
+     * @return array
+     */
+    public function getChangedColumnValues()
+    {
+        $changed_column_values = array();
+
+        foreach ($this->getTable()->_columns as $col => $options) {
+            if ($this->_orig_data[$col] != $this->_data[$col]) {
+                $changed_column_values[$col] = $this->_data[$col];
+            }
+        }
+
+        return $changed_column_values;
+    }
+
     public function save()
     {
 	try {
@@ -201,19 +220,18 @@ class Pix_Table_Row
 
         if (!is_null($this->_primary_values)) { // UPDATE
 	    try {
-                $changed_fields = array_diff_assoc($this->_orig_data, $this->_data);
+                $changed_fields = $this->getChangedColumnValues();
 		$this->preUpdate($changed_fields);
 	    } catch (Pix_Table_Row_Stop $e) {
 		return;
             }
 
-	    $array = array_diff_assoc($this->_data, $this->_orig_data);
-	    if (!count($array)) {
+            $changed_fields = $this->getChangedColumnValues();
+	    if (!count($changed_fields)) {
 		return;
             }
 
-            $this->getRowDb()->updateOne($this, $array);
-            $changed_fields = array_diff_assoc($this->_orig_data, $this->_data);
+            $this->getRowDb()->updateOne($this, $changed_fields);
 	    $this->refreshRowData();
 	    $this->cacheRow($this->_data);
 	    $this->postUpdate($changed_fields);

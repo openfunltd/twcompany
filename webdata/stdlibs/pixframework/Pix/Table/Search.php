@@ -18,7 +18,7 @@ class Pix_Table_Search
     protected $_index = null;
     protected $_offset = null;
     protected $_search_conditions = array();
-    protected $_search_condition_types = array('string' => 0, 'map' => 0);
+    protected $_search_condition_types = array('string' => 0, 'map' => 0, 'term' => 0);
 
     static public function factory($data = null)
     {
@@ -54,6 +54,12 @@ class Pix_Table_Search
             return $this;
         }
 
+        if (is_a($search, 'Pix_Table_Search_Term')) {
+            $this->_search_conditions[] = array('term', $search);
+            $this->_search_condition_types['term'] ++;
+            return $this;
+        }
+
 	throw new Pix_Table_Search_Exception('Unknown search type');
     }
 
@@ -75,7 +81,7 @@ class Pix_Table_Search
 
     public function isMapOnly()
     {
-        return $this->_search_condition_types['map'] and (!$this->_search_condition_types['string']);
+        return $this->_search_condition_types['map'] and (!$this->_search_condition_types['string']) and (!$this->_search_condition_types['term']);
     }
 
     public function order()
