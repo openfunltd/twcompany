@@ -2,6 +2,27 @@
 
 class UnitLocation extends Pix_Table
 {
+    public static function searchUnit($min_lng, $min_lat, $max_lng, $max_lat)
+    {
+        $min_lng = floatval($min_lng);
+        $max_lng = floatval($max_lng);
+        $min_lat = floatval($min_lat);
+        $max_lat = floatval($max_lat);
+        $text = "POLYGON(({$min_lng} {$min_lat},{$min_lng} {$max_lat},{$max_lng} {$max_lat},{$max_lng} {$min_lat},{$min_lng} {$min_lat}))";
+
+        $sql = "SELECT id, ST_X(geo::geometry) AS lng, ST_Y(geo::geometry) AS lat FROM unit_location WHERE ST_Intersects(geo, ST_GeographyFromText('{$text}'))";
+        $db = self::getDb();
+
+        $res = $db->query($sql);
+        $ret = array();
+        while ($row = $res->fetch_assoc()) {
+            $ret[] = $row;
+        }
+        $res->free_result();
+
+        return $ret;
+    }
+
     public function init()
     {
         $this->_name = 'unit_location';
