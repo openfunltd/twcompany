@@ -10,6 +10,17 @@ class IndexController extends Pix_Controller
     {
     }
 
+    public function changelogAction()
+    {
+        list(, /*index*/, /*changelog*/, $id) = explode('/', $this->getURI());
+
+        if (!$unit = Unit::find(intval($id))) {
+            return $this->redirect('/');
+        }
+
+        $this->view->unit = $unit;
+    }
+
     public function showAction()
     {
         list(, /*id*/, $id) = explode('/', $this->getURI());
