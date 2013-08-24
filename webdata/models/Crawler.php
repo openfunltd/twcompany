@@ -29,22 +29,13 @@ class Crawler
     {
         $output_file = tempnam('', '');
         system('pdftotext -enc UTF-8 ' . escapeshellarg($file) . ' ' . escapeshellarg($output_file));
-        $content = file_get_contents($output_file);
-        $content = preg_replace('/.*\n.*\n.*\n核准設立日期\n/m', '', $content, 1);
-        $content = preg_replace('/\d+\n第 頁\n.*\n.*\n.*\n.*\n核准設立日期/m', '==分隔線==', $content);
-        file_put_contents($output_file, $content);
 
         $ids = array();
-        $fp = fopen($output_file, 'r');
-        while (false !== ($line = fgets($fp))) {
-            $terms = explode(' ', trim($line));
-            foreach ($terms as $term) {
-                if (preg_match('/^\d{8,8}$/', $term)) {
-                    $ids[] = $term;
-                }
-            }
+        $content = file_get_contents($output_file);
+        preg_match_all('/\d{8,8}/', $content, $matches);
+        foreach ($matches[0] as $match) {
+            $ids[] = $match;
         }
-        fclose($fp);
         unlink($output_file);
         return $ids;
     }
