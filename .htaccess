@@ -1,3 +1,4 @@
 RewriteEngine on
 RewriteBase /
+RewriteRule robots.txt - [L]
 RewriteRule .* index.php
