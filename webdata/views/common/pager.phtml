@@ -7,7 +7,7 @@
         <?php } ?>
         <?php $start = max(1, min($this->max_page - 5, $this->page - 2)); ?>
         <?php for ($i = $start; $i < min($this->max_page + 1, $start + 5); $i ++) { ?>
-        <li<?= $i == $this->page ? ' class="active"' : '' ?>><a href="<?= $this->escape(sprintf($this->pagerBaseUri, $i) ?>"> <?= $i ?> </a></li>
+        <li<?= $i == $this->page ? ' class="active"' : '' ?>><a href="<?= $this->escape(sprintf($this->pagerBaseUri, $i)) ?>"> <?= $i ?> </a></li>
         <?php } ?>
         <?php if ($this->page < $this->max_page) { ?>
         <li><a href="<?= $this->escape(sprintf($this->pagerBaseUri, $this->max_page)) ?>">&raquo;</a></li>
