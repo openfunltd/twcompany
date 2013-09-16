@@ -1,6 +1,7 @@
 <?php
 if ($this->page > 1) {
     for ($i = $this->page - 6, $counter = 0; $i < $this->page && $counter < 6; ++$i, ++$counter) {
+        if($this->page < 0) continue;
         ?>
         <a href="<?= $this->pagerBaseUri ?><?= urlencode($this->search_word) ?>?page=<?= $i ?>"> <?= $i ?> </a>
         <?php
