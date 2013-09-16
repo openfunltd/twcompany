@@ -1,16 +1,16 @@
 <div class="pagination">
     <ul class="pagination">
         <?php if ($this->page > 1) { ?>
-        <li><a href="<?= $this->escape(sprintf($this->pagerBaseUri, 1)) ?>">&laquo;</a></li>
+        <li><a href="<?= $this->escape($this->pagerBaseUri . 1) ?>">&laquo;</a></li>
         <?php } else { ?>
         <li class="disabled"><a href="#">&laquo;</a></li>
         <?php } ?>
         <?php $start = max(1, min($this->max_page - 5, $this->page - 2)); ?>
         <?php for ($i = $start; $i < min($this->max_page + 1, $start + 5); $i ++) { ?>
-        <li<?= $i == $this->page ? ' class="active"' : '' ?>><a href="<?= $this->escape(sprintf($this->pagerBaseUri, $i)) ?>"> <?= $i ?> </a></li>
+        <li<?= $i == $this->page ? ' class="active"' : '' ?>><a href="<?= $this->escape($this->pagerBaseUri . $i) ?>"> <?= $i ?> </a></li>
         <?php } ?>
         <?php if ($this->page < $this->max_page) { ?>
-        <li><a href="<?= $this->escape(sprintf($this->pagerBaseUri, $this->max_page)) ?>">&raquo;</a></li>
+        <li><a href="<?= $this->escape($this->pagerBaseUri . $this->max_page) ?>">&raquo;</a></li>
         <?php } else { ?>
         <li class="disabled"><a href="#">&raquo;</a></li>
         <?php } ?>
