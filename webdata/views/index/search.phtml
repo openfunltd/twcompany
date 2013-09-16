@@ -1,5 +1,5 @@
 <?php
-$this->pagerBaseUri = '/index/';
+$this->pagerBaseUri = '/index/search?q=' . urlencode($this->search_word) . '&page=%d';
 ?>
 <?= $this->partial('/common/header.phtml', $this) ?>
 <h2>搜尋，「<?= $this->escape($this->search_word) ?>」的結果，一共 <?= $this->search_result->hits->total ?> 筆</h2>
