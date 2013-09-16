@@ -1,17 +1,8 @@
 <?php
+$this->pagerBaseUri = '/fund/';
 ?>
 <?= $this->partial('/common/header.phtml', $this) ?>
 <h2>搜尋 「<?= $this->escape($this->search_word) ?>」有在代表法人的結果，一共 <?= $this->search_result->hits->total ?> 筆</h2>
 <?= $this->partial('index/search_table.phtml', array('search_result' => $this->search_result)) ?>
-<?php if ($this->page > 1) { ?>
-<a href="/fund/<?= urlencode($this->search_word) ?>?page=<?= $this->page - 1 ?>">上一頁</a>
-<?php } else { ?>
-上一頁
-<?php } ?>
-| <?= $this->page ?> |
-<?php if ($this->page < $this->max_page) { ?>
-<a href="/fund/<?= urlencode($this->search_word) ?>?page=<?= $this->page + 1 ?>">下一頁</a>
-<?php } else { ?>
-下一頁
-<?php } ?>
+<?= $this->partial('/common/pager.phtml', $this) ?>
 <?= $this->partial('/common/footer.phtml', $this) ?>
