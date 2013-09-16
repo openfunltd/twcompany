@@ -5,7 +5,7 @@
         <?php } else { ?>
         <li class="disabled"><a href="#">&laquo;</a></li>
         <?php } ?>
-        <?php $start = max(1, min($this->max_page - 5, $this->page - 2)); ?>
+        <?php $start = max(1, min($this->max_page - 4, $this->page - 2)); ?>
         <?php for ($i = $start; $i < min($this->max_page + 1, $start + 5); $i ++) { ?>
         <li<?= $i == $this->page ? ' class="active"' : '' ?>><a href="<?= $this->escape($this->pagerBaseUri . $i) ?>"> <?= $i ?> </a></li>
         <?php } ?>
