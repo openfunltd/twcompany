@@ -1,0 +1,29 @@
+<?php
+if ($this->page > 1) {
+    for ($i = 1, $counter = 0; $i < $this->page && $counter < 6; ++$i, ++$counter) {
+        ?>
+        <a href="<?= $this->pagerBaseUri ?><?= urlencode($this->search_word) ?>?page=<?= $i ?>"> <?= $i ?> </a>
+        <?php
+    }
+}
+?>
+<?php if ($this->page > 1) { ?>
+    <a href="<?= $this->pagerBaseUri ?><?= urlencode($this->search_word) ?>?page=<?= $this->page - 1 ?>">上一頁</a>
+<?php } else { ?>
+    上一頁
+<?php } ?>
+| <?= $this->page ?> |
+<?php if ($this->page < $this->max_page) { ?>
+    <a href="<?= $this->pagerBaseUri ?><?= urlencode($this->search_word) ?>?page=<?= $this->page + 1 ?>">下一頁</a>
+<?php } else { ?>
+    下一頁
+<?php } ?>
+<?php
+if ($this->page < $this->max_page) {
+    for ($i = $this->page + 1, $counter = 0; $i <= $this->max_page && $counter < 6; ++$i, ++$counter) {
+        ?>
+        <a href="<?= $this->pagerBaseUri ?><?= urlencode($this->search_word) ?>?page=<?= $i ?>"> <?= $i ?> </a>
+        <?php
+    }
+}
+?>
