@@ -45,9 +45,9 @@ class SearchLib
     {
         $curl = curl_init();
         if ($alive_only) {
-            $q = urlencode("(現況:核准設立 AND 商業名稱:\"{$name}\") OR (公司狀況:核准設立 AND 公司名稱:\"{$name}\")");
+            $q = urlencode("(現況:核准設立 AND 商業名稱:\"{$name}\") OR (公司狀況:核准設立 AND 公司名稱:\"{$name}\") OR (名稱:\"{$name}\")");
         } else {
-            $q = urlencode('商業名稱:"' . $name . '" OR 公司名稱:"' . $name. '"');
+            $q = urlencode('商業名稱:"' . $name . '" OR 公司名稱:"' . $name. '" OR 名稱:"' . $name . '"');
         }
         $from = 10 * ($page - 1);
         curl_setopt($curl, CURLOPT_URL, getenv('SEARCH_URL') . '/company/_search?q=' . $q . '&from=' . $from);
