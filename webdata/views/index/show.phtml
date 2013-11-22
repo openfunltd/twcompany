@@ -9,6 +9,10 @@ $this->title = $this->unit->name() . ':' . $this->unit->id() . ':';
         <td>值</td>
     </tr>
     <tr>
+        <td>API URL</td>
+        <td>http://<?= $_SERVER['HTTP_SERVER'] ?>/api/show/<?= $this->unit->id() ?></td>
+    </tr>
+    <tr>
         <td>ID</td>
         <td><?= $this->unit->id() ?></td>
     </tr>
