@@ -10,7 +10,7 @@ $this->title = $this->unit->name() . ':' . $this->unit->id() . ':';
     </tr>
     <tr>
         <td>API URL</td>
-        <td>http://<?= $_SERVER['HTTP_SERVER'] ?>/api/show/<?= $this->unit->id() ?></td>
+        <td><a href="/api/show/<?= $this->unit->id() ?>">http://<?= $_SERVER['HTTP_HOST'] ?>/api/show/<?= $this->unit->id() ?></a></td>
     </tr>
     <tr>
         <td>ID</td>
