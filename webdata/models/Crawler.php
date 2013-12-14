@@ -10,6 +10,7 @@ class Crawler
         sleep(1);
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
         curl_setopt($curl, CURLOPT_FILE, $fp);
         curl_exec($curl);
         fclose($fp);

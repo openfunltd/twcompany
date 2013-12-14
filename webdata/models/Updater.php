@@ -279,7 +279,7 @@ class Updater
             if (in_array($column, array('分公司統一編號', '分公司狀況', '分公司名稱', '分公司經理姓名', '分公司所在地', '總(本)公司統一編號'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
                 $info->{$column} = trim(explode("\n", trim($value_dom->wholeText))[0]);
-            } elseif (in_array($column, array('核准設立日期', '最後核准變更日期', '停業日期(起)', '停業日期(迄)', '延展開業日期(迄)', '撤銷日期'))) {
+            } elseif (in_array($column, array('核准設立日期', '最後核准變更日期', '停業日期(起)', '停業日期(迄)', '延展開業日期(迄)', '撤銷日期', '廢止日期'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
                 $value = trim(explode("\n", trim($value_dom->wholeText))[0]);
                 if (preg_match('#(.*)年(.*)月(.*)日#', $value, $matches)) {
@@ -590,6 +590,7 @@ class Updater
         error_log('Fetching ' . $url);
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
         curl_setopt($curl, CURLOPT_REFERER, 'http://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do');
         return curl_exec($curl);
     }
@@ -600,6 +601,7 @@ class Updater
         $url = 'http://gcis.nat.gov.tw/pub/cmpy/branInfoListAction.do?method=query&banNo=' . str_pad(intval($id), 8, '0', STR_PAD_LEFT) . '&from=';
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
         curl_setopt($curl, CURLOPT_REFERER, $url);
         curl_setopt($curl, CURLOPT_COOKIEFILE, $tmpfile);
         curl_setopt($curl, CURLOPT_URL, $url);
@@ -652,6 +654,7 @@ class Updater
         $url = 'http://gcis.nat.gov.tw/moeadsBF/bms/bmsInfoListAction.do';
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
         curl_setopt($curl, CURLOPT_REFERER, $url);
         curl_setopt($curl, CURLOPT_COOKIEFILE, $tmpfile);
         curl_setopt($curl, CURLOPT_POST, true);
@@ -701,6 +704,7 @@ class Updater
         $url = 'http://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do';
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
         curl_setopt($curl, CURLOPT_REFERER, $url);
         curl_setopt($curl, CURLOPT_COOKIEFILE, $tmpfile);
         curl_setopt($curl, CURLOPT_POST, true);
