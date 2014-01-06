@@ -5,4 +5,6 @@ $this->pagerBaseUri = '/index/search?q=' . urlencode($this->search_word) . '&pag
 <h2>搜尋，「<?= $this->escape($this->search_word) ?>」的結果，一共 <?= $this->search_result->hits->total ?> 筆</h2>
 <?= $this->partial('index/search_table.phtml', array('search_result' => $this->search_result)) ?>
 <?= $this->partial('/common/pager.phtml', $this) ?>
+<hr>
+本站資料為每月月初更新上個月資料，非即時資料，若有搜尋不到的資料，可以到 <a href="http://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do" target="_blank">經濟部商業司公司及分公司基本資料查詢</a> 或是 <a href="http://gcis.nat.gov.tw/moeadsBF/bms/bmsInfoListAction.do?method=first&agencyCode=allbf&showGcisLocation=true&showBusi=true&showFact=false" target="_blank">商業登記公示資料查詢</a> 確認，資料以經濟部商業司為準。
 <?= $this->partial('/common/footer.phtml', $this) ?>
