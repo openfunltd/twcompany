@@ -81,6 +81,7 @@ class Crawler
             foreach ($types as $type_id => $type_name) {
                 $yearmonth = sprintf("%03d%02d", $year, $month);
                 $url = "http://gcis.nat.gov.tw/moeadsBF/cmpy/reportAction.do?method=report&reportClass=bms&subPath={$yearmonth}&fileName={$ori_id}{$type_id}{$yearmonth}.pdf";
+                error_log("Fetch {$url}");
                 $file = self::fetch($url);
                 if (false === $file) {
                     trigger_error("Fetch failed: {$ori_id}-{$type_id}-{$year}-{$month}", E_USER_WARNING);
