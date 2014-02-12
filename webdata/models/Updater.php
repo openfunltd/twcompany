@@ -372,7 +372,7 @@ class Updater
                 $info->{$column} = $list;
             } elseif ($column == '' or preg_match('/查詢「/', $column)) {
             } elseif (strpos($tr_dom->getElementsByTagName('td')->item(1)->nodeValue, '原營利事業登記證所登載之營業項目資料')) {
-                $info->{'原營利事業登記證所登載之營業項目資料'} = 'http://gcis.nat.gov.tw' . $tr_dom->getElementsByTagName('td')->item(1)->getElementsByTagName('a')->item(0)->getAttribute('href');
+                $info->{'舊營業項目資料'} = 'http://gcis.nat.gov.tw' . $tr_dom->getElementsByTagName('td')->item(1)->getElementsByTagName('a')->item(0)->getAttribute('href');
             } else {
                 $key_dom = $tr_dom->getElementsByTagName('td')->item(1);
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
