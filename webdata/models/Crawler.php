@@ -92,7 +92,7 @@ class Crawler
                     trigger_error("Fetch failed: {$ori_id}-{$type_id}-{$year}-{$month}", E_USER_WARNING);
                     continue;
                 }
-                $ret += self::convert($file);
+                $ret = array_merge($ret, self::convert($file));
                 unlink($file);
             }
         }
@@ -132,7 +132,7 @@ class Crawler
                     trigger_error("Fetch failed: {$ori_id}-{$type_id}-{$year}-{$month}", E_USER_WARNING);
                     continue;
                 }
-                $ret += self::convert($file);
+                $ret = array_merge($ret, self::convert($file));
                 unlink($file);
             }
         }
