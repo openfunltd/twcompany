@@ -45,8 +45,9 @@ class Updater
                 $info->{$column} = preg_replace("/\s/", '', $terms[0]);
             } elseif ($column == '' or preg_match('/查詢「/', $column)) {
             } else {
+                $key_dom = $tr_dom->getElementsByTagName('td')->item(1);
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
-                echo '[TODO1]' . $column . ' ' . $value_dom->nodeValue . "\n";
+                echo '[TODO1]' . trim($key_dom->nodeValue) . ' ' . $value_dom->nodeValue . "\n";
                 exit;
             }
         }
@@ -122,8 +123,9 @@ class Updater
                 $info->{$column} = preg_replace("/\s/", '', $terms[0]);
             } elseif ($column == '' or preg_match('/查詢「/', $column)) {
             } else {
+                $key_dom = $tr_dom->getElementsByTagName('td')->item(1);
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
-                echo '[TODO1]' . $column . ' ' . $value_dom->nodeValue . "\n";
+                echo '[TODO1]' . trim($key_dom->nodeValue) . ' ' . $value_dom->nodeValue . "\n";
                 exit;
             }
         }
@@ -294,8 +296,9 @@ class Updater
             } elseif (in_array($column, array('總(本)公司名稱'))) {
                 // skip
             } else {
+                $key_dom = $tr_dom->getElementsByTagName('td')->item(1);
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
-                echo '[TODO1]' . $column . ' ' . $value_dom->nodeValue . "\n";
+                echo '[TODO1]' . trim($key_dom->nodeValue) . ' ' . $value_dom->nodeValue . "\n";
                 exit;
             }
         }
@@ -369,8 +372,9 @@ class Updater
                 $info->{$column} = $list;
             } elseif ($column == '' or preg_match('/查詢「/', $column)) {
             } else {
+                $key_dom = $tr_dom->getElementsByTagName('td')->item(1);
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
-                echo '[TODO1]' . $column . ' ' . $value_dom->nodeValue . "\n";
+                echo '[TODO1]' . trim($key_dom->nodeValue) . ' ' . $value_dom->nodeValue . "\n";
                 exit;
             }
         }
