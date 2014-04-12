@@ -13,14 +13,17 @@ class CustomCrawler
     {
         Pix_Table::$_save_memory = true;
         list(, $type, $year, $month) = $argv;
-        if (!in_array($type, array('company', 'bussiness'))) {
+        if (!in_array($type, array('company', 'bussiness', 'company-continue', 'bussiness-continue'))) {
             return $this->wrong_argv();
         }
-        $year = intval($year);
-        $month = intval($month);
 
-        if (!intval($year) or !intval($month)) {
-            return $this->wrong_argv();
+        if (in_array($type, array('company', 'bussiness'))) {
+            $year = intval($year);
+            $month = intval($month);
+
+            if (!intval($year) or !intval($month)) {
+                return $this->wrong_argv();
+            }
         }
 
         if ('company' == $type) {
@@ -28,6 +31,19 @@ class CustomCrawler
             $ids = array_unique($ids);
             file_put_contents('ids', implode("\n", $ids));
             foreach ($ids as $id) {
+                $u = Updater::update($id);
+                if ($u) {
+                    $u->updateSearch();
+                }
+            }
+        } elseif ('company-continue' == $type) {
+            $ids = explode("\n", file_get_contents('ids'));
+            $pos = array_search($year, $ids);
+            var_dump($pos);
+            if (false === $pos) {
+                return $this->wrong_argv();
+            }
+            foreach (array_slice($ids, $pos - 1) as $id) {
                 $u = Updater::update($id);
                 if ($u) {
                     $u->updateSearch();
