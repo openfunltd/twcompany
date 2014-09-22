@@ -28,7 +28,7 @@ class SearchLib
         return json_decode($ret);
     }
 
-    public function searchCompaniesByAddress($address)
+    public function searchCompaniesByAddress($address, $page)
     {
         $curl = curl_init();
         $q = urlencode('公司所在地:"' . $address. '"');
