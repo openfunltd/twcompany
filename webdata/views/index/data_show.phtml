@@ -14,7 +14,7 @@
     (所代表法人:
     <?= $this->escape($row->{'所代表法人'}) ?>)
     <?php } ?>
-    <?php if (preg_match($row->{'公司名稱'}, '#有限公司$#') and !preg_match($row->{'公司名稱'}, '#股份有限公司$#')
+    <?php if (preg_match('#有限公司$#', $this->name) and !preg_match('#股份有限公司$#', $this->name)){ ?>
     , 出資額:
     <?php } else { ?>
     , 持有股份數:
