@@ -55,4 +55,20 @@ class ApiController extends Pix_Controller
         $ret->found = $search_ret->hits->total;
         return $this->jsonp($ret, strval($_GET['callback']));
     }
+
+    public function nameAction()
+    {
+        $page = intval($_GET['page']) ?: 1;
+        $search_ret = SearchLib::searchCompaniesByPerson($_GET['q'], $page);
+        $ret = new StdClass;
+        $data = array();
+        foreach ($search_ret->hits->hits as $hit) {
+            $hit->_source->{'統一編號'} = $hit->_id;
+            $data[] = $hit->_source;
+        }
+
+        $ret->data = $data;
+        $ret->found = $search_ret->hits->total;
+        return $this->jsonp($ret, strval($_GET['callback']));
+    }
 }
