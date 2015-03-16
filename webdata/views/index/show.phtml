@@ -13,6 +13,10 @@ $this->title = $this->unit->name() . ':' . $this->unit->id() . ':';
         <td><a href="/api/show/<?= $this->unit->id() ?>">http://<?= $_SERVER['HTTP_HOST'] ?>/api/show/<?= $this->unit->id() ?></a></td>
     </tr>
     <tr>
+        <td>公司關係圖 URL</td>
+        <td><a href="http://company-graph.g0v.ronny.tw/?id=<?= $this->unit->id() ?>">http://company-graph.g0v.ronny.tw/?id=<?= $this->unit->id() ?></a></td>
+    </tr>
+    <tr>
         <td>ID</td>
         <td><?= $this->unit->id() ?></td>
     </tr>
