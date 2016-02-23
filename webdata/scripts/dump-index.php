@@ -90,5 +90,6 @@ if (count($unit_names)) {
     $units = $unit_names = $types = array();
 }
 fclose($fp);
-DropboxLib::putFile($tmpname, $file_name);
+S3Lib::putFile($tmpname, 's3://ronnywang-twcompany/' . $file_name);
+S3Lib::buildIndex('s3://ronnywang-twcompany/');
 unlink($tmpname);
