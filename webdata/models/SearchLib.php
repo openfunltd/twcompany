@@ -5,6 +5,7 @@ class SearchLib
     public function searchCompaniesByFund($name, $page = 1)
     {
         $curl = curl_init();
+        $name = Unit::changeRareWord($name);
         $q = urlencode('董監事名單.所代表法人:"' . $name . '"');
         $from = 10 * ($page - 1);
         curl_setopt($curl, CURLOPT_URL, getenv('SEARCH_URL') . '/company/_search?q=' . $q . '&from=' . $from);
@@ -18,6 +19,7 @@ class SearchLib
     public function searchCompaniesByPerson($name, $page = 1)
     {
         $curl = curl_init();
+        $name = Unit::changeRareWord($name);
         $q = urlencode('代表人姓名:"' . $name . '" OR 經理人名單.姓名:"' . $name. '" OR 董監事名單.姓名:"' . $name . '"');
         $from = 10 * ($page - 1);
         curl_setopt($curl, CURLOPT_URL, getenv('SEARCH_URL') . '/company/_search?q=' . $q . '&from=' . $from);
@@ -31,6 +33,7 @@ class SearchLib
     public function searchCompaniesByAddress($address, $page)
     {
         $curl = curl_init();
+        $address = Unit::changeRareWord($address);
         $q = urlencode('公司所在地:"' . $address. '"');
         $from = 10 * ($page - 1);
         curl_setopt($curl, CURLOPT_URL, getenv('SEARCH_URL') . '/company/_search?q=' . $q . '&from=' . $from);
@@ -44,6 +47,7 @@ class SearchLib
     public function searchCompaniesByName($name, $page = 1, $alive_only = false)
     {
         $curl = curl_init();
+        $name = Unit::changeRareWord($name);
         if ($alive_only) {
             $q = urlencode("(現況:核准設立 AND 商業名稱:\"{$name}\") OR (公司狀況:核准設立 AND 公司名稱:\"{$name}\") OR (名稱:\"{$name}\")");
         } else {

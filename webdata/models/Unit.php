@@ -17,6 +17,7 @@ class UnitRow extends Pix_Table_Row
         foreach (UnitData::search(array('id' => $this->id)) as $unitdata) {
             $data->{self::$_columns[$unitdata->column_id]} = json_decode($unitdata->value);
         }
+        $data = Unit::walkObject($data);
         return $data;
     }
 
@@ -30,6 +31,10 @@ class UnitRow extends Pix_Table_Row
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
         curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($this->getData()));
         $ret = curl_exec($curl);
+        $info = curl_getinfo($curl);
+        if (!in_array($info['http_code'], array(200, 201))) {
+            throw new Exception($info['http_code'] . ' ' . $ret);
+        }
     }
 
     public function id()
@@ -174,5 +179,43 @@ class Unit extends Pix_Table
         // 1 - 公司, 2 - 商業登記, 3 - 工廠登記, 4 - 教育部, 99 - 未知來源
         $this->_columns['type'] = array('type' => 'tinyint');
         $this->_columns['updated_at'] = array('type' => 'int');
+    }
+
+    protected static $_rare_words = null;
+
+    public static function changeRareWord($word)
+    {
+        if (is_null(self::$_rare_words)) {
+            self::$_rare_words = array();
+            $fp = fopen(__DIR__ . '/../maps/rare-word.csv', 'r');
+            while ($rows = fgetcsv($fp)) {
+                self::$_rare_words[$rows[0]] = $rows[1];
+            }
+        }
+
+        foreach (self::$_rare_words as $old_word => $new_word) {
+            $word = str_replace($old_word, $new_word, $word);
+        }
+
+        return $word;
+    }
+
+    public static function walkObject($obj)
+    {
+        if (is_string($obj)) {
+            return self::changeRareWord($obj);
+        } elseif (is_object($obj)) {
+            foreach ($obj as $k => $v) {
+                $obj->{$k} = self::walkObject($v);
+            }
+            return $obj;
+        } elseif (is_array($obj)) {
+            foreach ($obj as $k => $v) {
+                $obj[$k] = self::walkObject($v);
+            }
+            return $obj;
+        } else {
+            return $obj;
+        }
     }
 }

@@ -1,0 +1,25 @@
+--TEST--
+send_multi_request failed 2
+
+--FILE--
+<?php
+	require_once dirname(__FILE__) . '/../requestcore.class.php';
+	$http = new RequestCore();
+	$http->set_request_url('https://yahoo.com');
+	$prepped_request = $http->prep_request();
+
+	$responses = $http->send_multi_request(array($prepped_request));
+
+	$bodies = array(
+		$responses[0]->body,
+	);
+
+	var_dump($bodies);
+?>
+
+--EXPECT--
+Notice: Trying to get property of non-object in /Library/WebServer/Documents/requestcore/_tests/method_send_multi_request_fail.php on line 10
+array(1) {
+  [0]=>
+  NULL
+}

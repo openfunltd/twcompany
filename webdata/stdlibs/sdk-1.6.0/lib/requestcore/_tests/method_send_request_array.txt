@@ -1,0 +1,33 @@
+--TEST--
+send_request::array
+
+--FILE--
+<?php
+	require_once dirname(__FILE__) . '/../requestcore.class.php';
+	$http = new RequestCore();
+	$http->set_request_url(array(
+		'http://github.com/skyzyx/requestcore/raw/master/_tests/test_request.txt',
+		'http://github.com/skyzyx/requestcore/raw/master/_tests/test_request2.txt',
+	));
+
+	$responses = $http->send_request();
+
+	$bodies = array(
+		$responses[0]->body,
+		$responses[1]->body,
+	);
+
+	var_dump($bodies);
+?>
+
+--EXPECT--
+array(2) {
+  [0]=>
+  string(48) "abcdefghijklmnopqrstuvwxyz
+0123456789
+!@#$%^&*()"
+  [1]=>
+  string(48) ")(*&^%$#@!
+9876543210
+zyxwvutsrqponmljkihgfedcba"
+}

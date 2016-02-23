@@ -54,11 +54,12 @@ class Dumper
             }
             fclose($fp[1]);
             fclose($fp[2]);
-            DropboxLib::putFile($tmpname1, $file_name1);
-            DropboxLib::putFile($tmpname2, $file_name2);
+            S3Lib::putFile($tmpname1, 's3://ronnywang-twcompany/' . $file_name1);
+            S3Lib::putFile($tmpname2, 's3://ronnywang-twcompany/' . $file_name2);
             unlink($tmpname1);
             unlink($tmpname2);
         }
+        S3Lib::buildIndex('s3://ronnywang-twcompany/');
     }
 }
 

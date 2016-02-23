@@ -1,0 +1,41 @@
+RequestCore:
+    __construct:
+    add_header:
+          - method_add_header.phpt
+    remove_header:
+        - method_remove_header.phpt
+    get_response_header:
+        - method_get_response_header_content_type.phpt
+        - method_get_response_header_info_url.phpt
+    get_response_body:
+        - method_get_response_body.phpt
+    get_response_code:
+        - method_get_response_code.phpt
+    set_body:
+    set_credentials:
+        - method_set_credentials_user.phpt
+        - method_set_credentials_pass.phpt
+    set_curlopts:
+    set_method:
+    set_proxy:
+        - method_set_proxy.phpt
+    set_request_url:
+        - method_set_request_url.phpt
+    set_useragent:
+        - method_set_useragent.phpt
+    send_request:
+        - method_send_request.phpt
+        - method_send_request2.phpt
+        - method_send_request_head.phpt
+    send_multi_request:
+        - method_send_multi_request.phpt
+    prep_request:
+    process_response:
+
+ResponseCore:
+    __construct:
+    isOK:
+        - method_responsecore_isok.phpt
+        - method_responsecore_isok_false.phpt
+        - method_send_request_isok.phpt
+        - method_send_request_isok_200.phpt

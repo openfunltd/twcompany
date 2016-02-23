@@ -4,7 +4,7 @@ class Updater
 {
     protected static $_last_fetch = null;
 
-    public function parseBranch($doc)
+    public static function parseBranch($doc)
     {
         // 基本資料
         $info = new StdClass;
@@ -55,7 +55,7 @@ class Updater
         return $info;
     }
 
-    public function parseBussinessFile($content)
+    public static function parseBussinessFile($content)
     {
         $doc = new DOMDocument();
         $content = str_replace('text/html; charset=MS950', 'text/html; charset=UTF-8', Big52003::iconv($content));
@@ -133,7 +133,7 @@ class Updater
         return $info;
     }
 
-    public function parseChinaCompany($doc)
+    public static function parseChinaCompany($doc)
     {
         $info = new StdClass;
         $base_table_dom = $doc->getElementsByTagName('table')->item(6)->getElementsByTagName('table')->item(1);
@@ -146,7 +146,7 @@ class Updater
             }
             $column = trim($tr_dom->getElementsByTagName('td')->item(1)->childNodes->item(0)->wholeText);
 
-            if (in_array($column, array('統一編號', '公司狀況', '登記機關', '辦事處所在地', '在中華民國境內營運資金', '分公司所在地', '股權狀況', '代表人在台灣地區業務活動範圍', '訴訟及非訴訟代理人姓名', '在台灣地區營業所用'))) {
+            if (in_array($column, array('統一編號', '公司狀況', '登記機關', '辦事處所在地', '在中華民國境內營運資金', '分公司所在地', '股權狀況', '代表人在台灣地區業務活動範圍', '訴訟及非訴訟代理人姓名', '在台灣地區營業所用','公司屬性'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
                 $info->{$column} = trim(explode("\n", trim($value_dom->wholeText))[0]);
             } elseif (in_array($column, array('公司名稱'))) { // 有中英文名稱
@@ -192,7 +192,7 @@ class Updater
 
         return $info;
     }
-    public function parseForeignCompany($doc)
+    public static function parseForeignCompany($doc)
     {
         $info = new StdClass;
         $base_table_dom = $doc->getElementsByTagName('table')->item(6)->getElementsByTagName('table')->item(1);
@@ -205,7 +205,7 @@ class Updater
             }
             $column = trim($tr_dom->getElementsByTagName('td')->item(1)->childNodes->item(0)->wholeText);
 
-            if (in_array($column, array('統一編號', '公司狀況', '登記機關', '辦事處所在地', '在中華民國境內營運資金', '分公司所在地', '股權狀況', '代表人在中華民國境內所為之法律行為'))) {
+            if (in_array($column, array('統一編號', '公司狀況', '登記機關', '辦事處所在地', '在中華民國境內營運資金', '分公司所在地', '股權狀況', '代表人在中華民國境內所為之法律行為', '公司屬性'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
                 $info->{$column} = trim(explode("\n", trim($value_dom->wholeText))[0]);
             } elseif (in_array($column, array('訴訟及非訴訟代理人姓名', '公司名稱'))) { // 有中英文名稱
@@ -252,7 +252,7 @@ class Updater
         return $info;
     }
 
-    public function parseBranchFile($content)
+    public static function parseBranchFile($content)
     {
         $doc = new DOMDocument();
         $content = str_replace('text/html; charset=BIG5', 'text/html; charset=UTF-8', Big52003::iconv($content));
@@ -280,8 +280,8 @@ class Updater
             $column = trim($tr_dom->getElementsByTagName('td')->item(1)->nodeValue);
             if (in_array($column, array('分公司統一編號', '分公司狀況', '分公司名稱', '分公司經理姓名', '分公司所在地', '總(本)公司統一編號'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
-                $info->{$column} = trim(explode("\n", trim($value_dom->wholeText))[0]);
-            } elseif (in_array($column, array('核准設立日期', '最後核准變更日期', '停業日期(起)', '停業日期(迄)', '延展開業日期(迄)', '撤銷日期', '廢止日期'))) {
+                $info->{$column} = str_replace(html_entity_decode('&nbsp;'), '', trim(explode("\n", trim($value_dom->wholeText))[0]));
+            } elseif (in_array($column, array('核准設立日期', '最後核准變更日期', '停業日期(起)', '停業日期(迄)', '延展開業日期(迄)', '撤銷日期', '廢止日期', '停業核准(備)機關'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
                 $value = trim(explode("\n", trim($value_dom->wholeText))[0]);
                 if (preg_match('#(.*)年(.*)月(.*)日#', $value, $matches)) {
@@ -306,7 +306,7 @@ class Updater
         return $info;
     }
 
-    public function parseFile($content)
+    public static function parseFile($content)
     {
         $doc = new DOMDocument();
         $content = str_replace('text/html; charset=Big5', 'text/html; charset=UTF-8', Big52003::iconv($content));
@@ -343,7 +343,7 @@ class Updater
             }
             $column = trim($tr_dom->getElementsByTagName('td')->item(1)->childNodes->item(0)->wholeText);
 
-            if (in_array($column, array('統一編號', '公司狀況', '公司名稱', '資本總額(元)', '實收資本額(元)', '代表人姓名', '公司所在地', '登記機關', '股權狀況'))) {
+            if (in_array($column, array('統一編號', '公司狀況', '公司名稱', '資本總額(元)', '實收資本額(元)', '代表人姓名', '公司所在地', '登記機關', '股權狀況', '公司屬性'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
                 $info->{$column} = trim(explode("\n", trim($value_dom->wholeText))[0]);
             } elseif (in_array($column, array('核准設立日期', '最後核准變更日期', '停業日期(起)', '停業日期(迄)', '延展開業日期(迄)'))) {
@@ -437,7 +437,7 @@ class Updater
         return $info;
     }
 
-    public function updateBussiness($id, $options = array())
+    public static function updateBussiness($id, $options = array())
     {
         $unit = Unit::find($id);
         if (!$unit) {
@@ -485,7 +485,7 @@ class Updater
         return $unit;
     }
 
-    public function updateBranch($id, $options = array())
+    public static function updateBranch($id, $options = array())
     {
         $unit = Unit::find($id);
         if (!$unit) {
@@ -520,6 +520,9 @@ class Updater
 
             throw new Exception('統一編號 not found?');
         }
+        if (!$info->{'總(本)公司統一編號'}) {
+            return;
+        }
         unset($info->{'分公司統一編號'});
 
         if (!$unit = Unit::find($id)) {
@@ -535,7 +538,7 @@ class Updater
     }
 
 
-    public function update($id, $options = array())
+    public static function update($id, $options = array())
     {
         $unit = Unit::find($id);
         if (!$unit) {
@@ -591,20 +594,29 @@ class Updater
         return $unit;
     }
 
-    public function http($url)
+    public static function http($url)
     {
-        error_log('Fetching ' . $url);
-        $curl = curl_init($url);
-        if (getenv('PROXY_URL')) {
-            curl_setopt($curl, CURLOPT_PROXY, getenv('PROXY_URL'));
+        for ($i = 0; $i < 10; $i ++) {
+            error_log('Fetching ' . $url . " time: {$i}");
+            $curl = curl_init($url);
+            if (getenv('PROXY_URL')) {
+                curl_setopt($curl, CURLOPT_PROXY, getenv('PROXY_URL'));
+            }
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+            curl_setopt($curl, CURLOPT_TIMEOUT, 20);
+            curl_setopt($curl, CURLOPT_REFERER, 'http://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do');
+            $content = curl_exec($curl);
+            $info = curl_getinfo($curl);
+            curl_close($curl);
+            if (200 == $info['http_code']) {
+                return $content;
+            }
         }
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-        curl_setopt($curl, CURLOPT_REFERER, 'http://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do');
-        return curl_exec($curl);
+        throw new Exception("fetch 3 times failed");
     }
 
-    public function searchBranch($id)
+    public static function searchBranch($id)
     {
         $tmpfile = tempnam('', '');
         $url = 'http://gcis.nat.gov.tw/pub/cmpy/branInfoListAction.do?method=query&banNo=' . str_pad(intval($id), 8, '0', STR_PAD_LEFT) . '&from=';
@@ -642,7 +654,7 @@ class Updater
         return (array_values(array_unique($ids)));
     }
 
-    public function searchBussinessByKeyword($word)
+    public static function searchBussinessByKeyword($word)
     {
         $params = array();
         $params['method'] = 'query';
@@ -700,7 +712,7 @@ class Updater
         return (array_values(array_unique($ids)));
     }
 
-    public function searchByKeyword($word)
+    public static function searchByKeyword($word)
     {
         $params = array();
         $params['method'] = 'query';
