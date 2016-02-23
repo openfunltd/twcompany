@@ -31,6 +31,10 @@ class UnitRow extends Pix_Table_Row
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
         curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($this->getData()));
         $ret = curl_exec($curl);
+        $info = curl_getinfo($curl);
+        if (!in_array($info['http_code'], array(200, 201))) {
+            throw new Exception($info['http_code'] . ' ' . $ret);
+        }
     }
 
     public function id()
