@@ -37,7 +37,7 @@ class Crawler
         return $output_file;
     }
 
-    public function convert($file)
+    public static function convert($file)
     {
         $output_file = tempnam('', '');
         system('pdftotext -enc UTF-8 ' . escapeshellarg($file) . ' ' . escapeshellarg($output_file));
@@ -52,7 +52,7 @@ class Crawler
         return $ids;
     }
 
-    public function crawlerBussiness($year, $month)
+    public static function crawlerBussiness($year, $month)
     {
         $orginations = array(
             '376570000A' => '基隆市政府',
@@ -106,7 +106,7 @@ class Crawler
         return $ret;
     }
 
-    public function crawlerMonth($year, $month)
+    public static function crawlerMonth($year, $month)
     {
         $orginations = array(
             'AL' => '全國不分區',
