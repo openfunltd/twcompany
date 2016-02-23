@@ -2,20 +2,32 @@
 
 class Crawler 
 {
-    public function fetch($url)
+    public static function fetch($url)
     {
         $return_var = 0;
         $output_file = tempnam('', '');
         $fp = fopen($output_file, 'w');
         sleep(1);
-        $curl = curl_init($url);
-        if (getenv('PROXY_URL')) {
-            curl_setopt($curl, CURLOPT_PROXY, getenv('PROXY_URL'));
+        error_log($url);
+        for ($i = 0; $i < 3; $i ++) {
+            $curl = curl_init($url);
+            if (getenv('PROXY_URL')) {
+                curl_setopt($curl, CURLOPT_PROXY, getenv('PROXY_URL'));
+            }
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+            curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+            curl_setopt($curl, CURLOPT_FILE, $fp);
+            curl_exec($curl);
+            $info = curl_getinfo($curl);
+            if ($info["http_code"] == 200) {
+                break;
+            }
         }
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-        curl_setopt($curl, CURLOPT_FILE, $fp);
-        curl_exec($curl);
+        if ($i == 3) {
+            throw new Exception("{$url} failed");
+        }
+        error_log("done " . $url);
         fclose($fp);
 
         $info = curl_getinfo($curl);
