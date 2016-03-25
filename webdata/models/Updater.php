@@ -343,7 +343,7 @@ class Updater
             }
             $column = trim($tr_dom->getElementsByTagName('td')->item(1)->childNodes->item(0)->wholeText);
 
-            if (in_array($column, array('統一編號', '公司狀況', '公司名稱', '資本總額(元)', '實收資本額(元)', '代表人姓名', '公司所在地', '登記機關', '股權狀況', '公司屬性'))) {
+            if (in_array($column, array('統一編號', '公司狀況', '公司名稱', '資本總額(元)', '實收資本額(元)', '代表人姓名', '公司所在地', '登記機關', '股權狀況', '公司屬性', '停業核准(備)機關'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
                 $info->{$column} = trim(explode("\n", trim($value_dom->wholeText))[0]);
             } elseif (in_array($column, array('核准設立日期', '最後核准變更日期', '停業日期(起)', '停業日期(迄)', '延展開業日期(迄)'))) {
