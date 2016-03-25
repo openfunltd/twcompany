@@ -220,6 +220,37 @@ class Pix_Table_Db_Adapter_SQL extends Pix_Table_Db_Adapter_Abstract
     }
 
     /**
+     * bulk insert
+     *
+     * @param Pix_Table $table
+     * @param array $keys
+     * @param array $values_list
+     * @param array $options
+     * @access public
+     * @return void
+     */
+    public function bulkInsert($table, $keys, $values_list, $options = array())
+    {
+        if (array_key_exists('replace', $options) and $options['replace']) {
+            $sql = 'REPLACE INTO ';
+        } else if (array_key_exists('ignore', $options) and $options['ignore']) {
+            $sql = 'INSERT IGNORE INTO ';
+        } else {
+            $sql = 'INSERT INTO ';
+        }
+        $sql .= $this->column_quote($table->getTableName());
+        $sql .= ' (' . implode(',', array_map(array($this, 'column_quote'), $keys)) . ')';
+        $sql .= ' VALUES ';
+        $sql .= implode(',', array_map(function($values) use ($table, $keys){
+            return '(' . implode(',', array_map(function($value, $key) use ($table){
+                return $this->quoteWithColumn($table, $value, $key);
+            }, $values, $keys)) . ')';
+        }, $values_list));
+
+        $this->query($sql);
+    }
+
+    /**
      * insertOne 從 db 上增加一筆資料
      * 
      * @param Pix_Table $table 

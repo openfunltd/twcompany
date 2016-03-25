@@ -202,7 +202,7 @@ class Pix_Table_Row
         $changed_column_values = array();
 
         foreach ($this->getTable()->_columns as $col => $options) {
-            if ($this->_orig_data[$col] != $this->_data[$col]) {
+            if (array_key_exists($col, $this->_data) and (!array_key_exists($col, $this->_orig_data) or $this->_orig_data[$col] != $this->_data[$col])) {
                 $changed_column_values[$col] = $this->_data[$col];
             }
         }

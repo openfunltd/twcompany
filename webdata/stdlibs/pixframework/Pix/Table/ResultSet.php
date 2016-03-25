@@ -182,7 +182,7 @@ class Pix_Table_ResultSet extends Pix_Array // implements Pix_Array_Volumable
     public function searchIn($column, $values)
     {
 	if (!is_array($values) or !$values) {
-	    return $this->search(0);
+	    return $this->search("0 = 1");
 	}
 
 	$terms = array();

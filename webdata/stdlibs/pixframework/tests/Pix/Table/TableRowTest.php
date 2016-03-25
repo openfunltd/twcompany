@@ -26,7 +26,7 @@ class Pix_Table_TableRowTest_TableRow extends Pix_Table_Row
         }
     }
 
-    public function preUpdate()
+    public function preUpdate($changed_fields = null)
     {
         if ($this->value == 'preUpdate_stop') {
             return $this->stop();

@@ -19,4 +19,21 @@ abstract class Pix_Table_Db_Adapter_Abstract implements Pix_Table_Db_Adapter
     {
         return array();
     }
+
+    /**
+     * insert multiple rows
+     *
+     * @param Pix_Table $table
+     * @param array $keys columns
+     * @param array $values_list values list
+     * @param array $options options
+     * @access public
+     * @return void
+     */
+    public function bulkInsert($table, $keys, $values_list, $options = array())
+    {
+        foreach ($values_list as $values) {
+            $this->insertOne($table, array_combine($keys, $values));
+        }
+    }
 }

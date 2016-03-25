@@ -22,6 +22,17 @@ class Pix_Controller_Helper_Json extends Pix_Helper
     public function json($controller, $obj)
     {
         header('Content-Type: application/json');
+        if ($encoding = $this->checkCanGzip()) {
+            ob_start();
+            ob_implicit_flush(0);
+            echo @json_encode($obj);
+            $contents = ob_get_contents();
+            ob_end_clean();
+            header("Content-Encoding: " . $encoding);
+            print gzencode($contents);
+            return $controller->noview();
+        }
+
         echo @json_encode($obj);
         return $controller->noview();
     }
@@ -35,4 +46,15 @@ class Pix_Controller_Helper_Json extends Pix_Helper
         echo $callback . '(' . @json_encode($obj) . ')';
         return $controller->noview();
     }
+
+    public function checkCanGzip() {
+
+        if (headers_sent()) return 0;
+        if (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'x-gzip') !== false) return
+            "x-gzip";
+        if (strpos($_SERVER['HTTP_ACCEPT_ENCODING'],'gzip') !== false) return
+            "gzip";
+        return 0;
+    }
+
 }
