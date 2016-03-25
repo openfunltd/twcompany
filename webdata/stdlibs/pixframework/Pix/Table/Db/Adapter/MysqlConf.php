@@ -150,10 +150,11 @@ class Pix_Table_Db_Adapter_MysqlConf extends Pix_Table_Db_Adapter_MysqlCommon
             $res = $link->query($sql);
             $this->insert_id = $link->insert_id;
             $delta = microtime(true) - $starttime;
+            $short_sql = mb_strimwidth($sql, 0, 512, "...len=" . strlen($sql));
             if (array_key_exists(Pix_Table::LOG_QUERY, Pix_Table::$_log_groups) and Pix_Table::$_log_groups[Pix_Table::LOG_QUERY]) {
-                Pix_Table::debug(sprintf("[%s-%s](%f)%s", strval($link->host_info), $type, $delta, $sql));
+                Pix_Table::debug(sprintf("[%s-%s](%f)%s", strval($link->host_info), $type, $delta, $short_sql));
             } elseif (($t = Pix_Table::getLongQueryTime()) and $delta > $t) {
-                Pix_Table::debug(sprintf("[%s-%s](%f)%s", strval($link->host_info), $type, $delta, $sql));
+                Pix_Table::debug(sprintf("[%s-%s](%f)%s", strval($link->host_info), $type, $delta, $short_sql));
             }
 
             if ($res === false) {

@@ -189,8 +189,8 @@ class Pix_Table_Search
 	}
 
         if (is_scalar($order)) {
-            if ('RAND()' == $order) {
-                return 'RAND()';
+            if (in_array($order, array('RAND()', 'RANDOM()'))) {
+                return $order;
             }
 	    $orders = explode(',', $order);
 	    $resultorder = array();

@@ -23,12 +23,12 @@ class Pix_HttpResponse
         self::runHook('redirect', func_get_args());
     }
 
-    public static function setcookie($name, $value, $expire = 0, $path = '/', $domain = null)
+    public static function setcookie($name, $value, $expire = 0, $path = '/', $domain = null, $secure = false)
     {
         if (is_null($domain)) {
             $domain = $_SERVER['HTTP_HOST'];
         }
-        setcookie($name, $value, $expire, $path, $domain);
+        setcookie($name, $value, $expire, $path, $domain, $secure);
         self::runHook('setcookie', func_get_args());
     }
 }
