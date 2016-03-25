@@ -2,10 +2,12 @@
 $this->title = $this->unit->name() . ':' . $this->unit->id() . ':';
 ?>
 <?= $this->partial('/common/header.phtml', $this) ?>
-<a href="/index/redirect?type=<?= $this->unit->type ?>&id=<?= $this->unit->id ?>&gcis.nat.gov.tw">原始資料</a>
 <table border="1">
     <tr>
-        <td colspan="2"><h2>經濟部資料</h2></td>
+        <td colspan="2">
+            <h2>經濟部資料</h2>
+            <a href="/index/redirect?type=<?= $this->unit->type ?>&id=<?= $this->unit->id ?>&gcis.nat.gov.tw">原始資料</a>
+        </td>
     </tr>
     <tr>
         <td>欄位</td>
@@ -31,7 +33,10 @@ $this->title = $this->unit->name() . ':' . $this->unit->id() . ':';
     <?php } ?>
     <?php if (count(FIAUnitData::search(array('id' => $this->unit->id)))) { ?>
     <tr>
-        <td colspan="2"><h2>財政部資料</h2></td>
+        <td colspan="2">
+            <h2>財政部資料</h2>
+            <a href="https://www.etax.nat.gov.tw/etwmain//front/ETW113W1_1?vatId=<?= $this->unit->id ?>">原始資料</a>
+        </td>
     </tr>
     <tr>
         <td>欄位</td>
