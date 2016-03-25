@@ -5,6 +5,9 @@ $this->title = $this->unit->name() . ':' . $this->unit->id() . ':';
 <a href="/index/redirect?type=<?= $this->unit->type ?>&id=<?= $this->unit->id ?>&gcis.nat.gov.tw">原始資料</a>
 <table border="1">
     <tr>
+        <td colspan="2"><h2>經濟部資料</h2></td>
+    </tr>
+    <tr>
         <td>欄位</td>
         <td>值</td>
     </tr>
@@ -25,6 +28,21 @@ $this->title = $this->unit->name() . ':' . $this->unit->id() . ':';
         <td><?= ColumnGroup::getColumnName($unitdata->column_id) ?></td>
         <td><?= $this->partial('/index/data_show.phtml', array('value' => $unitdata->value, 'column_id' => $unitdata->column_id, 'name' => $this->unit->name())) ?></td>
     </tr>
+    <?php } ?>
+    <?php if (count(FIAUnitData::search(array('id' => $this->unit->id)))) { ?>
+    <tr>
+        <td colspan="2"><h2>財政部資料</h2></td>
+    </tr>
+    <tr>
+        <td>欄位</td>
+        <td>值</td>
+    </tr>
+    <?php foreach (FIAUnitData::search(array('id' => $this->unit->id)) as $unitdata) { ?>
+    <tr>
+        <td><?= FIAColumnGroup::getColumnName($unitdata->column_id) ?></td>
+        <td><?= $this->partial('/index/data_show.phtml', array('value' => $unitdata->value, 'column_id' => $unitdata->column_id, 'name' => $this->unit->name())) ?></td>
+    </tr>
+    <?php } ?>
     <?php } ?>
 </table>
 <?= $this->partial('/common/footer.phtml', $this) ?>
