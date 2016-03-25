@@ -4,7 +4,7 @@ class UnitRow extends Pix_Table_Row
 {
     protected static $_columns = null;
 
-    public function getData()
+    public function getData($with_changelog = false)
     {
         if (is_null(self::$_columns)) {
             self::$_columns = array();
@@ -17,6 +17,35 @@ class UnitRow extends Pix_Table_Row
         foreach (UnitData::search(array('id' => $this->id)) as $unitdata) {
             $data->{self::$_columns[$unitdata->column_id]} = json_decode($unitdata->value);
         }
+        if ($with_changelog) {
+            $data->_change_logs = array();
+            $data->_version_map= array();
+            foreach (UnitChangeLog::search(array('id' => $this->id))->order('updated_at ASC') as $unitchangelog) {
+                if (self::$_columns[$unitchangelog->column_id] == '最後核准變更日期') {
+                    if (!count($data->_version_map)) {
+                        $d = json_decode($unitchangelog->old_value);
+                        $data->_version_map[0] = array(
+                            'db_updated_at' => 0,
+                            'date' => "{$d->year}/{$d->month}/{$d->day}",
+                        );
+                    }
+                    $d = json_decode($unitchangelog->new_value);
+                    $data->_version_map[intval($unitchangelog->updated_at)] = array(
+                        'db_updated_at' => intval($unitchangelog->updated_at),
+                        'date' => "{$d->year}/{$d->month}/{$d->day}",
+                        'changed_columns' => array(),
+                    );
+                }
+                $data->_change_logs[self::$_columns[$unitchangelog->column_id]][] = array(
+                    'db_updated_at' => intval($unitchangelog->updated_at),
+                    'old_value' => json_decode($unitchangelog->old_value),
+                    'new_value' => json_decode($unitchangelog->new_value),
+                );
+                $data->_version_map[intval($unitchangelog->updated_at)]['changed_columns'][] = self::$_columns[$unitchangelog->column_id];
+            }
+            $data->_version_map = array_values($data->_version_map);
+        }
+        
         $data = Unit::walkObject($data);
         return $data;
     }
