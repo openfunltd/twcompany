@@ -29,6 +29,11 @@ while ($rows = fgetcsv($fp)) {
     }
     $values['行業'] = $records;
     $no = $values['統一編號'];
+    $values['設立日期'] = array(
+        'year' => intval(1911 + substr($values['設立日期'], 0, 3)),
+        'month' => intval(substr($values['設立日期'], 3, 2)),
+        'day' => intval(substr($values['設立日期'], 5, 2)),
+    );
     unset($values['統一編號']);
 
     foreach ($values as $k => $v) {
