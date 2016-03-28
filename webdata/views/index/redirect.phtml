@@ -1,9 +1,9 @@
 <script>
-<?php if (2 == $this->unit->type) { // 商業登記 ?>
-    document.location='http://gcis.nat.gov.tw/moeadsBF/bms/bmsInfoAction.do?method=detail&banNo=' + <?= json_encode($this->unit->id()) ?> + '&lAgencyCode=&agencyCode=allbf&showGcisLocation=true&showBusi=true&showFact=false';
-<?php } elseif (3 == $this->unit->type) { // 分公司 ?>
-    document.location='http://gcis.nat.gov.tw/pub/cmpy/branInfoAction.do?method=detail&brBanNo=<?= $this->unit->id() ?>';
+<?php if (2 == $this->type) { // 商業登記 ?>
+    document.location='http://gcis.nat.gov.tw/moeadsBF/bms/bmsInfoAction.do?method=detail&banNo=' + <?= json_encode($this->id) ?> + '&lAgencyCode=&agencyCode=allbf&showGcisLocation=true&showBusi=true&showFact=false';
+<?php } elseif (3 == $this->type) { // 分公司 ?>
+    document.location='http://gcis.nat.gov.tw/pub/cmpy/branInfoAction.do?method=detail&brBanNo=<?= $this->id ?>';
 <?php } else { ?>
-    document.location='http://gcis.nat.gov.tw/pub/cmpy/cmpyInfoAction.do?method=detail&banNo=' + <?= json_encode($this->unit->id()) ?>;
+    document.location='http://gcis.nat.gov.tw/pub/cmpy/cmpyInfoAction.do?method=detail&banNo=' + <?= json_encode($this->id) ?>;
 <?php } ?>
 </script>
