@@ -45,7 +45,7 @@ $this->title = $this->unit->name() . ':' . $this->unit->id() . ':';
     <?php foreach (FIAUnitData::search(array('id' => $this->unit->id)) as $unitdata) { ?>
     <tr>
         <td><?= FIAColumnGroup::getColumnName($unitdata->column_id) ?></td>
-        <td><?= $this->partial('/index/data_show.phtml', array('value' => $unitdata->value, 'column_id' => $unitdata->column_id, 'name' => $this->unit->name())) ?></td>
+        <td><?= $this->partial('/index/data_show.phtml', array('value' => $unitdata->value, 'column_id' => $unitdata->column_id, 'name' => $this->unit->name(), 'type' => 'fia')) ?></td>
     </tr>
     <?php } ?>
     <?php } ?>
