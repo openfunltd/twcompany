@@ -1,6 +1,6 @@
-<?php if (5 == $this->column_id) { // 代表人姓名 ?>
+<?php if (5 == $this->column_id and 'fia' != $this->type) { // 代表人姓名 ?>
 <a href="/name/<?= urlencode(json_decode($this->value)) ?>"><?= $this->escape(json_decode($this->value)) ?></a>
-<?php } elseif (11 == $this->column_id) { // 董監事名單 ?>
+<?php } elseif (11 == $this->column_id and 'fia' != $this->type) { // 董監事名單 ?>
 <ol>
     <?php foreach (json_decode($this->value) as $row) { ?>
     <li value="<?= $this->escape($row->{'序號'}) ?>">
@@ -23,7 +23,7 @@
     </li>
     <?php } ?>
 </ol>
-<?php } elseif (12 == $this->column_id) { // 經理人名單 ?>
+<?php } elseif (12 == $this->column_id and 'fia' != $this->type) { // 經理人名單 ?>
 <ol>
     <?php foreach (json_decode($this->value) as $row) { ?>
     <li value="<?= $this->escape($row->{'序號'}) ?>">
@@ -34,7 +34,7 @@
     </li>
     <?php } ?>
 </ol>
-<?php } elseif (50 == $this->column_id) { // 總公司統編 ?>
+<?php } elseif (50 == $this->column_id and 'fia' != $this->type) { // 總公司統編 ?>
 <?php if ($unit = Unit::find(json_decode($this->value))) { ?>
 <a href="/id/<?= $unit->id ?>"><?= $unit->id() ?>.<?= $this->escape($unit->name()) ?></a>
 <?php } else { ?>
