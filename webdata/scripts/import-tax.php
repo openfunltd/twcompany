@@ -42,11 +42,11 @@ while ($rows = fgetcsv($fp)) {
     }
     if (count($inserting) > 10000) {
         error_log('No: ' . $inserting[0][0]);
-        FIAUnitData::bulkInsert(array('id', 'column_id', 'value'), $inserting);
+        FIAUnitData::bulkInsert(array('id', 'column_id', 'value'), $inserting, array('replace' => true));
         $inserting= array();
     }
 }
 if (count($inserting)) {
     error_log('final');
-    FIAUnitData::bulkInsert(array('id', 'column_id', 'value'), $inserting);
+    FIAUnitData::bulkInsert(array('id', 'column_id', 'value'), $inserting, array('replace' => true));
 }
