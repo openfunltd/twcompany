@@ -46,6 +46,12 @@ class UnitRow extends Pix_Table_Row
             $data->_version_map = array_values($data->_version_map);
         }
         
+
+        $data->{'財政部'} = new StdClass;
+        foreach (FIAUnitData::search(array('id' => $this->id)) as $unitdata) {
+            $data->{'財政部'}->{FIAColumnGroup::getColumnName($unitdata->column_id)} = json_decode($unitdata->value);
+        }
+
         $data = Unit::walkObject($data);
         return $data;
     }
