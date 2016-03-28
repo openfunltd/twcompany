@@ -25,11 +25,8 @@ class IndexController extends Pix_Controller
     {
         list(, /*id*/, $id) = explode('/', $this->getURI());
 
-        if (!$unit = Unit::find(intval($id))) {
-            return $this->redirect('/');
-        }
-
-        $this->view->unit = $unit;
+        $this->view->unit = Unit::find(intval($id));
+        $this->view->id = sprintf("%08d", intval($id));
     }
 
     public function fundAction()
@@ -62,10 +59,10 @@ class IndexController extends Pix_Controller
 
     public function redirectAction()
     {
-        if (!$unit = Unit::find(intval($_GET['id']))) {
-            return $this->redirect('/');
-        }
-        $this->view->unit = $unit;
+        $id = $_GET['id'];
+        $this->view->unit = Unit::find(intval($_GET['id']));
+        $this->view->type = intval($_GET['type']);
+        $this->view->id = sprintf("%08d", intval($id));
     }
 
     public function searchAction()

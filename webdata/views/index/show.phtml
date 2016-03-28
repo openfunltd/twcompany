@@ -1,51 +1,65 @@
 <?php
-$this->title = $this->unit->name() . ':' . $this->unit->id() . ':';
+if ($this->unit) {
+    $this->title = $this->unit->name() . ':' . $this->unit->id() . ':';
+} else {
+    $this->title = 'Unknown: ' . $this->id . ':';
+}
 ?>
 <?= $this->partial('/common/header.phtml', $this) ?>
 <table border="1">
     <tr>
+        <td>API URL</td>
+        <td><a href="/api/show/<?= $this->id ?>">http://<?= $_SERVER['HTTP_HOST'] ?>/api/show/<?= $this->id ?></a></td>
+    </tr>
+    <tr>
+        <td>統一編號</td>
+        <td><?= $this->id ?></td>
+    </tr>
+    <tr>
         <td colspan="2">
             <h2>經濟部資料</h2>
+            <?php if ($this->unit) { ?>
             <a href="/index/redirect?type=<?= $this->unit->type ?>&id=<?= $this->unit->id ?>&gcis.nat.gov.tw">原始資料</a>
+            <?php } else { ?>
+            未找到經濟部資料，可能是經濟部裡面沒有或者是這邊還未同步到<br>
+            您可試試看以下連結看看經濟部是否有資料
+            <a href="/index/redirect?type=1&id=<?= $this->id ?>&gcis.nat.gov.tw">公司</a>
+            <a href="/index/redirect?type=2&id=<?= $this->id ?>&gcis.nat.gov.tw">商業登記</a>
+            <a href="/index/redirect?type=2&id=<?= $this->id ?>&gcis.nat.gov.tw">分公司</a>
+            <?php } ?>
         </td>
     </tr>
     <tr>
         <td>欄位</td>
         <td>值</td>
     </tr>
-    <tr>
-        <td>API URL</td>
-        <td><a href="/api/show/<?= $this->unit->id() ?>">http://<?= $_SERVER['HTTP_HOST'] ?>/api/show/<?= $this->unit->id() ?></a></td>
-    </tr>
-    <tr>
-        <td>ID</td>
-        <td><?= $this->unit->id() ?></td>
-    </tr>
+    <?php if ($this->unit) { ?>
     <tr>
         <td>Updated_at</td>
         <td><?= date('c', $this->unit->updated_at) ?></td>
     </tr>
-    <?php foreach (UnitData::search(array('id' => $this->unit->id)) as $unitdata) { ?>
+    <?php } ?>
+    <?php foreach (UnitData::search(array('id' => $this->id)) as $unitdata) { ?>
     <tr>
         <td><?= ColumnGroup::getColumnName($unitdata->column_id) ?></td>
         <td><?= $this->partial('/index/data_show.phtml', array('value' => $unitdata->value, 'column_id' => $unitdata->column_id, 'name' => $this->unit->name())) ?></td>
     </tr>
     <?php } ?>
-    <?php if (count(FIAUnitData::search(array('id' => $this->unit->id)))) { ?>
+    <?php if (count(FIAUnitData::search(array('id' => $this->id)))) { ?>
     <tr>
         <td colspan="2">
             <h2>財政部資料</h2>
-            <a href="https://www.etax.nat.gov.tw/etwmain//front/ETW113W1_1?vatId=<?= $this->unit->id ?>">原始資料</a>
+            <a href="https://www.etax.nat.gov.tw/etwmain//front/ETW113W1_1?vatId=<?= $this->id ?>">原始資料</a>
         </td>
     </tr>
     <tr>
         <td>欄位</td>
         <td>值</td>
     </tr>
-    <?php foreach (FIAUnitData::search(array('id' => $this->unit->id)) as $unitdata) { ?>
+    <?php foreach (FIAUnitData::search(array('id' => $this->id)) as $unitdata) { ?>
     <tr>
         <td><?= FIAColumnGroup::getColumnName($unitdata->column_id) ?></td>
-        <td><?= $this->partial('/index/data_show.phtml', array('value' => $unitdata->value, 'column_id' => $unitdata->column_id, 'name' => $this->unit->name(), 'type' => 'fia')) ?></td>
+        <td><?= $this->partial('/index/data_show.phtml', array('value' => $unitdata->value, 'column_id' => $unitdata->column_id, 'type' => 'fia')) ?></td>
     </tr>
     <?php } ?>
     <?php } ?>
