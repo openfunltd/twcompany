@@ -35,7 +35,7 @@
     <?php } ?>
 </ol>
 <?php } elseif (50 == $this->column_id and 'fia' != $this->type) { // 總公司統編 ?>
-<?php if ($unit = Unit::find(json_decode($this->value))) { ?>
+<?php if ($unit = Unit::find(intval(json_decode($this->value)))) { ?>
 <a href="/id/<?= $unit->id ?>"><?= $unit->id() ?>.<?= $this->escape($unit->name()) ?></a>
 <?php } else { ?>
 <?= $this->escape(json_decode($this->value)) ?>
