@@ -591,6 +591,9 @@ abstract class Pix_Table
     public static function bulkInsert($keys, $values_list, $options = array())
     {
         $table = self::getTable();
+        if (!$values_list) {
+            return;
+        }
 
         return $table->getDb()->bulkInsert($table, $keys, $values_list, $options);
     }
