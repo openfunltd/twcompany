@@ -38,4 +38,12 @@ $this->title = $this->unit->name() . ':' . $this->unit->id() . ':';
         <td><?= $this->partial('/index/data_show.phtml', array('value' => $change_log->new_value, 'column_id' => $change_log->column_id)) ?></td>
     </tr>
     <?php } ?>
+    <?php foreach (FIAUnitChangeLog::search(array('id' => $this->unit->id))->order('updated_at ASC') as $change_log) { ?>
+    <tr>
+        <td><?= date('c', $change_log->updated_at) ?></td>
+        <td><?= FIAColumnGroup::getColumnName($change_log->column_id) ?></td>
+        <td><?= $this->partial('/index/data_show.phtml', array('value' => $change_log->old_value, 'column_id' => $change_log->column_id, 'type' => 'fia')) ?></td>
+        <td><?= $this->partial('/index/data_show.phtml', array('value' => $change_log->new_value, 'column_id' => $change_log->column_id, 'type' => 'fia')) ?></td>
+    </tr>
+    <?php } ?>
 <?= $this->partial('/common/footer.phtml', $this) ?>
