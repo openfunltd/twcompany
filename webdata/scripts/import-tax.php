@@ -2,6 +2,7 @@
 
 // http://data.gov.tw/node/9400
 // http://www.fia.gov.tw/opendata/bgmopen1.csv
+exit;
 include(__DIR__ . '/../init.inc.php');
 
 $fp = fopen($_SERVER['argv'][1], 'r');

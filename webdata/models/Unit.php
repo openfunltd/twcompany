@@ -21,6 +21,13 @@ class UnitRow extends Pix_Table_Row
             $data->_change_logs = array();
             $data->_version_map= array();
             foreach (UnitChangeLog::search(array('id' => $this->id))->order('updated_at ASC') as $unitchangelog) {
+                if (!array_key_exists(intval($unitchangelog->updated_at), $data->_version_map)) {
+                    $data->_version_map[intval($unitchangelog->updated_at)] = array(
+                        'db_updated_at' => intval($unitchangelog->updated_at),
+                        'changed_columns' => array(),
+                    );
+                }
+
                 if (self::$_columns[$unitchangelog->column_id] == '最後核准變更日期') {
                     if (!count($data->_version_map)) {
                         $d = json_decode($unitchangelog->old_value);
@@ -30,12 +37,9 @@ class UnitRow extends Pix_Table_Row
                         );
                     }
                     $d = json_decode($unitchangelog->new_value);
-                    $data->_version_map[intval($unitchangelog->updated_at)] = array(
-                        'db_updated_at' => intval($unitchangelog->updated_at),
-                        'date' => "{$d->year}/{$d->month}/{$d->day}",
-                        'changed_columns' => array(),
-                    );
+                    $data->_version_map[intval($unitchangelog->updated_at)]['date'] = "{$d->year}/{$d->month}/{$d->day}";
                 }
+
                 $data->_change_logs[self::$_columns[$unitchangelog->column_id]][] = array(
                     'db_updated_at' => intval($unitchangelog->updated_at),
                     'old_value' => json_decode($unitchangelog->old_value),
