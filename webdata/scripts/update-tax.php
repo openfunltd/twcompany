@@ -5,13 +5,17 @@
 include(__DIR__ . '/../init.inc.php');
 Pix_Table::$_save_memory = true;
 
-$fp = tmpfile();
-$curl = curl_init('http://www.fia.gov.tw/opendata/bgmopen1.csv');
-curl_setopt($curl, CURLOPT_FILE, $fp);
-curl_exec($curl);
-curl_close($curl);
+if ($_SERVER['argv'][1]) {
+    $fp = fopen($_SERVER['argv'][1], 'r');
+} else {
+    $fp = tmpfile();
+    $curl = curl_init('http://www.fia.gov.tw/opendata/bgmopen1.csv');
+    curl_setopt($curl, CURLOPT_FILE, $fp);
+    curl_exec($curl);
+    curl_close($curl);
 
-fseek($fp, 0);
+    fseek($fp, 0);
+}
 
 $inserting = array();
 while ($rows = fgetcsv($fp)) {
