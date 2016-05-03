@@ -208,13 +208,23 @@ class Updater
             if (in_array($column, array('統一編號', '公司狀況', '登記機關', '辦事處所在地', '在中華民國境內營運資金', '分公司所在地', '股權狀況', '代表人在中華民國境內所為之法律行為', '公司屬性'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
                 $info->{$column} = trim(explode("\n", trim($value_dom->wholeText))[0]);
-            } elseif (in_array($column, array('訴訟及非訴訟代理人姓名', '公司名稱'))) { // 有中英文名稱
+            } elseif (in_array($column, array('訴訟及非訴訟代理人姓名'))) { // 有中英文名稱
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
                 $lines = explode("\n", trim($value_dom->nodeValue));
                 $info->{$column} = array(
                     trim($lines[0]),
                     trim($lines[count($lines) - 1]),
                 );
+            } elseif (in_array($column, array('公司名稱'))) { // 有中英文名稱
+                $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
+                $nodes = $value_dom->childNodes;
+                
+                $info->{$column} = array(
+                    trim($nodes->item(0)->nodeValue),
+                );
+                if (trim($nodes->item(2)->nodeValue)) {
+                    $info->{$column}[] = trim($nodes->item(2)->nodeValue);
+                }
             } elseif (in_array($column, array('核准設立日期', '最後核准變更日期', '核准報備日期', '核准認許日期', '停業日期(起)', '停業日期(迄)'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
                 $value = trim(explode("\n", trim($value_dom->wholeText))[0]);
