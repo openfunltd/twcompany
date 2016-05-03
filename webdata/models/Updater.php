@@ -537,6 +537,36 @@ class Updater
         return $unit;
     }
 
+    public static function getBranchName($id)
+    {
+        $url = 'http://gcis.nat.gov.tw/pub/cmpy/branInfoAction.do?method=detail&brBanNo=' . $id;
+        // 一秒只更新一個檔案
+        while (!is_null(self::$_last_fetch) and (microtime(true) - self::$_last_fetch) < 0.5) {
+            usleep(1000);
+        }
+        self::$_last_fetch = microtime(true);
+
+        $content = self::http($url);
+        if (!$content) {
+            trigger_error("找不到網頁內容: $url", E_USER_WARNING);
+            return;
+        }
+
+        $info = self::parseBranchFile($content);
+
+        if (!$parsed_id = $info->{'分公司統一編號'}) {
+            trigger_error("找不到統一編號: $id", E_USER_WARNING);
+            return;
+
+            throw new Exception('統一編號 not found?');
+        }
+        if (!$info->{'總(本)公司統一編號'}) {
+            return;
+        }
+        unset($info->{'分公司統一編號'});
+
+        return $info->{'分公司名稱'};
+    }
 
     public static function update($id, $options = array())
     {
@@ -587,6 +617,8 @@ class Updater
         foreach (self::searchBranch($unit->id()) as $id) {
             // 跳過 branch 等同自己的
             if ($id == $unit->id()) {
+                $info->{'分公司名稱'} = self::getBranchName($id);
+                $unit->updateData($info);
                 continue;
             }
             self::updateBranch($id);
