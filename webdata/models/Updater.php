@@ -623,7 +623,11 @@ class Updater
         } else {
             $unit->update(array('type' => 1));
         }
-        $unit->updateData($info);
+        $branch_ids = self::searchBranch($unit->id());
+
+        if (!in_array($unit->id(), $branch_ids)) {
+            $unit->updateData($info);
+        }
         foreach (self::searchBranch($unit->id()) as $id) {
             // 跳過 branch 等同自己的
             if ($id == $unit->id()) {
