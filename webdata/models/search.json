@@ -24,8 +24,7 @@
                     "properties" : {
                           "姓名" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk", "index_name" : "董監事姓名"}
                     }
-                },
-
+                }
             }
         }
     }
