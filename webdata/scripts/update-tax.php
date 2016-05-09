@@ -9,12 +9,10 @@ if ($_SERVER['argv'][1]) {
     $fp = fopen($_SERVER['argv'][1], 'r');
 } else {
     $fp = tmpfile();
-    $curl = curl_init('http://www.fia.gov.tw/opendata/bgmopen1.csv');
-    curl_setopt($curl, CURLOPT_FILE, $fp);
-    curl_exec($curl);
-    curl_close($curl);
-
-    fseek($fp, 0);
+    chdir("/tmp");
+    system("wget -O bgmopen1.zip http://www.fia.gov.tw/opendata/bgmopen1.zip");
+    system("unzip -o -P1234 bgmopen1.zip");
+    $fp = fopen("BGMOPEN1.csv", "r");
 }
 
 $inserting = array();

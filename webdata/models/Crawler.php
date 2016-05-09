@@ -54,33 +54,15 @@ class Crawler
 
     public static function crawlerBussiness($year, $month)
     {
-        $orginations = array(
-            '376570000A' => '基隆市政府',
-            '376410000A' => '新北市政府',
-            '379100000G' => '台北市政府',
-            '376430000A' => '桃園縣政府',
-            '376440000A' => '新竹縣政府',
-            '376580000A' => '新竹市政府',
-            '376450000A' => '苗栗縣政府',
-            '376460000A' => '台中縣政府',
-            '376590000A' => '台中市政府',
-            '376480000A' => '南投縣政府',
-            '376470000A' => '彰化縣政府',
-            '376490000A' => '雲林縣政府',
-            '376500000A' => '嘉義縣政府',
-            '376600000A' => '嘉義市政府',
-            '376510000A' => '台南縣政府',
-            '376610000A' => '台南市政府',
-            '376520000A' => '高雄縣政府',
-            '383100000G' => '高雄市政府',
-            '376530000A' => '屏東縣政府',
-            '376420000A' => '宜蘭縣政府',
-            '376550000A' => '花蓮縣政府',
-            '376540000A' => '台東縣政府',
-            '376560000A' => '澎湖縣政府',
-            '371010000A' => '金門縣政府',
-            '371030000A' => '連江縣政府',
-        );
+        $content = file_get_contents('http://gcis.nat.gov.tw/moeadsBF/bms/report.jsp');
+        $content = iconv('big5', 'utf-8', $content);
+        preg_match('#<select name="area">(.*?)</select>#s', $content, $matches);
+        preg_match_all('#<option value="(.*?)">(.*?)</option>#', $matches[1], $matches);
+
+        $orginations = array();
+        foreach ($matches[1] as $k => $id) {
+            $orginations[$id] = $matches[2][$k];
+        }
 
         $types = array(
             'setup' => '設立',
@@ -108,20 +90,15 @@ class Crawler
 
     public static function crawlerMonth($year, $month)
     {
-        $orginations = array(
-            'AL' => '全國不分區',
-            'MO' => '經濟部商業司',
-            'CT' => '經濟部中部辦公室',
-            'DO' => '臺北市商業處',
-            'NT' => '新北市政府經濟發展局',
-            'KC' => '高雄市政府經濟發展局',
-            'TN' => '臺南市政府經濟發展局',
-            'SI' => '科學工業園區管理區',
-            'CS' => '中部科學工業園區管理局',
-            'ST' => '南部科學工業園區管理局',
-            'EP' => '經濟部加工出口區管理處',
-            'PT' => '屏東農業生物技術園區籌備處',
-        );
+        $content = file_get_contents('http://gcis.nat.gov.tw/pub/cmpy/reportReg.jsp');
+        $content = iconv('big5', 'utf-8', $content);
+        preg_match('#<select name="org">(.*?)</select>#s', $content, $matches);
+        preg_match_all('#<option value="(.*?)">(.*?)</option>#', $matches[1], $matches);
+
+        $orginations = array();
+        foreach ($matches[1] as $k => $id) {
+            $orginations[$id] = $matches[2][$k];
+        }
 
         $types = array(
             'S' => '設立',
