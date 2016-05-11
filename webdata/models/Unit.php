@@ -29,13 +29,26 @@ class UnitRow extends Pix_Table_Row
 
     public function updateSearch()
     {
+        $data = $this->getData();
+
+        if (property_exists($data, '公司所在地')) {
+            $number_map = array('０', '１', '２', '３', '４', '５', '６', '７', '８', '９');
+            foreach ($number_map as $id => $n) {
+                $data->{'公司所在地'} = str_replace($n, $id, $data->{'公司所在地'});
+            }
+            $number_map = array('○', '一', '二', '三', '四', '五', '六', '七', '八', '九');
+            foreach ($number_map as $id => $n) {
+                $data->{'公司所在地'} = str_replace($n, $id, $data->{'公司所在地'});
+            }
+        }
+
         $curl = curl_init();
         $url = getenv('SEARCH_URL') . '/company/company/' . $this->id();
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_HEADER, 0);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($this->getData()));
+        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
         $ret = curl_exec($curl);
         $info = curl_getinfo($curl);
         if (!in_array($info['http_code'], array(200, 201))) {
