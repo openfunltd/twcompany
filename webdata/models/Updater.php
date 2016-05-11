@@ -146,9 +146,14 @@ class Updater
             }
             $column = trim($tr_dom->getElementsByTagName('td')->item(1)->childNodes->item(0)->wholeText);
 
-            if (in_array($column, array('統一編號', '公司狀況', '登記機關', '辦事處所在地', '在中華民國境內營運資金', '分公司所在地', '股權狀況', '代表人在台灣地區業務活動範圍', '訴訟及非訴訟代理人姓名', '在台灣地區營業所用','公司屬性'))) {
+            if (in_array($column, array('統一編號', '登記機關', '辦事處所在地', '在中華民國境內營運資金', '分公司所在地', '股權狀況', '代表人在台灣地區業務活動範圍', '訴訟及非訴訟代理人姓名', '在台灣地區營業所用','公司屬性'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
                 $info->{$column} = trim(explode("\n", trim($value_dom->wholeText))[0]);
+            } elseif ('公司狀況' == $column) {
+                $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
+                foreach (self::parseCompanyStatus($value_dom) as $k => $v) {
+                    $info->{$k} = $v;
+                }
             } elseif (in_array($column, array('公司名稱'))) { // 有中英文名稱
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
                 $lines = explode("\n", trim($value_dom->nodeValue));
@@ -205,9 +210,14 @@ class Updater
             }
             $column = trim($tr_dom->getElementsByTagName('td')->item(1)->childNodes->item(0)->wholeText);
 
-            if (in_array($column, array('統一編號', '公司狀況', '登記機關', '辦事處所在地', '在中華民國境內營運資金', '分公司所在地', '股權狀況', '代表人在中華民國境內所為之法律行為', '公司屬性'))) {
+            if (in_array($column, array('統一編號', '登記機關', '辦事處所在地', '在中華民國境內營運資金', '分公司所在地', '股權狀況', '代表人在中華民國境內所為之法律行為', '公司屬性'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
                 $info->{$column} = trim(explode("\n", trim($value_dom->wholeText))[0]);
+            } elseif ('公司狀況' == $column) {
+                $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
+                foreach (self::parseCompanyStatus($value_dom) as $k => $v) {
+                    $info->{$k} = $v;
+                }
             } elseif (in_array($column, array('訴訟及非訴訟代理人姓名'))) { // 有中英文名稱
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
                 $lines = explode("\n", trim($value_dom->nodeValue));
@@ -316,6 +326,35 @@ class Updater
         return $info;
     }
 
+    public static function parseCompanyStatus($dom)
+    {
+        $values = array();
+        foreach ($dom->childNodes as $node) {
+            if ($node->nodeName == '#text' and trim($node->nodeValue) != '') {
+                $str = trim(str_replace(html_entity_decode('&nbsp;'), '', $node->nodeValue));
+                $str = preg_replace('#\s+#', ' ', $str);
+                $values[] = $str;
+            }
+        }
+        
+        $ret = array(
+            '公司狀況' => array_shift($values),
+        );
+        if (count($values) == 1) {
+            if (preg_match('#\( (\d+)年(\d+)月(\d+)日 (.*) \)#', $values[0], $matches)) {
+                $ret['公司狀況日期'] = array('year' => $matches[1] + 1911, 'month' => intval($matches[2]), 'day' => intval($matches[3]));
+                $ret['公司狀況文號'] = $matches[4];
+            } elseif ($values[0] == '公司法第三百七十五條規定：外國公司經認許後，其法律上權利義務及主管機關之管轄，除法律另有 規定外，與中華民國公司同。') {
+            } else {
+                echo '[TODO_公司狀況]';
+                print_r($values);
+                exit;
+            }
+        }
+
+        return $ret;
+    }
+
     public static function parseFile($content)
     {
         $doc = new DOMDocument();
@@ -353,9 +392,14 @@ class Updater
             }
             $column = trim($tr_dom->getElementsByTagName('td')->item(1)->childNodes->item(0)->wholeText);
 
-            if (in_array($column, array('統一編號', '公司狀況', '公司名稱', '資本總額(元)', '實收資本額(元)', '代表人姓名', '公司所在地', '登記機關', '股權狀況', '公司屬性', '停業核准(備)機關'))) {
+            if (in_array($column, array('統一編號', '公司名稱', '資本總額(元)', '實收資本額(元)', '代表人姓名', '公司所在地', '登記機關', '股權狀況', '公司屬性', '停業核准(備)機關'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
                 $info->{$column} = trim(explode("\n", trim($value_dom->wholeText))[0]);
+            } elseif ('公司狀況' == $column) {
+                $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
+                foreach (self::parseCompanyStatus($value_dom) as $k => $v) {
+                    $info->{$k} = $v;
+                }
             } elseif (in_array($column, array('核准設立日期', '最後核准變更日期', '停業日期(起)', '停業日期(迄)', '延展開業日期(迄)'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
                 $value = trim(explode("\n", trim($value_dom->wholeText))[0]);

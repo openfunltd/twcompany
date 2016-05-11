@@ -45,7 +45,7 @@ _gaq.push(['_trackPageview']);
             </li>
         </ul>
         <form class="navbar-search pull-left" method="get" action="/index/search">
-            <input type="text" class="search-query" name="q" placeholder="請輸入統一編號或是公司名稱">
+            <input type="text" class="search-query" name="q" placeholder="請輸入統一編號或是公司名稱" value="<?= $this->escape($this->search_word) ?>">
         </form>
         <form class="navbar-search pull-left" method="get" action="/index/search?type=name">
             <input type="hidden" name="type" value="name">
