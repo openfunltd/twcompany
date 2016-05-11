@@ -341,13 +341,15 @@ class Updater
             '公司狀況' => array_shift($values),
         );
         if (count($values) == 1) {
-            if (!preg_match('#\( (\d+)年(\d+)月(\d+)日 (.*) \)#', $values[0], $matches)) {
+            if (preg_match('#\( (\d+)年(\d+)月(\d+)日 (.*) \)#', $values[0], $matches)) {
+                $ret['公司狀況日期'] = array('year' => $matches[1] + 1911, 'month' => intval($matches[2]), 'day' => intval($matches[3]));
+                $ret['公司狀況文號'] = $matches[4];
+            } elseif ($values[0] == '公司法第三百七十五條規定：外國公司經認許後，其法律上權利義務及主管機關之管轄，除法律另有 規定外，與中華民國公司同。') {
+            } else {
                 echo '[TODO_公司狀況]';
                 print_r($values);
                 exit;
             }
-            $ret['公司狀況日期'] = array('year' => $matches[1] + 1911, 'month' => intval($matches[2]), 'day' => intval($matches[3]));
-            $ret['公司狀況文號'] = $matches[4];
         }
 
         return $ret;
