@@ -32,14 +32,7 @@ class UnitRow extends Pix_Table_Row
         $data = $this->getData();
 
         if (property_exists($data, '公司所在地')) {
-            $number_map = array('０', '１', '２', '３', '４', '５', '６', '７', '８', '９');
-            foreach ($number_map as $id => $n) {
-                $data->{'公司所在地'} = str_replace($n, $id, $data->{'公司所在地'});
-            }
-            $number_map = array('○', '一', '二', '三', '四', '五', '六', '七', '八', '九');
-            foreach ($number_map as $id => $n) {
-                $data->{'公司所在地'} = str_replace($n, $id, $data->{'公司所在地'});
-            }
+            $data->{'公司所在地'} = Unit::toNormalNumber($data->{'公司所在地'});
         }
 
         $curl = curl_init();
@@ -236,5 +229,48 @@ class Unit extends Pix_Table
         } else {
             return $obj;
         }
+    }
+
+    public static function chineseNumberToInt($w)
+    {
+        $chi_number_map = array_flip(array('○', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十'));
+
+        $chars = preg_split('//u', $w, null, PREG_SPLIT_NO_EMPTY);
+        if (count($chars) == 1) {
+            if ($chars[0] == '廿') {
+                return 20;
+            }
+            return $chi_number_map[$chars[0]];
+        } elseif (count($chars) == 2 and $chars[0] == '廿') {
+            return 20 + $chi_number_map[$chars[1]];
+        } elseif (count($chars) == 2 and $chars[0] == '十') {
+            return 10 + $chi_number_map[$chars[1]];
+        } elseif (count($chars) == 2 and $chars[1] == '十') {
+            return 10 * $chi_number_map[$chars[0]];
+        } elseif (strpos($w, '十') === false) {
+            $s = '';
+            for ($i = 0; $i < count($chars); $i ++) {
+                $s .= $chi_number_map[$chars[$i]];
+            }
+            return $s;
+        } elseif (count($chars) == 3 and $chars[1] == '十') {
+            return $chi_number_map[$chars[0]] * 10 + $chi_number_map[$chars[2]];
+        }
+
+        return $w;
+    }
+
+    public static function toNormalNumber($word)
+    {
+        $number_map = array('０', '１', '２', '３', '４', '５', '６', '７', '８', '９');
+        foreach ($number_map as $num => $big_num) {
+            $word = str_replace($big_num, $num, $word);
+        }
+
+        $word = preg_replace_callback('#[○一二三四五六七八九十廿]+#u', function($matches) {
+            return Unit::chineseNumberToInt($matches[0]);
+        }, $word);
+
+        return $word;
     }
 }
