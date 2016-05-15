@@ -45,6 +45,20 @@ class SearchLib
         return json_decode($ret);
     }
 
+    public function searchCompaniesByParent($id, $page)
+    {
+        $curl = curl_init();
+        $id = sprintf("%08d", intval($id));
+        $q = urlencode('總公司統一編號:"' . $id . '"');
+        $from = 10 * ($page - 1);
+        curl_setopt($curl, CURLOPT_URL, getenv('SEARCH_URL') . '/company/_search?q=' . $q . '&from=' . $from);
+        curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+        $ret = curl_exec($curl);
+        return json_decode($ret);
+    }
+
     public function searchCompaniesByName($name, $page = 1, $alive_only = false)
     {
         $curl = curl_init();

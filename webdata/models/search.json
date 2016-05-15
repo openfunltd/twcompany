@@ -15,6 +15,7 @@
                 "地址" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"},
                 "負責人姓名" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"},
                 "辦事處所在地" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk"},
+                "總(本)公司統一編號" : {"type" : "string", "null_value" : "na", "index": "not_analyzed", "index_name": "總公司統一編號" },
                 "經理人名單" : {
                     "properties" : {
                           "姓名" : {"type" : "string", "null_value" : "na", "index" : "analyzed", "analyzer" : "cjk", "index_name" : "經理人姓名"}
