@@ -10,6 +10,8 @@ class MyDispatcher extends Pix_Controller_Dispatcher
             return array('index', 'show');
         } elseif (preg_match('#^/fund/#', $path)) {
             return array('index', 'fund');
+        } elseif (preg_match('#^/branch/#', $path)) {
+            return array('index', 'branch');
         } elseif (preg_match('#^/name/#', $path)) {
             return array('index', 'name');
         }

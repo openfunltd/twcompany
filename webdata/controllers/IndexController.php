@@ -32,6 +32,19 @@ class IndexController extends Pix_Controller
         $this->view->search_result = $ret;
     }
 
+    public function branchAction()
+    {
+        list(, /*branch*/, $id) = explode('/', $this->getURI());
+
+        $page = intval($_GET['page']) ?: 1;
+        $ret = (SearchLib::searchCompaniesByParent(intval($id), $page));
+
+        $this->view->page = $page;
+        $this->view->max_page = ceil($ret->hits->total / 10);
+        $this->view->search_word = sprintf("%08d", intval($id));
+        $this->view->search_result = $ret;
+    }
+
     public function nameAction()
     {
         list(, /*name*/, $name) = explode('/', $this->getURI());
