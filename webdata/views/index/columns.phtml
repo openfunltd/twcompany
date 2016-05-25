@@ -1,3 +1,6 @@
+<?php
+$csv = '';
+?>
 <?= $this->partial('/common/header.phtml', $this) ?>
 <h1>本站所有欄位</h1>
     <table border="1">
@@ -6,10 +9,13 @@
         <td>欄位名稱</td>
     </tr>
     <?php foreach (ColumnGroup::search(1) as $columngroup) { ?>
+    <?php $csv .= "{$columngroup->id},{$columngroup->name}\n"; ?>
     <tr>
         <td><?= $columngroup->id ?></td>
         <td><?= $this->escape($columngroup->name) ?></td>
     </tr>
     <?php } ?>
 </table>
+<h2>CSV</h2>
+    <textarea rows="6" style="width: 100%"><?= $this->escape($csv) ?></textarea>
 <?= $this->partial('/common/footer.phtml', $this) ?>
