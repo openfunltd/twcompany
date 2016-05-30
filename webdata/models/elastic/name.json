@@ -1,0 +1,8 @@
+{
+        "name_map" : {
+            "properties" : {
+                "name" : {"type" : "string", "null_value" : "na", "index" : "not_analyzed"},
+                "id" : {"type" : "string", "null_value" : "na", "index" : "not_analyzed"}
+            }
+        }
+}

@@ -1,0 +1,1 @@
+curl -XPUT http://123.123.123.123:9200/twcompany/name_map/_mapping -d '@name.json'
