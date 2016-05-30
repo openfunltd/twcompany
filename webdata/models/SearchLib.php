@@ -49,10 +49,16 @@ class SearchLib
     {
         $curl = curl_init();
         $id = sprintf("%08d", intval($id));
-        $q = urlencode('總公司統一編號:"' . $id . '"');
-        $from = 10 * ($page - 1);
-        curl_setopt($curl, CURLOPT_URL, getenv('SEARCH_URL') . '/company/_search?q=' . $q . '&from=' . $from);
+        $cmd = array(
+            'query' => array(
+                'match' => array('總(本)公司統一編號' => $id),
+            ),
+            'from' => 10 * ($page - 1),
+        );
+        curl_setopt($curl, CURLOPT_URL, getenv('SEARCH_URL') . '/company/_search');
         curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_Setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
+        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($cmd));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_TIMEOUT, 10);
         $ret = curl_exec($curl);
