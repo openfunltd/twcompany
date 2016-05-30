@@ -47,6 +47,155 @@ class UnitRow extends Pix_Table_Row
         if (!in_array($info['http_code'], array(200, 201))) {
             throw new Exception($info['http_code'] . ' ' . $ret);
         }
+
+        // 處理名稱搜尋
+        $columns = array(
+            2 => '公司名稱',
+            33 => '商業名稱',
+            48 => '分公司名稱',
+            50 => '總(本)公司統一編號',
+        );
+        $fia_columns = array(
+            3 => '營業人名稱',
+        );
+
+        $names = array();
+        $uni_name = function($str) {
+            if (is_scalar($str)) {
+                $name = $str;
+            } elseif (is_array($str)) {
+                if (is_scalar($str[0])) {
+                    $name = $str[0];
+                }
+                if ($str[0][1] == '(在臺灣地區公司名稱)') {
+                    $name = $str[0][0];
+                }
+            } else {
+                return null;
+            }
+            $name = str_replace('　', '', $name);
+            $name = Unit::changeRareWord($name);
+            $name = Unit::toNormalNumber($name);
+            return $name;
+        };
+
+        $values = array();
+        foreach (UnitData::search(array('id' => $this->id))->searchIn('column_id', array_keys($columns)) as $ud) {
+            if (!array_key_exists($ud->column_id, $values)) {
+                $values[$ud->column_id] = array();
+            }
+            $values[$ud->column_id][] = json_decode($ud->value);
+        }
+        foreach (UnitChangeLog::search(array('id' => $this->id))->searchIn('column_id', array_keys($columns)) as $ud) {
+            if (!array_key_exists($ud->column_id, $values)) {
+                $values[$ud->column_id] = array();
+            }
+            $values[$ud->column_id][] = json_decode($ud->old_value);
+            $values[$ud->column_id][] = json_decode($ud->new_value);
+        }
+        foreach (FIAUnitData::search(array('id' => $this->id))->searchIn('column_id', array_keys($fia_columns)) as $ud) {
+            if (!array_key_exists($ud->column_id, $values)) {
+                $values[$ud->column_id] = array();
+            }
+            $values[$ud->column_id][] = json_decode($ud->value);
+        }
+        foreach (FIAUnitChangeLog::search(array('id' => $this->id))->searchIn('column_id', array_keys($fia_columns)) as $ud) {
+            if (!array_key_exists($ud->column_id, $values)) {
+                $values[$ud->column_id] = array();
+            }
+            $values[$ud->column_id][] = json_decode($ud->old_value);
+            $values[$ud->column_id][] = json_decode($ud->new_value);
+        }
+
+        $names = array();
+        foreach (array(2, 3, 33) as $c) { // 公司名稱, 商業名稱, 營業人名稱
+            if (!array_key_Exists($c, $values)) {
+                continue;
+            }
+            foreach ($values[$c] as $n) {
+                $n = $uni_name($n);
+                if ($n) {
+                    $names[$n] = true;
+                }
+            }
+        }
+
+        if (array_key_exists(50, $values)) {
+            $parents_names = array();
+            foreach ($values[50] as $n) {
+                $id = $uni_name($n);
+                if (!$id) {
+                    continue;
+                }
+                foreach (UnitData::search(array('id' => $id, 'column_id' => 2)) as $ud) {
+                    $parents_names[] = json_decode($ud->value);
+                }
+                foreach (UnitChangeLog::search(array('id' => $id, 'column_id' => 2)) as $ud) {
+                    $parents_names[] = json_decode($ud->old_value);
+                    $parents_names[] = json_decode($ud->new_value);
+                }
+            }
+
+            foreach ($values[48] as $n) {
+                $branch_name = $uni_name($n);
+                if (!$branch_name) {
+                    continue;
+                }
+                foreach ($parents_names as $parent_name) {
+                    $parent_name = $uni_name($parent_name);
+                    if ($parent_name) {
+                        $names[$parent_name . $branch_name] = true;
+                    }
+                }
+            }
+        }
+
+        // 先刪除舊的資料
+        $curl = curl_init();
+        $url = getenv('SEARCH_URL') . '/twcompany/name_map/_query';
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
+        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(array(
+            'query' => array(
+                'term' => array('id' => $this->id()),
+            )
+        )));
+        $ret = curl_exec($curl);
+        $info = curl_getinfo($curl);
+        if ($info['http_code'] != 200) {
+            throw new Exception($ret);
+        }
+
+        // 新增新的資料
+        $command = '';
+        $id = $this->id();
+        foreach ($names as $name => $true) {
+            $command .= json_encode(array(
+                'create' => array(
+                    '_id' => $id . '-' . $name,
+                ),
+            ), JSON_UNESCAPED_UNICODE) . "\n";
+            $command .= json_encode(array(
+                'name' => $name,
+                'id' => $id,
+            ), JSON_UNESCAPED_UNICODE) . "\n";
+        }
+        $curl = curl_init();
+        $url = getenv('SEARCH_URL') . "/twcompany/name_map/_bulk";
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_BINARYTRANSFER, true);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $command);
+        $ret = curl_exec($curl);
+        $info = curl_getinfo($curl);
+        curl_close($curl);
+        if (!in_array($info['http_code'], array(200, 201))) {
+            throw new Exception($info['http_code'] . $ret);
+        }
     }
 
     public function id()
