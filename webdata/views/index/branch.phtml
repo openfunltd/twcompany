@@ -1,0 +1,9 @@
+<?php
+$this->pagerBaseUri = '/branch/' . urlencode($this->search_word) . '?page=';
+?>
+<?= $this->partial('/common/header.phtml', $this) ?>
+<h2>搜尋 「<?= $this->escape($this->search_word) ?>」的分公司，一共 <?= $this->search_result->hits->total ?> 筆</h2>
+API: <code>http://<?= $_SERVER['HTTP_HOST'] ?>/api/branch?q=<?= urlencode($this->search_word) ?>&amp;page=<?= $this->page ?></code>
+<?= $this->partial('index/search_table.phtml', array('search_result' => $this->search_result)) ?>
+<?= $this->partial('/common/pager.phtml', $this) ?>
+<?= $this->partial('/common/footer.phtml', $this) ?>

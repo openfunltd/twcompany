@@ -8,10 +8,17 @@ Pix_Table::$_save_memory = true;
 if ($_SERVER['argv'][1]) {
     $fp = fopen($_SERVER['argv'][1], 'r');
 } else {
-    $fp = tmpfile();
-    chdir("/tmp");
     system("wget -O bgmopen1.zip http://www.fia.gov.tw/opendata/bgmopen1.zip");
+    if (file_exists('bgmopen1.txt')) {
+        $old_md5 = md5_file('bgmopen1.txt');
+    } else {
+        $old_md5 = null;
+    }
     system("unzip -o -P1234 bgmopen1.zip");
+    if (!is_null($old_md5) and $old_md5 == md5_file('bgmopen1.txt')) {
+        echo "檔案未變\n";
+        exit;
+    }
     $fp = fopen("BGMOPEN1.csv", "r");
 }
 
@@ -34,8 +41,12 @@ $updating = array();
 $changed_unit = array();
 $checking = array();
 $names = array();
-while ($rows = fgetcsv($fp)) {
+while ($rows = fgetcsv($fp, 0, ';')) {
     $rows = array_map('trim', $rows);
+    if (count($rows) < 6) {
+        print_r($rows);
+        throw new Exception('wrong');
+    }
     $values = array_combine(array_slice($columns, 0, 6), array_slice($rows, 0, 6));
     $rows = array_slice($rows, 6);
     $records = array();
