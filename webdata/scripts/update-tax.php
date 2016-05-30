@@ -8,10 +8,17 @@ Pix_Table::$_save_memory = true;
 if ($_SERVER['argv'][1]) {
     $fp = fopen($_SERVER['argv'][1], 'r');
 } else {
-    $fp = tmpfile();
-    chdir("/tmp");
     system("wget -O bgmopen1.zip http://www.fia.gov.tw/opendata/bgmopen1.zip");
+    if (file_exists('bgmopen1.txt')) {
+        $old_md5 = md5_file('bgmopen1.txt');
+    } else {
+        $old_md5 = null;
+    }
     system("unzip -o -P1234 bgmopen1.zip");
+    if (!is_null($old_md5) and $old_md5 == md5_file('bgmopen1.txt')) {
+        echo "檔案未變\n";
+        exit;
+    }
     $fp = fopen("BGMOPEN1.csv", "r");
 }
 
