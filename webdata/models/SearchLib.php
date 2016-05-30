@@ -82,4 +82,61 @@ class SearchLib
         $ret = curl_exec($curl);
         return json_decode($ret);
     }
+
+    public function bulkSearchCompany($searchs)
+    {
+        $name_map = array();
+        $names = array();
+        foreach ($searchs['name'] as $id => $name) {
+            $name = str_replace('　', '', $name);
+            $name = Unit::changeRareWord($name);
+            $name = Unit::toNormalNumber($name);
+            $name_map[$id] = $name;
+            if (array_key_exists($name, $names)) {
+                continue;
+            }
+            $names[$name] = null;
+        }
+
+        foreach (array_chunk($names, 100, true) as $chunk_names) {
+            $request = '';
+            foreach ($chunk_names as $name => $nul) {
+                $q = 'name:"' . ($name) . '"';
+                $request .= "{}\n";
+                $request .= json_encode(array(
+                    'query' => array("query_string" => array('query' => $q )),
+                )) . "\n";
+            }
+            $url = getenv('SEARCH_URL') . '/twcompany/name_map/_msearch';
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_HEADER, 0);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $request);
+            $ret = curl_exec($curl);
+            $info = curl_getinfo($curl);
+            curl_close($curl);
+            foreach (json_decode($ret)->responses as $res) {
+                if (count($res->hits->hits) == 1) {
+                    $hit = $res->hits->hits[0];
+                    $names[$hit->_source->name] = $hit->_source->id;
+                    continue;
+                }
+
+                if (count($res->hits->hits) == 0) {
+                    continue;
+                }
+
+                $name = $res->hits->hits[0]->_source->name;
+                $names[$name] = implode(';', array_map(function($hit) { return $hit->_source->id; }, $res->hits->hits));
+            }
+        }
+
+        return array_map(function($id) use ($name_map, $names, $searchs) {
+            return array(
+                'query' => $searchs['name'][$id],
+                'result' => $names[$name_map[$id]],
+            );
+        }, array_keys($name_map));
+    }
 }
