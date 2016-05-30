@@ -41,8 +41,12 @@ $updating = array();
 $changed_unit = array();
 $checking = array();
 $names = array();
-while ($rows = fgetcsv($fp)) {
+while ($rows = fgetcsv($fp, 0, ';')) {
     $rows = array_map('trim', $rows);
+    if (count($rows) < 6) {
+        print_r($rows);
+        throw new Exception('wrong');
+    }
     $values = array_combine(array_slice($columns, 0, 6), array_slice($rows, 0, 6));
     $rows = array_slice($rows, 6);
     $records = array();
