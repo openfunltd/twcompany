@@ -94,4 +94,8 @@ class IndexController extends Pix_Controller
         $this->view->search_word = $_GET['q'];
         $this->view->search_result = $ret;
     }
+
+    public function bulksearchAction()
+    {
+    }
 }
