@@ -1,0 +1,25 @@
+<?= $this->partial('/common/header.phtml', $this) ?>
+API: <code>http://<?= $_SERVER['HTTP_HOST'] ?>/api/bulksearch  POST: names:name1,name2,name3 ... </code>
+<form id="form">
+            <div class="span6">
+                <h3>輸入</h3>
+                <textarea id="input" style="width:100%; height: 300px">華碩電腦股份有限公司
+藝珂人事顧問股份有限公司
+香港商瑞健股份有限公司台灣分公司</textarea>
+            </div>
+            <div class="span6">
+                <h3>結果</h3>
+                <textarea id="result" style="width:100%; height: 300px"></textarea>
+            </div>
+    <button type="submit">搜尋</button>
+</form>
+<script>
+$('#form').submit(function(e){
+    e.preventDefault();
+    var names = $('#input').val().split("\n");
+    $.post('/api/bulksearch', 'names=' + encodeURIComponent(names.join(',')), function(ret){
+        $('#result').val(ret.map(function(obj){ return obj.query + ',' + obj.result; }).join("\n"));
+    }, 'json');
+});
+</script>
+<?= $this->partial('/common/footer.phtml', $this) ?>
