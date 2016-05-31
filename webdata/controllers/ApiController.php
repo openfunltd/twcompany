@@ -91,4 +91,12 @@ class ApiController extends Pix_Controller
         $ret->found = $search_ret->hits->total;
         return $this->jsonp($ret, strval($_GET['callback']));
     }
+
+    public function bulksearchAction()
+    {
+        $ret = SearchLib::bulkSearchCompany(array(
+            'name' => explode(',', $_REQUEST['names']),
+        ));
+        return $this->jsonp($ret, strval($_GET['callback']));
+    }
 }
