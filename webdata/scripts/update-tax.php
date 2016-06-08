@@ -92,12 +92,16 @@ while ($rows = fgetcsv($fp, 0, ';')) {
 }
 file_put_contents('change.log', json_encode($changed_unit));
 foreach ($changed_unit as $id => $name) {
+    $id = sprintf("%08d", $id);
     if (strpos($name, '分公司')) {
-        Updater::updateBranch($id);
+        $u = Updater::updateBranch($id);
     } elseif (strpos($name, '公司')) {
-        Updater::update($id);
+        $u = Updater::update($id);
     } else {
-        Updater::updateBussiness($id);
+        $u = Updater::updateBussiness($id);
+    }
+    if ($u) {
+        $u->updateSearch();
     }
 }
 
