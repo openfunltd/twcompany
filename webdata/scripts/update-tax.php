@@ -27,9 +27,13 @@ while ($rows = fgetcsv($fp)) {
     if (strpos($rows[0], '備註:') === 0) {
         continue;
     }
+    if (strpos($rows[0], '檔案產生日期：') === 0) {
+        continue;
+    }
     $columns = array_map('trim', $rows);
 
-    if (implode(',', $columns) != '營業地址,統一編號,營業人名稱,資本額,設立日期,使用統一發票,行業代號,名稱,行業代號,名稱,行業代號,名稱,行業代號,名稱') {
+    if (implode(',', $columns) != '營業地址,統一編號,營業人名稱,負責人姓氏,資本額,設立日期,使用統一發票,行業代號,名稱,行業代號,名稱,行業代號,名稱,行業代號,名稱') {
+        print_r($columns);
         throw new Exception('欄位不正確');
     }
     break;
@@ -43,12 +47,12 @@ $checking = array();
 $names = array();
 while ($rows = fgetcsv($fp, 0, ';')) {
     $rows = array_map('trim', $rows);
-    if (count($rows) < 6) {
+    if (count($rows) < 7) {
         print_r($rows);
         throw new Exception('wrong');
     }
-    $values = array_combine(array_slice($columns, 0, 6), array_slice($rows, 0, 6));
-    $rows = array_slice($rows, 6);
+    $values = array_combine(array_slice($columns, 0, 7), array_slice($rows, 0, 7));
+    $rows = array_slice($rows, 7);
     $records = array();
     while ($no = array_shift($rows)) {
         $records[] = array($no, array_shift($rows));
