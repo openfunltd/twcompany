@@ -574,6 +574,9 @@ class Updater
 
             throw new Exception('統一編號 not found?');
         }
+        if ($info->{'總(本)公司統一編號'} == $info->{'分公司統一編號'}) {
+            return self::update($id);
+        }
         if (!$info->{'總(本)公司統一編號'}) {
             return;
         }
