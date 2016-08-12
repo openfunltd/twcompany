@@ -81,7 +81,12 @@ while ($rows = fgetcsv($fp, 0, ';')) {
             $id = $unit_data['id'] . '-' . $unit_data['column_id'];
             if ($checking[$id] !== $unit_data['value']) {
                 $updating[$id] = array($unit_data['value'], $checking[$id]);
+
+                if (!in_array(FIAColumnGroup::getColumnName($unit_data['column_id']), array(
+                    '使用統一發票',
+                ))) {  // 如果以上欄位變更，不需要去經濟部更新
                 $changed_unit[$unit_data['id']] = $names[$unit_data['id']];
+                }
             }
             unset($checking[$id]);
         }
