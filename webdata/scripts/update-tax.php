@@ -115,11 +115,13 @@ foreach ($changed_unit as $id => $name) {
 }
 
 $now = time();
-$changelog_records = array_map(function($no_column) use ($updating, $now){
-    list($id, $column_id) = explode('-', $no_column);
-    return array($id, $now, $column_id, $updating[$no_column][0], $updating[$no_column][1]);
-}, array_keys($updating));
-FIAUnitChangeLog::bulkInsert(array('id', 'updated_at', 'column_id', 'old_value', 'new_value'), $changelog_records, array('replace' => true));
+foreach (array_chunk($updating, 1000, true) as $chunk_updating) {
+    $changelog_records = array_map(function($no_column) use ($chunk_updating, $now){
+        list($id, $column_id) = explode('-', $no_column);
+        return array($id, $now, $column_id, $chunk_updating[$no_column][0], $chunk_updating[$no_column][1]);
+    }, array_keys($chunk_updating));
+    FIAUnitChangeLog::bulkInsert(array('id', 'updated_at', 'column_id', 'old_value', 'new_value'), $changelog_records, array('replace' => true));
+}
 
 $insert_records = array_map(function($no_column) use ($inserting) {
     list($id, $column_id) = explode('-', $no_column);
@@ -127,8 +129,10 @@ $insert_records = array_map(function($no_column) use ($inserting) {
 }, array_keys($inserting));
 FIAUnitData::bulkInsert(array('id', 'column_id', 'value'), $insert_records, array('replace' => true));
 
-$insert_records = array_map(function($no_column) use ($updating) {
-    list($id, $column_id) = explode('-', $no_column);
-    return array($id, $column_id, $updating[$no_column][1]);
-}, array_keys($updating));
-FIAUnitData::bulkInsert(array('id', 'column_id', 'value'), $insert_records, array('replace' => true));
+foreach (array_chunk($updating, 10000, true) as $chunk_updating) {
+    $insert_records = array_map(function($no_column) use ($chunk_updating) {
+        list($id, $column_id) = explode('-', $no_column);
+        return array($id, $column_id, $chunk_updating[$no_column][1]);
+    }, array_keys($chunk_updating));
+    FIAUnitData::bulkInsert(array('id', 'column_id', 'value'), $insert_records, array('replace' => true));
+}
