@@ -23,7 +23,7 @@ if ($_SERVER['argv'][1]) {
 }
 
 $inserting = array();
-while ($rows = fgetcsv($fp)) {
+while ($rows = fgetcsv($fp, 0, ';')) {
     if (strpos($rows[0], '備註:') === 0) {
         continue;
     }
