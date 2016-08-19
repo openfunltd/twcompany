@@ -35,6 +35,17 @@ class UnitRow extends Pix_Table_Row
             $data->{'公司所在地'} = Unit::toNormalNumber($data->{'公司所在地'});
         }
 
+        if (property_exists($data, '公司名稱') and property_exists($data, '分公司名稱')) {
+            // 同時有公司名稱和分公司名稱的話，表示這是總公司，那讓 xxx公司 和 xxx公司台灣分公司 兩者都可以被搜尋到
+            if (!is_array($data->{'公司名稱'})) {
+                $data->{'公司名稱'} = array($data->{'公司名稱'});
+            }
+            $data->{'公司名稱'}[] = $data->{'公司名稱'}[0] . $data->{'分公司名稱'};
+        } else if (property_exists($data, '分公司名稱')) {
+            // 只有分公司名稱的話，就把全稱存進去公司名稱中，並且加上這是分公司，預設不要搜尋到
+            $data->{'公司名稱'} = $this->name();
+        }
+
         $curl = curl_init();
         $url = getenv('SEARCH_URL') . '/company/company/' . $this->id();
         curl_setopt($curl, CURLOPT_URL, $url);
