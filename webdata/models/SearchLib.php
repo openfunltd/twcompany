@@ -69,13 +69,28 @@ class SearchLib
     {
         $curl = curl_init();
         $name = Unit::changeRareWord($name);
+        $from = 10 * ($page - 1);
         if ($alive_only) {
             $q = urlencode("(現況:核准設立 AND 商業名稱:\"{$name}\") OR (公司狀況:核准設立 AND 公司名稱:\"{$name}\") OR (名稱:\"{$name}\")");
+            curl_setopt($curl, CURLOPT_URL, getenv('SEARCH_URL') . '/company/_search?q=' . $q . '&from=' . $from);
         } else {
-            $q = urlencode('商業名稱:"' . $name . '" OR 公司名稱:"' . $name. '" OR 名稱:"' . $name . '"');
+            $cmd = array(
+                'query' => array(
+                    'filtered' => array(
+                        'query' => array('multi_match' => array(
+                            'query' => $name,
+                            'fields' => array('商業名稱', '公司名稱', '名稱'),
+                            'type' => 'phrase',
+                            'operator' => 'and'
+                        )),
+                        'filter' => array('missing' => array('field' => '分公司狀況')),
+                    ),
+                ),
+                'from' => 10 * ($page - 1),
+            );
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($cmd));
+            curl_setopt($curl, CURLOPT_URL, getenv('SEARCH_URL') . '/company/_search?from=' . $from);
         }
-        $from = 10 * ($page - 1);
-        curl_setopt($curl, CURLOPT_URL, getenv('SEARCH_URL') . '/company/_search?q=' . $q . '&from=' . $from);
         curl_setopt($curl, CURLOPT_HEADER, 0);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_TIMEOUT, 10);
