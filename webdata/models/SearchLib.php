@@ -68,7 +68,9 @@ class SearchLib
     public function searchCompaniesByName($name, $page = 1, $alive_only = false)
     {
         $curl = curl_init();
-        $name = Unit::changeRareWord($name);
+        if (!getenv('SKIP_RAREWORD')) {
+            $name = Unit::changeRareWord($name);
+        }
         $from = 10 * ($page - 1);
         if ($alive_only) {
             $q = urlencode("(現況:核准設立 AND 商業名稱:\"{$name}\") OR (公司狀況:核准設立 AND 公司名稱:\"{$name}\") OR (名稱:\"{$name}\")");
