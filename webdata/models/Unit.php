@@ -195,20 +195,22 @@ class UnitRow extends Pix_Table_Row
                 'id' => $id,
             ), JSON_UNESCAPED_UNICODE) . "\n";
         }
-        $curl = curl_init();
-        $url = getenv('SEARCH_URL') . "/twcompany/name_map/_bulk";
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_HEADER, 0);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_PROXY, '');
-        curl_setopt($curl, CURLOPT_BINARYTRANSFER, true);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $command);
-        $ret = curl_exec($curl);
-        $info = curl_getinfo($curl);
-        curl_close($curl);
-        if (!in_array($info['http_code'], array(200, 201))) {
-            throw new Exception($info['http_code'] . $ret);
+        if ($command) {
+            $curl = curl_init();
+            $url = getenv('SEARCH_URL') . "/twcompany/name_map/_bulk";
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_HEADER, 0);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curl, CURLOPT_PROXY, '');
+            curl_setopt($curl, CURLOPT_BINARYTRANSFER, true);
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $command);
+            $ret = curl_exec($curl);
+            $info = curl_getinfo($curl);
+            curl_close($curl);
+            if (!in_array($info['http_code'], array(200, 201))) {
+                throw new Exception($info['http_code'] . $ret);
+            }
         }
     }
 
