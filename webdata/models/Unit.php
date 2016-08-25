@@ -56,13 +56,13 @@ class UnitRow extends Pix_Table_Row
             $data->{'財政部'}->{FIAColumnGroup::getColumnName($unitdata->column_id)} = json_decode($unitdata->value);
         }
 
-        $data = Unit::walkObject($data);
         return $data;
     }
 
     public function updateSearch()
     {
         $data = $this->getData();
+        $data = Unit::walkObject($data);
 
         if (property_exists($data, '公司所在地')) {
             $data->{'公司所在地'} = Unit::toNormalNumber($data->{'公司所在地'});
