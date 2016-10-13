@@ -219,6 +219,19 @@ class UnitRow extends Pix_Table_Row
         return str_pad($this->id, 8, '0', STR_PAD_LEFT);
     }
 
+    public function getAddress()
+    {
+        if (1 == $this->type) { // 公司
+            $column_id = 6; // 公司所在地
+        } elseif (2 == $this->type) { // 商業登記
+            $column_id = 38; // 地址
+        } elseif (3 == $this->type) { // 分公司
+            $column_id = 21; // 分公司所在地
+        }
+        $data = UnitData::search(array('id' => $this->id, 'column_id' => $column_id))->first();
+        return json_decode($data->value);
+    }
+
     public function name($depth = 0)
     {
         $prefix = '';
