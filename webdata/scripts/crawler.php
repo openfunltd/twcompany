@@ -30,7 +30,10 @@ class CustomCrawler
             $ids = Crawler::crawlerMonth($year, $month);
             $ids = array_unique($ids);
             file_put_contents('ids', implode("\n", $ids));
+            $i = 1;
             foreach ($ids as $id) {
+                error_log($i . '/' . count($ids));
+                $i ++;
                 $u = Updater::update($id);
                 if ($u) {
                     $u->updateSearch();
@@ -43,7 +46,10 @@ class CustomCrawler
             if (false === $pos) {
                 return $this->wrong_argv();
             }
+            $i = $pos;
             foreach (array_slice($ids, $pos - 1) as $id) {
+                error_log($i . '/' . count($ids));
+                $i ++;
                 $u = Updater::update($id);
                 if ($u) {
                     $u->updateSearch();
@@ -53,7 +59,10 @@ class CustomCrawler
             $ids = Crawler::crawlerBussiness($year, $month);
             $ids = array_unique($ids);
             file_put_contents('ids', implode("\n", $ids));
+            $i = 1;
             foreach ($ids as $id) {
+                error_log($i . '/' . count($ids));
+                $i ++;
                 $u = Updater::updateBussiness($id);
                 if ($u) {
                     $u->updateSearch();
