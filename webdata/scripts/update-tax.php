@@ -32,7 +32,7 @@ while ($rows = fgetcsv($fp, 0, ';')) {
     }
     $columns = array_map('trim', $rows);
 
-    if (implode(',', $columns) != '營業地址,統一編號,總機構統一編號,營業人名稱,負責人姓氏,資本額,設立日期,使用統一發票,行業代號,名稱,行業代號,名稱,行業代號,名稱,行業代號,名稱') {
+    if (implode(',', $columns) != '營業地址,統一編號,總機構統一編號,營業人名稱,資本額,設立日期,使用統一發票,行業代號,名稱,行業代號,名稱,行業代號,名稱,行業代號,名稱') {
         print_r($columns);
         throw new Exception('欄位不正確');
     }
@@ -84,6 +84,10 @@ while ($rows = fgetcsv($fp, 0, ';')) {
         foreach ($unit_datas->toArray() as $unit_data) {
             $id = $unit_data['id'] . '-' . $unit_data['column_id'];
             if ($checking[$id] !== $unit_data['value']) {
+                if ($unit_data['column_id'] == 10 and !$checking[$id]) { // 負責人姓氏被拿掉了
+                    unset($checking[$id]);
+                    continue;
+                }
                 $updating[$id] = array($unit_data['value'], $checking[$id]);
 
                 if (!in_array(FIAColumnGroup::getColumnName($unit_data['column_id']), array(
