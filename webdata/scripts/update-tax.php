@@ -45,14 +45,18 @@ $updating = array();
 $changed_unit = array();
 $checking = array();
 $names = array();
+$split_column = array_search('行業代號', $columns);
+if (!$split_column) {
+    throw new Exception("找不到行業代號開始欄位");
+}
 while ($rows = fgetcsv($fp, 0, ';')) {
     $rows = array_map('trim', $rows);
-    if (count($rows) < 8) {
+    if (count($rows) < $split_column) {
         print_r($rows);
         throw new Exception('wrong');
     }
-    $values = array_combine(array_slice($columns, 0, 8), array_slice($rows, 0, 8));
-    $rows = array_slice($rows, 8);
+    $values = array_combine(array_slice($columns, 0, $split_column), array_slice($rows, 0, $split_column));
+    $rows = array_slice($rows, $split_column);
     $records = array();
     while ($no = array_shift($rows)) {
         $records[] = array($no, array_shift($rows));
