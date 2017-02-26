@@ -1,4 +1,8 @@
 <script>
+if (document.location.protocol == 'https:') {
+    document.location.protocol = 'http:'; // 要用 http 商業司那邊才吃的到 referer
+} else {
+
 <?php if (2 == $this->type) { // 商業登記 ?>
     document.location='http://gcis.nat.gov.tw/moeadsBF/bms/bmsInfoAction.do?method=detail&banNo=' + <?= json_encode($this->id) ?> + '&lAgencyCode=&agencyCode=allbf&showGcisLocation=true&showBusi=true&showFact=false';
 <?php } elseif (3 == $this->type) { // 分公司 ?>
@@ -6,4 +10,6 @@
 <?php } else { ?>
     document.location='http://gcis.nat.gov.tw/pub/cmpy/cmpyInfoAction.do?method=detail&banNo=' + <?= json_encode($this->id) ?>;
 <?php } ?>
+
+}
 </script>

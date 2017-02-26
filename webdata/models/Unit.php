@@ -252,6 +252,75 @@ class UnitRow extends Pix_Table_Row
         return str_pad($this->id, 8, '0', STR_PAD_LEFT);
     }
 
+    public function getAddress()
+    {
+        if (1 == $this->type) { // 公司
+            $column_id = 6; // 公司所在地
+        } elseif (2 == $this->type) { // 商業登記
+            $column_id = 38; // 地址
+        } elseif (3 == $this->type) { // 分公司
+            $column_id = 21; // 分公司所在地
+        }
+        $data = UnitData::search(array('id' => $this->id, 'column_id' => $column_id))->first();
+        return str_replace('\\', '', json_decode($data->value));
+    }
+
+    /**
+     * getPricipal 取得代表人
+     * 
+     * @access public
+     * @return string
+     */
+    public function getPricipal()
+    {
+        if (1 == $this->type) { // 公司
+            $column_id = 5; // 代表人
+        } elseif (2 == $this->type) { // 商業登記
+            $column_id = 34; // 負責人
+        } elseif (3 == $this->type) { // 分公司
+            $column_id = 49; // 分公司經理姓名
+        }
+        $data = UnitData::search(array('id' => $this->id, 'column_id' => $column_id))->first();
+        $data = json_decode($data->value);
+        while (is_array($data)) {
+            $data = $data[0];
+        }
+        return $data;
+    }
+
+    /**
+     * getCapital 取得資本額跟實收資本額
+     * 
+     * @access public
+     * @return array(資本額,實收資本額)
+     */
+    public function getCapital()
+    {
+        if (1 == $this->type) { // 公司
+            $columns = array(
+                3, // 資本總額(元)
+                4, // 實收資本額(元)
+            );
+        } elseif (2 == $this->type) { // 商業登記
+            $columns = array(
+                36, // 資本額(元)
+                0, // 空
+            );
+        } elseif (3 == $this->type) { // 分公司
+            $columns = array(0, 0);
+        }
+        $ret = array();
+        foreach ($columns as $column_id) {
+            if ($column_id == 0 or !$data = UnitData::search(array('id' => $this->id, 'column_id' => $column_id))->first()) {
+                $ret[] = '';
+            } else {
+                $data = intval(str_replace(',', '', json_decode($data->value)));
+                $ret[] = $data;
+            }
+        }
+        return $ret;
+    }
+
     public function name($depth = 0)
     {
         $prefix = '';
