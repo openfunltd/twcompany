@@ -97,16 +97,27 @@ class Updater
             $column = trim($tr_dom->getElementsByTagName('td')->item(1)->childNodes->item(0)->wholeText);
 
             if (in_array($column, array('負責人姓名', '合夥人姓名'))) {
-                $value = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0)->wholeText;
-                $value = preg_replace('#\s#', '', $value);
-                if (preg_match('#([^\xa0]*)(\xa0)+出資額\(元\):(.*)#u', $value, $matches)) {
-                    if (!property_exists($info, '出資額(元)')) {
-                        $info->{'出資額(元)'} = new StdClass;
+                foreach ($tr_dom->getElementsByTagName('td')->item(2)->childNodes as $node) {
+                    if ($node->nodeName == 'br') {
+                        continue;
                     }
-                    $info->{$column} = $matches[1];
-                    $info->{'出資額(元)'}->{$matches[1]} = str_replace(',', '', $matches[3]);
-                } else {
-                    $info->{$column} = $value;
+                    $value = $node->nodeValue;
+                    $value = preg_replace('#\s#', '', $value);
+                    if (preg_match('#([^\xa0]*)(\xa0)+出資額\(元\):(.*)#u', $value, $matches)) {
+                        if (!property_exists($info, '出資額(元)')) {
+                            $info->{'出資額(元)'} = new StdClass;
+                        }
+                        $value = $matches[1];
+                        $info->{'出資額(元)'}->{$matches[1]} = str_replace(',', '', $matches[3]);
+                    }
+                    if (property_exists($info, $column)) {
+                        if (is_scalar($info->{$column})) {
+                            $info->{$column} = array($info->{$column});
+                        }
+                        $info->{$column}[] = $value;
+                    } else {
+                        $info->{$column} = $value;
+                    }
                 }
             } else if (in_array($column, array('登記機關', '商業統一編號', '商業名稱', '現況', '組織類型', '分支機構登記機關', '分支機構統一編號'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
@@ -141,6 +152,8 @@ class Updater
                 exit;
             }
         }
+        print_r($info);
+        exit;
 
         return $info;
     }
