@@ -152,8 +152,6 @@ class Updater
                 exit;
             }
         }
-        print_r($info);
-        exit;
 
         return $info;
     }
