@@ -16,7 +16,7 @@ class ApiController extends Pix_Controller
         if (!$unit = Unit::find(intval($id))) {
             $data = new StdClass;
             $data->{'財政部'} = new StdClass;
-            foreach (FIAUnitData::search(array('id' => $this->id)) as $unitdata) {
+            foreach (FIAUnitData::search(array('id' => $id)) as $unitdata) {
                 $data->{'財政部'}->{FIAColumnGroup::getColumnName($unitdata->column_id)} = json_decode($unitdata->value);
             }
             $ret->data = $unit->getData();
