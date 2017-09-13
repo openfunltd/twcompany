@@ -19,7 +19,7 @@ class ApiController extends Pix_Controller
             foreach (FIAUnitData::search(array('id' => $id)) as $unitdata) {
                 $data->{'財政部'}->{FIAColumnGroup::getColumnName($unitdata->column_id)} = json_decode($unitdata->value);
             }
-            $ret->data = $unit->getData();
+            $ret->data = $data;
             return $this->jsonp($ret, strval($_GET['callback']));
         }
 

@@ -108,7 +108,9 @@ class Updater
                             $info->{'出資額(元)'} = new StdClass;
                         }
                         $value = $matches[1];
-                        $info->{'出資額(元)'}->{$matches[1]} = str_replace(',', '', $matches[3]);
+                        if ($matches[1]) {
+                            $info->{'出資額(元)'}->{$matches[1]} = str_replace(',', '', $matches[3]);
+                        }
                     }
                     if (property_exists($info, $column)) {
                         if (is_scalar($info->{$column})) {
@@ -728,6 +730,7 @@ class Updater
             if (200 == $info['http_code']) {
                 return $content;
             }
+            sleep(30);
         }
         throw new Exception("fetch 3 times failed");
     }
