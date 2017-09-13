@@ -55,6 +55,22 @@ class CustomCrawler
                     $u->updateSearch();
                 }
             }
+        } elseif ('bussiness-continue' == $type) {
+            $ids = explode("\n", file_get_contents('ids'));
+            $pos = array_search($year, $ids);
+            var_dump($pos);
+            if (false === $pos) {
+                return $this->wrong_argv();
+            }
+            $i = $pos;
+            foreach (array_slice($ids, $pos - 1) as $id) {
+                error_log($i . '/' . count($ids));
+                $i ++;
+                $u = Updater::updateBussiness($id);
+                if ($u) {
+                    $u->updateSearch();
+                }
+            }
         } else {
             $ids = Crawler::crawlerBussiness($year, $month);
             $ids = array_unique($ids);

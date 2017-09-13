@@ -14,8 +14,12 @@ class ApiController extends Pix_Controller
 
         $ret = new StdClass;
         if (!$unit = Unit::find(intval($id))) {
-            $ret->error = true;
-            $ret->message = "Company not found";
+            $data = new StdClass;
+            $data->{'財政部'} = new StdClass;
+            foreach (FIAUnitData::search(array('id' => $this->id)) as $unitdata) {
+                $data->{'財政部'}->{FIAColumnGroup::getColumnName($unitdata->column_id)} = json_decode($unitdata->value);
+            }
+            $ret->data = $unit->getData();
             return $this->jsonp($ret, strval($_GET['callback']));
         }
 
