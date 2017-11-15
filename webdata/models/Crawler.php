@@ -54,7 +54,7 @@ class Crawler
 
     public static function crawlerBussiness($year, $month)
     {
-        $content = file_get_contents('http://gcis.nat.gov.tw/moeadsBF/bms/report.jsp');
+        $content = file_get_contents('https://gcis.nat.gov.tw/moeadsBF/bms/report.jsp');
         $content = iconv('big5', 'utf-8', $content);
         preg_match('#<select name="area">(.*?)</select>#s', $content, $matches);
         preg_match_all('#<option value="(.*?)">(.*?)</option>#', $matches[1], $matches);
@@ -74,7 +74,7 @@ class Crawler
         foreach ($orginations as $ori_id => $type_name) {
             foreach ($types as $type_id => $type_name) {
                 $yearmonth = sprintf("%03d%02d", $year, $month);
-                $url = "http://gcis.nat.gov.tw/moeadsBF/cmpy/reportAction.do?method=report&reportClass=bms&subPath={$yearmonth}&fileName={$ori_id}{$type_id}{$yearmonth}.pdf";
+                $url = "https://gcis.nat.gov.tw/moeadsBF/cmpy/reportAction.do?method=report&reportClass=bms&subPath={$yearmonth}&fileName={$ori_id}{$type_id}{$yearmonth}.pdf";
                 error_log("Fetch {$url}");
                 $file = self::fetch($url);
                 if (false === $file) {
@@ -90,7 +90,7 @@ class Crawler
 
     public static function crawlerMonth($year, $month)
     {
-        $content = file_get_contents('http://gcis.nat.gov.tw/pub/cmpy/reportReg.jsp');
+        $content = file_get_contents('https://gcis.nat.gov.tw/pub/cmpy/reportReg.jsp');
         $content = iconv('big5', 'utf-8', $content);
         preg_match('#<select name="org">(.*?)</select>#s', $content, $matches);
         preg_match_all('#<option value="(.*?)">(.*?)</option>#', $matches[1], $matches);
@@ -110,7 +110,7 @@ class Crawler
         foreach ($orginations as $ori_id => $type_name) {
             foreach ($types as $type_id => $type_name) {
                 $yearmonth = sprintf("%03d%02d", $year, $month);
-                $url = "http://gcis.nat.gov.tw/pub/cmpy/reportAction.do?method=report&reportClass=cmpy&subPath=${yearmonth}&fileName=${yearmonth}{$ori_id}{$type_id}.pdf";
+                $url = "https://gcis.nat.gov.tw/pub/cmpy/reportAction.do?method=report&reportClass=cmpy&subPath=${yearmonth}&fileName=${yearmonth}{$ori_id}{$type_id}.pdf";
                 $file = self::fetch($url);
                 if (false === $file) {
                     trigger_error("Fetch failed: {$ori_id}-{$type_id}-{$year}-{$month}", E_USER_WARNING);
