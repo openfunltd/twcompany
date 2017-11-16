@@ -59,10 +59,19 @@ class UnitRow extends Pix_Table_Row
         return $data;
     }
 
-    public function updateSearch()
+    public function getSearchData()
     {
         $data = $this->getData();
         $data = Unit::walkObject($data);
+
+        if (property_exists($data, '出資額(元)')) {
+            $new_value = array();
+            foreach ($data->{'出資額(元)'} as $name => $amount) {
+                // elastic 中最好不要有名稱出現在 key 的情況，因此把他轉成 object
+                $new_value[] = array('name' => $name, 'amount' => $amount);
+            }
+            $data->{'出資額(元)'} = $new_value;
+        }
 
         if (property_exists($data, '公司所在地')) {
             $data->{'公司所在地'} = Unit::toNormalNumber($data->{'公司所在地'});
@@ -78,9 +87,14 @@ class UnitRow extends Pix_Table_Row
             // 只有分公司名稱的話，就把全稱存進去公司名稱中，並且加上這是分公司，預設不要搜尋到
             $data->{'公司名稱'} = $this->name();
         }
+        return $data;
+    }
 
+    public function updateSearch()
+    {
+        $data = $this->getSearchData();
         $curl = curl_init();
-        $url = getenv('SEARCH_URL') . '/company/company/' . $this->id();
+        $url = getenv('SEARCH_URL') . '/company/' . $this->id();
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_HEADER, 0);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -197,7 +211,7 @@ class UnitRow extends Pix_Table_Row
 
         // 先刪除舊的資料
         $curl = curl_init();
-        $url = getenv('SEARCH_URL') . '/twcompany/name_map/_query';
+        $url = getenv('SEARCH_URL') . '/name_map/_query';
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_HEADER, 0);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -230,7 +244,7 @@ class UnitRow extends Pix_Table_Row
         }
         if ($command) {
             $curl = curl_init();
-            $url = getenv('SEARCH_URL') . "/twcompany/name_map/_bulk";
+            $url = getenv('SEARCH_URL') . "/name_map/_bulk";
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_HEADER, 0);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
