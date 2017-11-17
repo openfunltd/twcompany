@@ -191,8 +191,8 @@ class UnitRow extends Pix_Table_Row
         )));
         $ret = curl_exec($curl);
         $info = curl_getinfo($curl);
-        if ($info['http_code'] != 200) {
-            throw new Exception($ret);
+        if (!in_array($info['http_code'], array(200, 201, 404))) {
+            throw new Exception($info['http_code'] . $ret);
         }
 
         // 新增新的資料
