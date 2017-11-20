@@ -180,10 +180,14 @@ class Updater
             } elseif (in_array($column, array('公司名稱'))) { // 有中英文名稱
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
                 $lines = explode("\n", trim($value_dom->nodeValue));
-                $info->{$column} = array(
-                    array(trim($lines[0]), trim($lines[1])),
-                    array(trim($lines[3]), trim($lines[4])),
-                );
+                $info->{$column} = array();
+                foreach ($lines as $line) {
+                    if (preg_match('#^(.*)\((.*)\)$#', trim($line), $matches)) {
+                        $info->{$column}[] = array(
+                            trim($matches[1]), trim($matches[2]),
+                        );
+                    }
+                }
             } elseif (in_array($column, array('核准許可報備日期', '最後核准變更日期', '核准許可日期', '停業日期(起)', '停業日期(迄)'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
                 $value = trim(explode("\n", trim($value_dom->wholeText))[0]);
