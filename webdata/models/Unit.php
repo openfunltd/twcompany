@@ -336,7 +336,11 @@ class UnitRow extends Pix_Table_Row
             if (is_scalar($v)) {
                 return $prefix . $v;
             } elseif (is_array($v)) {
-                return $prefix . $v[0];
+                if (is_array($v[0])) { // 中國公司
+                    return $prefix . $v[0][0];
+                } else {
+                    return $prefix . $v[0];
+                }
             }
         }
     }
