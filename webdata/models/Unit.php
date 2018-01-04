@@ -205,25 +205,36 @@ class UnitRow extends Pix_Table_Row
                 ),
             ), JSON_UNESCAPED_UNICODE) . "\n";
             $command .= json_encode(array(
-                'name' => $name,
-                'id' => $id,
+                'company-name' => $name,
+                'company-id' => $id,
             ), JSON_UNESCAPED_UNICODE) . "\n";
         }
+
         if ($command) {
-            $curl = curl_init();
-            $url = getenv('SEARCH_URL') . "/name_map/_bulk";
-            curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_HEADER, 0);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($curl, CURLOPT_PROXY, '');
-            curl_setopt($curl, CURLOPT_BINARYTRANSFER, true);
-            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
-            curl_setopt($curl, CURLOPT_POSTFIELDS, $command);
-            $ret = curl_exec($curl);
-            $info = curl_getinfo($curl);
-            curl_close($curl);
-            if (!in_array($info['http_code'], array(200, 201))) {
-                throw new Exception($info['http_code'] . $ret);
+            $failed_codes = array();
+            $failed_messages = array();
+            for ($retry = 0; $retry < 3; $retry) {
+                $curl = curl_init();
+                $url = getenv('SEARCH_URL') . "/name_map/_bulk";
+                curl_setopt($curl, CURLOPT_URL, $url);
+                curl_setopt($curl, CURLOPT_HEADER, 0);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($curl, CURLOPT_PROXY, '');
+                curl_setopt($curl, CURLOPT_BINARYTRANSFER, true);
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $command);
+                $ret = curl_exec($curl);
+                $info = curl_getinfo($curl);
+                curl_close($curl);
+                if (!in_array($info['http_code'], array(200, 201))) {
+                    $failed_codes[] = $info['http_code'];
+                    $failed_messages[] = $ret;
+                    continue;
+                }
+                break;
+            }
+            if ($retry == 3) {
+                throw new Exception("name_map bulk insert failed: " . implode(',', $failed_codes) . ' ' . implode(';', $failed_messages));
             }
         }
     }
