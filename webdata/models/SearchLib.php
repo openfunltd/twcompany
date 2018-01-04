@@ -118,10 +118,9 @@ class SearchLib
         foreach (array_chunk($names, 100, true) as $chunk_names) {
             $request = '';
             foreach ($chunk_names as $name => $nul) {
-                $q = 'name:"' . ($name) . '"';
                 $request .= "{}\n";
                 $request .= json_encode(array(
-                    'query' => array("query_string" => array('query' => $q )),
+                    'query' => array("term" => array('company-name' => $name )),
                 )) . "\n";
             }
             $url = getenv('SEARCH_URL') . '/name_map/_msearch';

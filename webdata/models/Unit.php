@@ -186,7 +186,7 @@ class UnitRow extends Pix_Table_Row
         curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
         curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(array(
             'query' => array(
-                'term' => array('id' => $this->id()),
+                'term' => array('company-id' => $this->id()),
             )
         )));
         $ret = curl_exec($curl);
