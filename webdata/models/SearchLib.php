@@ -135,7 +135,7 @@ class SearchLib
             foreach (json_decode($ret)->responses as $res) {
                 if (count($res->hits->hits) == 1) {
                     $hit = $res->hits->hits[0];
-                    $names[$hit->_source->name] = $hit->_source->id;
+                    $names[$hit->_source->{"company-name"}] = $hit->_source->{"company-id"};
                     continue;
                 }
 
@@ -143,8 +143,8 @@ class SearchLib
                     continue;
                 }
 
-                $name = $res->hits->hits[0]->_source->name;
-                $names[$name] = implode(';', array_map(function($hit) { return $hit->_source->id; }, $res->hits->hits));
+                $name = $res->hits->hits[0]->_source->{"company-name"};
+                $names[$name] = implode(';', array_map(function($hit) { return $hit->_source->{"company-id"}; }, $res->hits->hits));
             }
         }
 
