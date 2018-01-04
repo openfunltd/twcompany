@@ -126,8 +126,8 @@ foreach (Unit::search(1)->volumemode(100000) as $unit) {
         ), JSON_UNESCAPED_UNICODE) . "\n";
         $command .= json_encode(array(
             'doc' => array(
-                'name' => $name,
-                'id' => $id,
+                'company-name' => $name,
+                'company-id' => $id,
             ),
             'doc_as_upsert' => true,
         ), JSON_UNESCAPED_UNICODE) . "\n";

@@ -734,7 +734,9 @@ class Updater
             if (200 == $info['http_code']) {
                 return $content;
             }
-            sleep(30);
+            if ($i) {
+                sleep($i);
+            }
         }
         throw new Exception("fetch 3 times failed");
     }
