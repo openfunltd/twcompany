@@ -30,7 +30,9 @@ while ($rows = fgetcsv($fp, 0, ';')) {
     if (strpos($rows[0], '檔案產生日期：') === 0) {
         continue;
     }
-    $columns = array_map('trim', $rows);
+    $columns = array_map(function($s) {
+        return str_replace('　', '', trim($s)); // 移除全形空白
+    }, $rows);
 
     if (implode(',', $columns) != '營業地址,統一編號,總機構統一編號,營業人名稱,資本額,設立日期,使用統一發票,行業代號,名稱,行業代號,名稱,行業代號,名稱,行業代號,名稱') {
         print_r($columns);
@@ -50,7 +52,9 @@ if (!$split_column) {
     throw new Exception("找不到行業代號開始欄位");
 }
 while ($rows = fgetcsv($fp, 0, ';')) {
-    $rows = array_map('trim', $rows);
+    $rows = array_map(function($s) {
+        return str_replace('　', '', trim($s)); // 移除全形空白
+    }, $rows);
     if (count($rows) < $split_column) {
         print_r($rows);
         throw new Exception('wrong');
