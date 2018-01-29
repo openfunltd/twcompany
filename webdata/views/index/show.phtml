@@ -20,6 +20,7 @@ if ($this->unit) {
             <h2>經濟部資料</h2>
             <?php if ($this->unit) { ?>
             <a href="/index/redirect?type=<?= $this->unit->type ?>&id=<?= $this->unit->id ?>&gcis.nat.gov.tw">原始資料</a>
+            <a href="/index/redirect?type=<?= $this->unit->type ?>&id=<?= $this->unit->id ?>&site=findbiz.nat.gov.tw&findbiz.nat.gov.tw/fts/query/QueryList/queryList.do">原始資料(新版)</a>
             <?php } else { ?>
             未找到經濟部資料，可能是經濟部裡面沒有或者是這邊還未同步到<br>
             您可試試看以下連結看看經濟部是否有資料
