@@ -8,13 +8,13 @@ Pix_Table::$_save_memory = true;
 if ($_SERVER['argv'][1]) {
     $fp = fopen($_SERVER['argv'][1], 'r');
 } else {
-    system("wget -O bgmopen1.zip https://www.fia.gov.tw/opendata/bgmopen1.zip");
+    system("wget -O bgmopen1.csv https://www.fia.gov.tw/opendata/bgmopen1.csv");
     if (file_exists('BGMOPEN1.csv')) {
         $old_md5 = md5_file('BGMOPEN1.csv');
     } else {
         $old_md5 = null;
     }
-    system("unzip -o -P1234 bgmopen1.zip");
+    copy('bgmopen1.csv', 'BGMOPEN1.csv');
     if (!is_null($old_md5) and $old_md5 == md5_file('BGMOPEN1.csv')) {
         echo "檔案未變\n";
         exit;
@@ -23,14 +23,17 @@ if ($_SERVER['argv'][1]) {
 }
 
 $inserting = array();
-while ($rows = fgetcsv($fp, 0, ';')) {
+$split = ',';
+while ($rows = fgetcsv($fp, 0, ',')) {
     if (strpos($rows[0], '備註:') === 0) {
         continue;
     }
     if (strpos($rows[0], '檔案產生日期：') === 0) {
         continue;
     }
-    $columns = array_map('trim', $rows);
+    $columns = array_map(function($s) {
+        return str_replace('　', '', trim($s)); // 移除全形空白
+    }, $rows);
 
     if (implode(',', $columns) != '營業地址,統一編號,總機構統一編號,營業人名稱,資本額,設立日期,使用統一發票,行業代號,名稱,行業代號,名稱,行業代號,名稱,行業代號,名稱') {
         print_r($columns);
@@ -49,8 +52,10 @@ $split_column = array_search('行業代號', $columns);
 if (!$split_column) {
     throw new Exception("找不到行業代號開始欄位");
 }
-while ($rows = fgetcsv($fp, 0, ';')) {
-    $rows = array_map('trim', $rows);
+while ($rows = fgetcsv($fp, 0, ',')) {
+    $rows = array_map(function($s) {
+        return str_replace('　', '', trim($s)); // 移除全形空白
+    }, $rows);
     if (count($rows) < $split_column) {
         print_r($rows);
         throw new Exception('wrong');

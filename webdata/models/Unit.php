@@ -93,17 +93,24 @@ class UnitRow extends Pix_Table_Row
     public function updateSearch()
     {
         $data = $this->getSearchData();
-        $curl = curl_init();
-        $url = getenv('SEARCH_URL') . '/company/' . $this->id();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_HEADER, 0);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_PROXY, '');
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
-        $ret = curl_exec($curl);
-        $info = curl_getinfo($curl);
-        if (!in_array($info['http_code'], array(200, 201, 100))) {
+
+        for ($i = 0; $i < 3; $i ++) {
+            $curl = curl_init();
+            $url = getenv('SEARCH_URL') . '/company/' . $this->id();
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_HEADER, 0);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curl, CURLOPT_PROXY, '');
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
+            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
+            $ret = curl_exec($curl);
+            $info = curl_getinfo($curl);
+            if (!in_array($info['http_code'], array(200, 201, 100))) {
+                continue;
+            }
+            break;
+        }
+        if ($i == 3) {
             throw new Exception($info['http_code'] . ' ' . $ret);
         }
 

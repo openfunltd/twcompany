@@ -76,6 +76,7 @@ class IndexController extends Pix_Controller
         $this->view->unit = Unit::find(intval($_GET['id']));
         $this->view->type = intval($_GET['type']);
         $this->view->id = sprintf("%08d", intval($id));
+        $this->view->site = $_GET['site'];
     }
 
     public function searchAction()

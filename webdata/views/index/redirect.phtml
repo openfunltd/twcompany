@@ -7,7 +7,9 @@ if (document.location.protocol == 'https:') {
     document.location='http://gcis.nat.gov.tw/moeadsBF/bms/bmsInfoAction.do?method=detail&banNo=' + <?= json_encode($this->id) ?> + '&lAgencyCode=&agencyCode=allbf&showGcisLocation=true&showBusi=true&showFact=false';
 <?php } elseif (3 == $this->type) { // 分公司 ?>
     document.location='http://gcis.nat.gov.tw/pub/cmpy/branInfoAction.do?method=detail&brBanNo=<?= $this->id ?>';
-<?php } else { ?>
+    <?php } elseif (1 == $this->type and 'findbiz.nat.gov.tw' == $this->site) { ?>
+        document.location='https://findbiz.nat.gov.tw/fts/query/QueryCmpyDetail/queryCmpyDetail.do?objectId=' + <?= json_encode(base64_encode('HC' . $this->id)) ?> + '&banNo=' + <?= json_encode($this->id) ?>;
+    <?php } else { ?>
     document.location='http://gcis.nat.gov.tw/pub/cmpy/cmpyInfoAction.do?method=detail&banNo=' + <?= json_encode($this->id) ?>;
 <?php } ?>
 
