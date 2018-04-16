@@ -27,7 +27,7 @@ class Updater
             } elseif (in_array($column, array('總機構統一編號', '總機構名稱'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
                 $info->{$column} = trim($value_dom->nodeValue);
-            } elseif (in_array($column, array('核准設立日期', '最近異動日期'))) {
+            } elseif (in_array($column, array('核准設立日期', '最近異動日期', '異動核准日期'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
                 $value = trim(explode("\n", trim($value_dom->wholeText))[0]);
                 if (preg_match('#(.*)年(.*)月(.*)日#', $value, $matches)) {
@@ -130,7 +130,7 @@ class Updater
             } elseif (in_array($column, array('營業項目'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
                 $info->{$column} = trim($value_dom->nodeValue);
-            } elseif (in_array($column, array('核准設立日期', '最近異動日期'))) {
+            } elseif (in_array($column, array('核准設立日期', '最近異動日期', '異動核准日期'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
                 $value = trim(explode("\n", trim($value_dom->wholeText))[0]);
                 if (preg_match('#(.*)年(.*)月(.*)日#', $value, $matches)) {
@@ -307,7 +307,7 @@ class Updater
         $content = str_replace('text/html; charset=BIG5', 'text/html; charset=UTF-8', Big52003::iconv($content));
         //<img src='http://gcis.nat.gov.tw/CNSServlet/KaiCGI1?page=3&code=3A62&size=12&background=ffffff&foreground=000000' onclick='javascript:this.src="http://gcis.nat.gov.tw/CNSServlet/KaiCGI1?page=3&code=3A62&size=36&background=ffffff&foreground=000000";' border='0' align='absmiddle' />
         $content = preg_replace_callback(
-            '#<img src=\'https://gcis.nat.gov.tw/CNSServlet/KaiCGI1\?page=([^&]*)&code=([^&]*)&([^\']*)\' onclick=\'([^\']*)\' border=\'0\' align=\'absmiddle\' />#',
+            '#<img src=\'https://i^\']*gcis.nat.gov.tw/CNSServlet/KaiCGI1\?page=([^&]*)&code=([^&]*)&([^\']*)\' onclick=\'([^\']*)\' border=\'0\' align=\'absmiddle\' />#',
             function($matches){
                 return CNS2UTF8::convert($matches[1], $matches[2]);
             },
@@ -534,7 +534,7 @@ class Updater
                 }
             }
         }
-        $url = "https://gcis.nat.gov.tw/moeadsBF/bms/bmsInfoAction.do?method=detail&banNo={$id}&lAgencyCode=&agencyCode=allbf&showGcisLocation=true&showBusi=true&showFact=true";
+        $url = "https://serv.gcis.nat.gov.tw/moeadsBF/bms/bmsInfoAction.do?method=detail&banNo={$id}&lAgencyCode=&agencyCode=allbf&showGcisLocation=true&showBusi=true&showFact=true";
         // 一秒只更新一個檔案
         while (!is_null(self::$_last_fetch) and (microtime(true) - self::$_last_fetch) < 0.5) {
             usleep(1000);
@@ -727,7 +727,7 @@ class Updater
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
             curl_setopt($curl, CURLOPT_TIMEOUT, 20);
-            curl_setopt($curl, CURLOPT_REFERER, 'https://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do');
+            curl_setopt($curl, CURLOPT_REFERER, $url); //'https://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do');
             $content = curl_exec($curl);
             $info = curl_getinfo($curl);
             curl_close($curl);
@@ -800,7 +800,7 @@ class Updater
         $params['imageFileName'] = 'S84rr1.jpg';
 
         $tmpfile = tempnam('', '');
-        $url = 'https://gcis.nat.gov.tw/moeadsBF/bms/bmsInfoListAction.do';
+        $url = 'https://serv.gcis.nat.gov.tw/moeadsBF/bms/bmsInfoListAction.do';
         $curl = curl_init();
         if (getenv('PROXY_URL')) {
             curl_setopt($curl, CURLOPT_PROXY, getenv('PROXY_URL'));
@@ -824,7 +824,7 @@ class Updater
             sleep(1);
             curl_setopt($curl, CURLOPT_COOKIEFILE, $tmpfile);
             curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_REFERER, 'https://gcis.nat.gov.tw/moeadsBF/bms/bmsInfoListAction.do');
+            curl_setopt($curl, CURLOPT_REFERER, 'https://serv.gcis.nat.gov.tw/moeadsBF/bms/bmsInfoListAction.do');
             curl_setopt($curl, CURLOPT_POST, true);
             curl_setopt($curl, CURLOPT_POSTFIELDS, 'method=nextPage&agencyCode=allbf&showGcisLocation=true&showBusi=true&showFact=false&otherEnterFlag=false&useEUC=N&goPage=' . $i);
             $content = curl_exec($curl);
