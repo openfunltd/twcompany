@@ -8,18 +8,21 @@ Pix_Table::$_save_memory = true;
 if ($_SERVER['argv'][1]) {
     $fp = fopen($_SERVER['argv'][1], 'r');
 } else {
-    system("wget -O bgmopen1.csv https://www.fia.gov.tw/opendata/bgmopen1.csv");
-    if (file_exists('BGMOPEN1.csv')) {
-        $old_md5 = md5_file('BGMOPEN1.csv');
+    system("wget -O bgmopen1.zip https://www.fia.gov.tw/opendata/bgmopen1.zip");
+    system("unzip bgmopen1.zip");
+    $unzip_filename = 'BGMOPEN1.csv';
+    $old_filename = 'bgmopen1.csv';
+    if (file_exists($old_filename)) {
+        $old_md5 = md5_file($old_filename);
     } else {
         $old_md5 = null;
     }
-    copy('bgmopen1.csv', 'BGMOPEN1.csv');
-    if (!is_null($old_md5) and $old_md5 == md5_file('BGMOPEN1.csv')) {
+    copy($unzip_filename, $old_filename);
+    if (!is_null($old_md5) and $old_md5 == md5_file($old_filename)) {
         echo "檔案未變\n";
         exit;
     }
-    $fp = fopen("BGMOPEN1.csv", "r");
+    $fp = fopen($old_filename, "r");
 }
 
 $inserting = array();
@@ -53,6 +56,9 @@ if (!$split_column) {
     throw new Exception("找不到行業代號開始欄位");
 }
 while ($rows = fgetcsv($fp, 0, ',')) {
+    if (strlen($rows[1]) != 8) {
+        continue;
+    }
     $rows = array_map(function($s) {
         return str_replace('　', '', trim($s)); // 移除全形空白
     }, $rows);
