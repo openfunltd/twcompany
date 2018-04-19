@@ -61,7 +61,7 @@ class Updater
         $content = str_replace('text/html; charset=MS950', 'text/html; charset=UTF-8', Big52003::iconv($content));
         //<img src='http://gcis.nat.gov.tw/CNSServlet/KaiCGI1?page=3&code=3A62&size=12&background=ffffff&foreground=000000' onclick='javascript:this.src="http://gcis.nat.gov.tw/CNSServlet/KaiCGI1?page=3&code=3A62&size=36&background=ffffff&foreground=000000";' border='0' align='absmiddle' />
         $content = preg_replace_callback(
-            '#<img src=\'https?://gcis.nat.gov.tw/CNSServlet/KaiCGI1\?page=([^&]*)&code=([^&]*)&([^\']*)\' onclick=\'([^\']*)\' border=\'0\' align=\'absmiddle\' />#',
+            '#<img src=\'https://[^\']*gcis.nat.gov.tw/CNSServlet/KaiCGI1\?page=([^&]*)&code=([^&]*)&([^\']*)\' onclick=\'([^\']*)\' border=\'0\' align=\'absmiddle\' />#',
             function($matches){
                 return CNS2UTF8::convert($matches[1], $matches[2]);
             },
@@ -307,7 +307,7 @@ class Updater
         $content = str_replace('text/html; charset=BIG5', 'text/html; charset=UTF-8', Big52003::iconv($content));
         //<img src='http://gcis.nat.gov.tw/CNSServlet/KaiCGI1?page=3&code=3A62&size=12&background=ffffff&foreground=000000' onclick='javascript:this.src="http://gcis.nat.gov.tw/CNSServlet/KaiCGI1?page=3&code=3A62&size=36&background=ffffff&foreground=000000";' border='0' align='absmiddle' />
         $content = preg_replace_callback(
-            '#<img src=\'https://i^\']*gcis.nat.gov.tw/CNSServlet/KaiCGI1\?page=([^&]*)&code=([^&]*)&([^\']*)\' onclick=\'([^\']*)\' border=\'0\' align=\'absmiddle\' />#',
+            '#<img src=\'https://[^\']*gcis.nat.gov.tw/CNSServlet/KaiCGI1\?page=([^&]*)&code=([^&]*)&([^\']*)\' onclick=\'([^\']*)\' border=\'0\' align=\'absmiddle\' />#',
             function($matches){
                 return CNS2UTF8::convert($matches[1], $matches[2]);
             },
@@ -390,7 +390,7 @@ class Updater
         $content = str_replace('text/html; charset=Big5', 'text/html; charset=UTF-8', Big52003::iconv($content));
         //<img src='http://gcis.nat.gov.tw/CNSServlet/KaiCGI1?page=3&code=3A62&size=12&background=ffffff&foreground=000000' onclick='javascript:this.src="http://gcis.nat.gov.tw/CNSServlet/KaiCGI1?page=3&code=3A62&size=36&background=ffffff&foreground=000000";' border='0' align='absmiddle' />
         $content = preg_replace_callback(
-            '#<img src=\'https?://gcis.nat.gov.tw/CNSServlet/KaiCGI1\?page=([^&]*)&code=([^&]*)&([^\']*)\' onclick=\'([^\']*)\' border=\'0\' align=\'absmiddle\' />#',
+            '#<img src=\'https://[^\']*gcis.nat.gov.tw/CNSServlet/KaiCGI1\?page=([^&]*)&code=([^&]*)&([^\']*)\' onclick=\'([^\']*)\' border=\'0\' align=\'absmiddle\' />#',
             function($matches){
                 return CNS2UTF8::convert($matches[1], $matches[2]);
             },
@@ -582,7 +582,7 @@ class Updater
                 }
             }
         }
-        $url = 'https://gcis.nat.gov.tw/pub/cmpy/branInfoAction.do?method=detail&brBanNo=' . $id;
+        $url = 'https://serv.gcis.nat.gov.tw/pub/cmpy/branInfoAction.do?method=detail&brBanNo=' . $id;
         // 一秒只更新一個檔案
         while (!is_null(self::$_last_fetch) and (microtime(true) - self::$_last_fetch) < 0.5) {
             usleep(1000);
@@ -625,7 +625,7 @@ class Updater
 
     public static function getBranchName($id)
     {
-        $url = 'https://gcis.nat.gov.tw/pub/cmpy/branInfoAction.do?method=detail&brBanNo=' . $id;
+        $url = 'https://serv.gcis.nat.gov.tw/pub/cmpy/branInfoAction.do?method=detail&brBanNo=' . $id;
         // 一秒只更新一個檔案
         while (!is_null(self::$_last_fetch) and (microtime(true) - self::$_last_fetch) < 0.5) {
             usleep(1000);
@@ -668,7 +668,7 @@ class Updater
                 }
             }
         }
-        $url = 'https://gcis.nat.gov.tw/pub/cmpy/cmpyInfoAction.do?method=detail&banNo=' . $id;
+        $url = 'https://serv.gcis.nat.gov.tw/pub/cmpy/cmpyInfoAction.do?method=detail&banNo=' . $id;
         // 一秒只更新一個檔案
         while (!is_null(self::$_last_fetch) and (microtime(true) - self::$_last_fetch) < 0.5) {
             usleep(1000);
@@ -765,8 +765,8 @@ class Updater
         for ($i = 2; $i <= $total; $i ++) {
             sleep(1);
             curl_setopt($curl, CURLOPT_COOKIEFILE, $tmpfile);
-            curl_setopt($curl, CURLOPT_URL, 'https://gcis.nat.gov.tw/pub/cmpy/branInfoListAction.do');
-            curl_setopt($curl, CURLOPT_REFERER, 'https://gcis.nat.gov.tw/pub/cmpy/branInfoListAction.do');
+            curl_setopt($curl, CURLOPT_URL, 'https://serv.gcis.nat.gov.tw/pub/cmpy/branInfoListAction.do');
+            curl_setopt($curl, CURLOPT_REFERER, 'https://serv.gcis.nat.gov.tw/pub/cmpy/branInfoListAction.do');
             curl_setopt($curl, CURLOPT_POST, true);
             curl_setopt($curl, CURLOPT_POSTFIELDS, 'method=goPage&goPage=' . $i);
             $content = curl_exec($curl);
@@ -853,7 +853,7 @@ class Updater
         $params['imageFileName'] = 'oxQ22Z.jpg';
 
         $tmpfile = tempnam('', '');
-        $url = 'https://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do';
+        $url = 'https://serv.gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do';
         $curl = curl_init();
         if (getenv('PROXY_URL')) {
             curl_setopt($curl, CURLOPT_PROXY, getenv('PROXY_URL'));
@@ -877,7 +877,7 @@ class Updater
             sleep(1);
             curl_setopt($curl, CURLOPT_COOKIEFILE, $tmpfile);
             curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_REFERER, 'https://gcis.nat.gov.tw/pub/cmpy/branInfoListAction.do');
+            curl_setopt($curl, CURLOPT_REFERER, 'https://serv.gcis.nat.gov.tw/pub/cmpy/branInfoListAction.do');
             curl_setopt($curl, CURLOPT_POST, true);
             curl_setopt($curl, CURLOPT_POSTFIELDS, 'isShowEUC=Y&otherEnterFlag=false&queryKey=sed4871&useEUC=N&method=goPage&goPage=' . $i);
             $content = curl_exec($curl);
