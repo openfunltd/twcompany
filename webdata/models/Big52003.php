@@ -11,7 +11,7 @@ class Big52003
 
     protected static $_maps = null;
 
-    public function big5ToUTF8($word)
+    public static function big5ToUTF8($word)
     {
         if (is_null(self::$_maps)) {
             $fp = fopen(__DIR__ . '/../maps/big5-2003/big5uni.txt', 'r');
