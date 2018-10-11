@@ -2,7 +2,7 @@
 
 class Pix_Helper_HelperTest_Helper1 extends Pix_Helper
 {
-    public function getFuncs()
+    public static function getFuncs()
     {
         return array('test1');
     }

@@ -9,9 +9,9 @@
  */
 class Pix_Partial_Helper_Html extends Pix_Helper
 {
-    public function getFuncs()
+    public static function getFuncs()
     {
-	return array('link_to', 'image_tag', 'urlArg');
+        return array('link_to', 'image_tag', 'urlArg');
     }
 
     public function link_to($partial, $href, $text, $html_options = array())

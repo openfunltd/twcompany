@@ -181,16 +181,36 @@ class Pix_Table_ResultSet extends Pix_Array // implements Pix_Array_Volumable
      */
     public function searchIn($column, $values)
     {
-	if (!is_array($values) or !$values) {
-	    return $this->search("0 = 1");
-	}
-
-	$terms = array();
-        $db = $this->getResultSetDb();
-	foreach ($values as $v) { 
-            $terms[] = $db->quoteWithColumn($this->getTable(), $v, $column);
+        if (!is_array($values) or !$values) {
+            return $this->search("0 = 1");
         }
-        return $this->search($db->column_quote($column) . " IN (" . implode(', ', $terms) . ")");
+
+        $terms = array();
+        $db = $this->getResultSetDb();
+        if (is_array($column)) {
+            $table = $this->getTable();
+            // not support list in left oprand of IN operator
+            return $this->search(implode(' OR ', array_map(function($values) use ($db, $table, $column) {
+                return '(' . implode(' AND ', array_map(function($id) use ($values, $column, $db, $table) {
+                    return $db->column_quote($column[$id]) . '=' . $db->quoteWithColumn($table, $values[$id], $column[$id]);
+                }, array_keys($values))) . ')';
+            }, $values)));
+
+            // support list in left oprand of IN operator TODO
+            return $this->search(sprintf("(%s) IN (%s)", 
+                implode(',', array_map(function($c) use ($db) { return $db->column_quote($c); }, $column)),
+                implode(',', array_map(function($values) use ($db, $column, $table) {
+                    return "(" . implode(",", array_map(function($id) use ($db, $column, $values, $table) {
+                        return $db->quoteWithColumn($table, $values[$id], $column[$id]);
+                    }, array_keys($values))) . ")";
+                }, $values))
+            ));
+        } else {
+            foreach ($values as $v) { 
+                $terms[] = $db->quoteWithColumn($this->getTable(), $v, $column);
+            }
+            return $this->search($db->column_quote($column) . " IN (" . implode(', ', $terms) . ")");
+        }
     }
 
     //public function pager($page, $pager); // 這函式寫在 Pix_Array::pager

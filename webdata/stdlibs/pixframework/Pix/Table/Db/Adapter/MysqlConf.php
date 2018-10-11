@@ -149,6 +149,7 @@ class Pix_Table_Db_Adapter_MysqlConf extends Pix_Table_Db_Adapter_MysqlCommon
             $starttime = microtime(true);
             $res = $link->query($sql);
             $this->insert_id = $link->insert_id;
+            $this->affected_rows = $link->affected_rows;
             $delta = microtime(true) - $starttime;
             $short_sql = mb_strimwidth($sql, 0, 512, "...len=" . strlen($sql));
             if (array_key_exists(Pix_Table::LOG_QUERY, Pix_Table::$_log_groups) and Pix_Table::$_log_groups[Pix_Table::LOG_QUERY]) {
@@ -197,6 +198,11 @@ class Pix_Table_Db_Adapter_MysqlConf extends Pix_Table_Db_Adapter_MysqlCommon
     public function getLastInsertId($table = null)
     {
         return $this->insert_id;
+    }
+
+    public function getAffectedRows($table = null)
+    {
+        return $this->affected_rows;
     }
 
 }

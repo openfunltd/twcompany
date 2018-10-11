@@ -10,21 +10,43 @@
  */
 class Pix_Table_Db_Adapter_PgSQL extends Pix_Table_Db_Adapter_SQL
 {
-    protected $_pdo;
+    protected $_pdo = null;
+    protected $_pdo_version;
     protected $_path;
     protected $_name = null;
+    public static $_connect_version = 1;
+
 
     public function __construct($options)
     {
         $this->_path = $options['host'];
         $this->_options = $options;
+    }
+
+    public function resetConnect()
+    {
+        self::$_connect_version ++;
+    }
+
+    public function getPDO()
+    {
+        if ($this->_pdo_version == self::$_connect_version) {
+            return $this->_pdo;
+        }
+
+        if (!is_null($this->_pdo)) {
+            unset($this->_pdo);
+        }
+
         $config = array();
-        foreach ($options as $key => $value) {
+        foreach ($this->_options as $key => $value) {
             if (in_array($key, array('host', 'port', 'user', 'password', 'dbname'))) {
                 $config[] = $key . '=' . $value;
             }
         }
         $this->_pdo = new PDO("pgsql:" . implode(';', $config));
+        $this->_pdo_version = self::$_connect_version;
+        return $this->_pdo;
     }
 
     public function getSQLConditionByTerm(Pix_Table_Search_Term $term, $table = null)
@@ -61,10 +83,11 @@ class Pix_Table_Db_Adapter_PgSQL extends Pix_Table_Db_Adapter_SQL
         }
 
         $starttime = microtime(true);
-        $statement = $this->_pdo->prepare($sql);
+        $pdo = $this->getPDO();
+        $statement = $pdo->prepare($sql);
         if (!$statement) {
-            if ($errno = $this->_pdo->errorCode()) {
-                $errorInfo = $this->_pdo->errorInfo();
+            if ($errno = $pdo->errorCode()) {
+                $errorInfo = $pdo->errorInfo();
             }
             if ($errorInfo[2] == 'PRIMARY KEY must be unique' or
                     preg_match('/duplicate key value violates unique constraint/', $errorInfo[2])) {
@@ -74,7 +97,7 @@ class Pix_Table_Db_Adapter_PgSQL extends Pix_Table_Db_Adapter_SQL
         }
         $res = $statement->execute();
 	if (($t = Pix_Table::getLongQueryTime()) and ($delta = (microtime(true) - $starttime)) > $t) {
-            Pix_Table::debug(sprintf("[%s]\t%s\t%40s", $this->_pdo->getAttribute(PDO::ATTR_SERVER_INFO), $delta, $short_sql));
+            Pix_Table::debug(sprintf("[%s]\t%s\t%40s", $pdo->getAttribute(PDO::ATTR_SERVER_INFO), $delta, $short_sql));
 	}
 
 	if ($res === false) {
@@ -120,15 +143,15 @@ class Pix_Table_Db_Adapter_PgSQL extends Pix_Table_Db_Adapter_SQL
                 $s .= 'INTEGER';
             } elseif ('binary' == $db_type) {
                 $s .= 'BYTEA';
-            } elseif ('geography' == $db_type) {
+            } elseif (in_array($db_type, array('geography', 'geometry'))) {
                 if (array_key_exists('modifier', $column)) {
-                    $type = in_array(strtoupper($column['modifier'][0]), array('GEOMETRYCOLLECTION', 'POINT', 'LINESTRING', 'POLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'MULTIPOLYGON')) ? strtoupper($column['modifier'][0]) : 'POINT';
+                    $type = in_array(strtoupper($column['modifier'][0]), array('GEOMETRYCOLLECTION', 'POINT', 'LINESTRING', 'POLYGON', 'MULTIPOINT', 'MULTILINESTRING', 'MULTIPOLYGON')) ? strtoupper($column['modifier'][0]) : 'GEOMETRY';
                     $srid = array_key_exists(1, $column['modifier']) ? intval($column['modifier'][1]) : 0;
                 } else {
                     $type = 'POINT';
                     $srid = 0;
                 }
-                $s .= 'geography(' . $type . ',' . $srid . ')';
+                $s .= $db_type . '(' . $type . ',' . $srid . ')';
             } else {
                 $s .= strtoupper($db_type);
             }
@@ -225,31 +248,33 @@ class Pix_Table_Db_Adapter_PgSQL extends Pix_Table_Db_Adapter_SQL
 
     public function quoteWithColumn($table, $value, $column_name = null)
     {
-	if (is_null($column_name)) {
-            return $this->_pdo->quote($value);
-	}
-	if ($table->isNumbericColumn($column_name)) {
-	    return intval($value);
-    }
-    if (in_array($table->_columns[$column_name]['type'], array('geography', 'geometry'))) {
-        return "ST_GeomFromGeoJSON(" . $this->_pdo->quote(json_encode($value)) . ")";
-    }
+        $pdo = $this->getPDO();
+        if (is_null($column_name)) {
+            return $pdo->quote($value);
+        }
+        if ($table->isNumbericColumn($column_name)) {
+            return intval($value);
+        }
+        if (in_array($table->_columns[$column_name]['type'], array('geography', 'geometry'))) {
+            return "ST_GeomFromGeoJSON(" . $pdo->quote(json_encode($value)) . ")";
+        }
 
-    if ('json' == $table->_columns[$column_name]['type'] and !is_scalar($value)) {
-        return $this->_pdo->quote(json_encode($value));
-    }
+        if ('json' == $table->_columns[$column_name]['type'] and !is_scalar($value)) {
+            return $pdo->quote(json_encode($value));
+        }
 
-	if (!is_scalar($value)) {
+        if (!is_scalar($value)) {
             trigger_error("{$_SERVER['SERVER_NAME']}{$_SERVER['REQUEST_URI']} 的 column `{$column_name}` 格式不正確: " . gettype($value), E_USER_WARNING);
-	}
-    return $this->_pdo->quote($value);
+        }
+        return $pdo->quote($value);
     }
 
     public function getLastInsertId($table)
     {
+        $pdo = $this->getPDO();
         foreach ($table->getPrimaryColumns() as $col) {
             if ($table->_columns[$col]['auto_increment']) {
-                return $this->_pdo->lastInsertId($table->getTableName() . '_' . $col . '_seq');
+                return $pdo->lastInsertId($table->getTableName() . '_' . $col . '_seq');
             }
         }
         return null;

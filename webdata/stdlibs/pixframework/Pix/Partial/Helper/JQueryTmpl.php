@@ -9,9 +9,9 @@
  */
 class Pix_Partial_Helper_JQueryTmpl extends Pix_Helper
 {
-    public function getFuncs()
+    public static function getFuncs()
     {
-	return array('jquerytmpl', 'addjquerytmpl');
+        return array('jquerytmpl', 'addjquerytmpl');
     }
 
     protected function _getTokens($tmpl)
