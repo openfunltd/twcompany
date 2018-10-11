@@ -2,7 +2,7 @@
 
 class Pix_Partial_Helper_Capture extends Pix_Helper
 {
-    public function getFuncs()
+    public static function getFuncs()
     {
         return array('captureStart', 'captureSet', 'captureAppend', 'getCapture');
     }

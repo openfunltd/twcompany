@@ -8,8 +8,8 @@ Pix_Table::$_save_memory = true;
 if ($_SERVER['argv'][1]) {
     $fp = fopen($_SERVER['argv'][1], 'r');
 } else {
-    system("wget -O bgmopen1.zip https://www.fia.gov.tw/opendata/bgmopen1.zip");
-    system("unzip bgmopen1.zip");
+    system("wget -4 -O bgmopen1.zip https://www.fia.gov.tw/opendata/bgmopen1.zip");
+    system("unzip -o bgmopen1.zip");
     $unzip_filename = 'BGMOPEN1.csv';
     $old_filename = 'bgmopen1.csv';
     if (file_exists($old_filename)) {
@@ -18,6 +18,8 @@ if ($_SERVER['argv'][1]) {
         $old_md5 = null;
     }
     copy($unzip_filename, $old_filename);
+    unlink('bgmopen1.zip');
+    unlink($unzip_filename);
     if (!is_null($old_md5) and $old_md5 == md5_file($old_filename)) {
         echo "檔案未變\n";
         exit;
@@ -38,7 +40,7 @@ while ($rows = fgetcsv($fp, 0, ',')) {
         return str_replace('　', '', trim($s)); // 移除全形空白
     }, $rows);
 
-    if (implode(',', $columns) != '營業地址,統一編號,總機構統一編號,營業人名稱,資本額,設立日期,使用統一發票,行業代號,名稱,行業代號,名稱,行業代號,名稱,行業代號,名稱') {
+    if (implode(',', $columns) != '營業地址,統一編號,總機構統一編號,營業人名稱,資本額,設立日期,使用統一發票,行業代號,名稱,行業代號1,名稱1,行業代號2,名稱2,行業代號3,名稱3') {
         print_r($columns);
         throw new Exception('欄位不正確');
     }
@@ -155,3 +157,5 @@ foreach (array_chunk($updating, 10000, true) as $chunk_updating) {
     }, array_keys($chunk_updating));
     FIAUnitData::bulkInsert(array('id', 'column_id', 'value'), $insert_records, array('replace' => true));
 }
+
+Unit::refreshUpdatedStatus();

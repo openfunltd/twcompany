@@ -129,7 +129,7 @@ class Pix_Prompt
         }
     }
 
-    public function autocomplete($name, $args2, $args3)
+    public static function autocomplete($name, $args2, $args3)
     {
         $res = array();
         if (preg_match('#^(.*)::(.*)$#', $name, $matches)) {

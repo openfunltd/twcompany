@@ -9,7 +9,7 @@
  */
 class Pix_Controller_Helper_Json extends Pix_Helper
 {
-    public function getFuncs()
+    public static function getFuncs()
     {
         return array('isJson', 'json', 'jsonp');
     }

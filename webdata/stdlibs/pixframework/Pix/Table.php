@@ -594,6 +594,12 @@ abstract class Pix_Table
         if (!$values_list) {
             return;
         }
+        if (array_key_exists('chunk', $options)) {
+            foreach (array_chunk($values_list, intval($options['chunk'])) as $chunk_list) {
+                $table->getDb()->bulkInsert($table, $keys, $chunk_list, $options);
+            }
+            return true;
+        }
 
         return $table->getDb()->bulkInsert($table, $keys, $values_list, $options);
     }
