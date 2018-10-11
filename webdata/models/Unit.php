@@ -547,4 +547,21 @@ class Unit extends Pix_Table
 
         return $word;
     }
+
+    public static function refreshUpdatedStatus()
+    {
+        $db = Unit::getDb();
+        $sql = "SELECT MAX(updated_at) FROM unit";
+
+        $res = $db->query($sql);
+        $row = $res->fetch_array();
+        $last_updated_at = strtotime('00:00:00', $row[0]);
+
+        $sql = "SELECT COUNT(id) FROM unit WHERE updated_at >= {$last_updated_at}";
+        $res = $db->query($sql);
+        $row = $res->fetch_array();
+        $count = $row[0];
+
+        KeyValue::set('data_update', implode(',', array($last_updated_at, $count)));
+    }
 }

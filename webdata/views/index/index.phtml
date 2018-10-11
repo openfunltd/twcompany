@@ -1,3 +1,7 @@
+<?php
+
+list($updated_at, $count) = explode(',', KeyValue::get('data_update'));
+?>
 <?= $this->partial('/common/header.phtml', $this) ?>
 <h1>關於本站</h1>
 本站內資料來自<a href="http://gcis.nat.gov.tw/">經濟部商業司</a>及<a href="https://www.etax.nat.gov.tw/etwmain/front/ETW113W1">財政部營業稅籍資料</a>，主要是提供另一個介面來讓大家更容易了解台灣的公司以及商業登記資訊。
@@ -7,5 +11,6 @@
     <li>財政部資料更新頻率為每日一次，更新來源為 <a href="http://data.gov.tw/node/9400" target="_blank">政府資料開放平台-全國營業(稅籍)登記資料集</a></li>
     <li>本站資料可能有未即時更新，正確資料請以各結果頁面上的「原始連結」內資料為準</li>
     <li>人名搜尋公司可能會有同名同姓但是其實是不同人的情況，若要確認是否為同一人請進一步至經濟部商業司查詢</li>
+    <li>最近資料更新日期：<?= date('Y-m-d', $updated_at) ?>（更新公司數：<?= $count ?>)</li>
 </ol>
 <?= $this->partial('/common/footer.phtml', $this) ?>
