@@ -85,6 +85,7 @@ class CustomCrawler
                 }
             }
         }
+        Unit::refreshUpdatedStatus();
     }
 }
 

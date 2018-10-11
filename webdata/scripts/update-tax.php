@@ -157,3 +157,5 @@ foreach (array_chunk($updating, 10000, true) as $chunk_updating) {
     }, array_keys($chunk_updating));
     FIAUnitData::bulkInsert(array('id', 'column_id', 'value'), $insert_records, array('replace' => true));
 }
+
+Unit::refreshUpdatedStatus();
