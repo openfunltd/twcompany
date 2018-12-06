@@ -35,7 +35,7 @@ class SearchLib
         $curl = curl_init();
         $address = Unit::changeRareWord($address);
         $address = Unit::toNormalNumber($address);
-        $q = urlencode('公司所在地:"' . $address. '"');
+        $q = urlencode('公司所在地:"' . $address. '" OR 地址:"' . $address . '"');
         $from = 10 * ($page - 1);
         curl_setopt($curl, CURLOPT_URL, getenv('SEARCH_URL') . '/company/_search?q=' . $q . '&from=' . $from);
         curl_setopt($curl, CURLOPT_HEADER, 0);

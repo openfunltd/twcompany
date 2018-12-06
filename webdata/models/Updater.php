@@ -264,7 +264,7 @@ class Updater
                 if (trim($nodes->item(2)->nodeValue)) {
                     $info->{$column}[] = trim($nodes->item(2)->nodeValue);
                 }
-            } elseif (in_array($column, array('核准設立日期', '最後核准變更日期', '核准報備日期', '核准認許日期', '停業日期(起)', '停業日期(迄)'))) {
+            } elseif (in_array($column, array('核准登記日期', '核准設立日期', '最後核准變更日期', '核准報備日期', '核准認許日期', '停業日期(起)', '停業日期(迄)'))) {
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2)->childNodes->item(0);
                 $value = trim(explode("\n", trim($value_dom->wholeText))[0]);
                 if (!preg_match('#(.*)年(.*)月(.*)日#', $value, $matches)) {
@@ -374,6 +374,7 @@ class Updater
                 $ret['公司狀況日期'] = array('year' => $matches[1] + 1911, 'month' => intval($matches[2]), 'day' => intval($matches[3]));
                 $ret['公司狀況文號'] = $matches[4];
             } elseif ($values[0] == '公司法第三百七十五條規定：外國公司經認許後，其法律上權利義務及主管機關之管轄，除法律另有 規定外，與中華民國公司同。') {
+            } elseif ($values[0] == '公司法第三百七十一條規定：外國公司經登記後，其法律上權利義務及主管機關之管轄，除法律另有規定外，與中華民國公司同。') {
             } else {
                 echo '[TODO_公司狀況]';
                 print_r($values);
@@ -403,10 +404,14 @@ class Updater
         $table_dom = $doc->getElementsByTagName('table');
         if ('外國公司報備基本資料' == trim(explode("\n", trim($table_dom->item(3)->nodeValue))[0])) {
             return self::parseForeignCompany($doc);
+        } elseif ('外國公司登記基本資料' == trim(explode("\n", trim($table_dom->item(3)->nodeValue))[0])) {
+            return self::parseForeignCompany($doc);
         } elseif ('外國公司認許基本資料' == trim(explode("\n", trim($table_dom->item(3)->nodeValue))[0])) {
             return self::parseForeignCompany($doc);
         } elseif ('大陸公司許可報備基本資料' == trim(explode("\n", trim($table_dom->item(3)->nodeValue))[0])) {
             return self::parseChinaCompany($doc);
+        } elseif ('外國公司辦事處登記基本資料' == trim(explode("\n", trim($table_dom->item(3)->nodeValue))[0])) {
+            return self::parseForeignCompany($doc);
         } elseif ('大陸公司許可基本資料' == trim(explode("\n", trim($table_dom->item(3)->nodeValue))[0])) {
             return self::parseChinaCompany($doc);
         }
