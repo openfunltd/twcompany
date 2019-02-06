@@ -247,7 +247,7 @@ class Updater
                 foreach (self::parseCompanyStatus($value_dom) as $k => $v) {
                     $info->{$k} = $v;
                 }
-            } elseif (in_array($column, array('在中華民國境內負責人', '訴訟及非訴訟代理人姓名'))) { // 有中英文名稱
+            } elseif (in_array($column, array('在中華民國境內代表人', '在中華民國境內負責人', '訴訟及非訴訟代理人姓名'))) { // 有中英文名稱
                 $value_dom = $tr_dom->getElementsByTagName('td')->item(2);
                 $lines = explode("\n", trim($value_dom->nodeValue));
                 $info->{$column} = array(
