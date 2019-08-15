@@ -1,0 +1,49 @@
+<?php
+$this->title = $this->unit->name() . ':' . $this->unit->id() . ':';
+?>
+<?= $this->partial('/common/header.phtml', $this) ?>
+<a href="/index/redirect?type=<?= $this->unit->type ?>&id=<?= $this->unit->id ?>&gcis.nat.gov.tw">原始資料</a>
+<table border="1">
+    <tr>
+        <td>欄位</td>
+        <td>值</td>
+    </tr>
+    <tr>
+        <td>ID</td>
+        <td><?= $this->unit->id() ?></td>
+    </tr>
+    <tr>
+        <td>Updated_at</td>
+        <td><?= date('c', $this->unit->updated_at) ?></td>
+    </tr>
+    <?php foreach (UnitData::search(array('id' => $this->unit->id)) as $unitdata) { ?>
+    <tr>
+        <td><?= ColumnGroup::getColumnName($unitdata->column_id) ?></td>
+        <td><?= $this->partial('/index/data_show.phtml', array('value' => $unitdata->value, 'column_id' => $unitdata->column_id)) ?></td>
+    </tr>
+    <?php } ?>
+</table>
+<table class="table">
+    <tr>
+        <td>時間</td>
+        <td>欄位</td>
+        <td>舊值</td>
+        <td>新值</td>
+    </tr>
+    <?php foreach (UnitChangeLog::search(array('id' => $this->unit->id))->order('updated_at ASC') as $change_log) { ?>
+    <tr>
+        <td><?= date('c', $change_log->updated_at) ?></td>
+        <td><?= ColumnGroup::getColumnName($change_log->column_id) ?></td>
+        <td><?= $this->partial('/index/data_show.phtml', array('value' => $change_log->old_value, 'column_id' => $change_log->column_id)) ?></td>
+        <td><?= $this->partial('/index/data_show.phtml', array('value' => $change_log->new_value, 'column_id' => $change_log->column_id)) ?></td>
+    </tr>
+    <?php } ?>
+    <?php foreach (FIAUnitChangeLog::search(array('id' => $this->unit->id))->order('updated_at ASC') as $change_log) { ?>
+    <tr>
+        <td><?= date('c', $change_log->updated_at) ?></td>
+        <td><?= FIAColumnGroup::getColumnName($change_log->column_id) ?></td>
+        <td><?= $this->partial('/index/data_show.phtml', array('value' => $change_log->old_value, 'column_id' => $change_log->column_id, 'type' => 'fia')) ?></td>
+        <td><?= $this->partial('/index/data_show.phtml', array('value' => $change_log->new_value, 'column_id' => $change_log->column_id, 'type' => 'fia')) ?></td>
+    </tr>
+    <?php } ?>
+<?= $this->partial('/common/footer.phtml', $this) ?>

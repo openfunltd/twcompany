@@ -23,7 +23,7 @@ class ApiController extends Pix_Controller
             return $this->jsonp($ret, strval($_GET['callback']));
         }
 
-        $ret->data = $unit->getData();
+        $ret->data = $unit->getData($_GET['with_changelog']);
         return $this->jsonp($ret, strval($_GET['callback']));
     }
 
