@@ -1,5 +1,19 @@
 <?php
 $this->title = $this->unit->name() . ':' . $this->unit->id() . ':';
+$gcis_change_log = array();
+foreach (UnitChangeLog::search(array('id' => $this->unit->id))->order('updated_at ASC') as $change_log) {
+    if (!array_key_exists($change_log->updated_at, $gcis_change_log)) {
+        $gcis_change_log[$change_log->updated_at] = array();
+    }
+    $gcis_change_log[$change_log->updated_at][] = $change_log;
+}
+$fia_change_log = array();
+foreach (FIAUnitChangeLog::search(array('id' => $this->unit->id))->order('updated_at ASC') as $change_log) {
+    if (!array_key_exists($change_log->updated_at, $fia_change_log)) {
+        $fia_change_log[$change_log->updated_at] = array();
+    }
+    $fia_change_log[$change_log->updated_at][] = $change_log;
+}
 ?>
 <?= $this->partial('/common/header.phtml', $this) ?>
 <a href="/index/redirect?type=<?= $this->unit->type ?>&id=<?= $this->unit->id ?>&gcis.nat.gov.tw">原始資料</a>
@@ -23,24 +37,39 @@ $this->title = $this->unit->name() . ':' . $this->unit->id() . ':';
     </tr>
     <?php } ?>
 </table>
-<table class="table">
+<h3>變動記錄</h3>
+<table class="table table-bordered">
     <tr>
         <td>時間</td>
         <td>欄位</td>
         <td>舊值</td>
         <td>新值</td>
     </tr>
+    <tr>
+        <td colspan="4">經濟部商業司資料</td>
+    </tr>
+    <?php $prev_time = null ?>
     <?php foreach (UnitChangeLog::search(array('id' => $this->unit->id))->order('updated_at ASC') as $change_log) { ?>
     <tr>
-        <td><?= date('c', $change_log->updated_at) ?></td>
+        <?php if (is_null($prev_time) or $prev_time != $change_log->updated_at) { ?>
+        <?php $prev_time = $change_log->updated_at ?>
+        <td rowspan="<?= count($gcis_change_log[$prev_time]) ?>"><?= date('c', $prev_time) ?></td>
+        <?php } ?>
         <td><?= ColumnGroup::getColumnName($change_log->column_id) ?></td>
         <td><?= $this->partial('/index/data_show.phtml', array('value' => $change_log->old_value, 'column_id' => $change_log->column_id)) ?></td>
         <td><?= $this->partial('/index/data_show.phtml', array('value' => $change_log->new_value, 'column_id' => $change_log->column_id)) ?></td>
     </tr>
     <?php } ?>
+    <tr>
+        <td colspan="4">財政部資料</td>
+    </tr>
+    <?php $prev_time = null ?>
     <?php foreach (FIAUnitChangeLog::search(array('id' => $this->unit->id))->order('updated_at ASC') as $change_log) { ?>
     <tr>
-        <td><?= date('c', $change_log->updated_at) ?></td>
+        <?php if (is_null($prev_time) or $prev_time != $change_log->updated_at) { ?>
+        <?php $prev_time = $change_log->updated_at ?>
+        <td rowspan="<?= count($fia_change_log[$prev_time]) ?>"><?= date('c', $prev_time) ?></td>
+        <?php } ?>
         <td><?= FIAColumnGroup::getColumnName($change_log->column_id) ?></td>
         <td><?= $this->partial('/index/data_show.phtml', array('value' => $change_log->old_value, 'column_id' => $change_log->column_id, 'type' => 'fia')) ?></td>
         <td><?= $this->partial('/index/data_show.phtml', array('value' => $change_log->new_value, 'column_id' => $change_log->column_id, 'type' => 'fia')) ?></td>
