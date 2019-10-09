@@ -276,6 +276,7 @@ class Updater2
             print_r($content);
             exit;
         }
+        sleep(3);
         $hit_href = array();
         foreach ($table_dom->getElementsByTagName('tbody')->item(0)->getElementsByTagName('tr') as $tr_dom) {
             $td_doms = $tr_dom->getElementsByTagName('td');
