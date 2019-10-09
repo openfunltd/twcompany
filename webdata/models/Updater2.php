@@ -277,17 +277,29 @@ class Updater2
             exit;
         }
         $hit_href = array();
-        foreach ($doc->getElementById('eslist-table')->getElementsByTagName('a') as $a_dom) {
-            $href = $a_dom->getAttribute('href');
+        foreach ($table_dom->getElementsByTagName('tbody')->item(0)->getElementsByTagName('tr') as $tr_dom) {
+            $td_doms = $tr_dom->getElementsByTagName('td');
+            if ($td_doms->length < 7) {
+                continue;
+            }
+
+            $a_dom = $tr_dom->getElementsByTagName('a')->item(0);
+            $href = preg_replace('#\s*#', '', $a_dom->getAttribute('href'));
             if (strpos($href, '/fts/query/QueryBusmDetail/queryBusmDetail.do') === false) {
                 continue;
             }
-            $hit_href[] = preg_replace('#\s*#', '', $href);
+            $date = $td_doms->item(6)->nodeValue;
+            if ($td_doms->item(6)->getAttribute('data-title') != '核准變更日期') {
+                throw new Exception("預期表格第七格應該是「核准變更日期」");
+            }
+            $hit_href[$href] = $date;
         }
-        if (count($hit_href) != 1) {
-            throw new Exception("搜尋 {$id} 商號結果不是 1 筆：" . count($hit_href));
+        arsort($hit_href);
+        if (count($hit_href) == 0) {
+            throw new Exception("找不到商號");
         }
 
+        $hit_href = array_keys($hit_href);
         $content = self::http("https://findbiz.nat.gov.tw" . $hit_href[0]);
         if (!$content) {
             trigger_error("找不到網頁內容: $url", E_USER_WARNING);
