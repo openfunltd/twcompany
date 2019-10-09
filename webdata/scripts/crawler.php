@@ -34,7 +34,7 @@ class CustomCrawler
             foreach ($ids as $id) {
                 error_log($i . '/' . count($ids));
                 $i ++;
-                $u = Updater::update($id);
+                $u = Updater2::update($id);
                 if ($u) {
                     $u->updateSearch();
                 }
@@ -50,7 +50,7 @@ class CustomCrawler
             foreach (array_slice($ids, $pos - 1) as $id) {
                 error_log($i . '/' . count($ids));
                 $i ++;
-                $u = Updater::update($id);
+                $u = Updater2::update($id);
                 if ($u) {
                     $u->updateSearch();
                 }
@@ -66,7 +66,7 @@ class CustomCrawler
             foreach (array_slice($ids, $pos - 1) as $id) {
                 error_log($i . '/' . count($ids));
                 $i ++;
-                $u = Updater::updateBussiness($id);
+                $u = Updater2::updateBussiness($id);
                 if ($u) {
                     $u->updateSearch();
                 }
@@ -79,7 +79,7 @@ class CustomCrawler
             foreach ($ids as $id) {
                 error_log($i . '/' . count($ids));
                 $i ++;
-                $u = Updater::updateBussiness($id);
+                $u = Updater2::updateBussiness($id);
                 if ($u) {
                     $u->updateSearch();
                 }

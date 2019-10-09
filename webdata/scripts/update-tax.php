@@ -124,11 +124,11 @@ file_put_contents('change.log', json_encode($changed_unit));
 foreach ($changed_unit as $id => $name) {
     $id = sprintf("%08d", $id);
     if (strpos($name, '分公司')) {
-        $u = Updater::updateBranch($id);
+        $u = Updater2::updateBranch($id);
     } elseif (strpos($name, '公司')) {
-        $u = Updater::update($id);
+        $u = Updater2::update($id);
     } else {
-        $u = Updater::updateBussiness($id);
+        $u = Updater2::updateBussiness($id);
     }
     if ($u) {
         $u->updateSearch();
