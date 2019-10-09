@@ -261,14 +261,20 @@ class Updater2
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, "qryCond={$id}&infoType=D&cmpyType=&brCmpyType=&qryType=busmType&busmType=true&factType=&lmtdType=&isAlive=all&busiItemMain=&busiItemSub=&sugCont=&sugEmail=&g-recaptcha-response=");
         curl_setopt($curl, CURLOPT_REFERER, $url); //'https://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do');
+
+        if (strpos($content, '很抱歉，我們無法找到符合條件的查詢結果。')) {
+            trigger_error("找不到商業登記: $id", E_USER_WARNING);
+            return;
+        }
+            
         $content = curl_exec($curl);
         $content = str_replace('<head>', '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">', $content);
         $doc = new DOMDocument;
         @$doc->loadHTML($content);
 
-        if (!$doc->getElementById('eslist-table')) {
-            trigger_error("找不到商業登記: $id", E_USER_WARNING);
-            return;
+        if (!$table_dom = $doc->getElementById('eslist-table')) {
+            print_r($content);
+            exit;
         }
         $hit_href = array();
         foreach ($doc->getElementById('eslist-table')->getElementsByTagName('a') as $a_dom) {
