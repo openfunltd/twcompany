@@ -11,6 +11,7 @@ list($updated_at, $count) = explode(',', KeyValue::get('data_update'));
     <li>財政部資料更新頻率為每日一次，更新來源為 <a href="http://data.gov.tw/node/9400" target="_blank">政府資料開放平台-全國營業(稅籍)登記資料集</a></li>
     <li>本站資料可能有未即時更新，正確資料請以各結果頁面上的「原始連結」內資料為準</li>
     <li>人名搜尋公司可能會有同名同姓但是其實是不同人的情況，若要確認是否為同一人請進一步至經濟部商業司查詢</li>
+    <li>2019年10月經濟部商業司舊版公司登記查詢網站下線，相關異動可參考<a href="https://g0v.hackmd.io/I78huXsgTk6EPFYLRl882g" target="_blank">這裡</a></li>
     <li>最近資料更新日期：<?= date('Y-m-d', $updated_at) ?>（更新公司數：<?= $count ?>)</li>
 </ol>
 <?= $this->partial('/common/footer.phtml', $this) ?>
