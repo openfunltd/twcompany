@@ -150,9 +150,10 @@ class Updater2
                         if (!preg_match('#^([A-Z0-9]*)#', trim($lines[0]), $matches)) {
                             throw new Exception('事業代號不正確');
                         }
-                        if ($matches[1]) {
-                            $list[] = array($matches[1], trim($lines[1]));
+                        if (trim($lines[1]) == '') {
+                            continue;
                         }
+                        $list[] = array($matches[1], trim($lines[1]));
                     }
                     $value = $list;
                 } elseif (in_array($key, array('在中華民國境內負責人', '在中華民國境內代表人', '訴訟及非訴訟代理人姓名'))) {
@@ -166,6 +167,9 @@ class Updater2
                 } elseif ($key == '公司名稱') {
                     $dom = $doc->getElementById('linkGoogleSearch');
                     while ($dom = $dom->nextSibling) {
+                        if ($dom->nodeName == 'span' and $dom->getAttribute('id') == 'linkMoea') {
+                            break;
+                        }
                         if ($dom->nodeName == 'br') {
                             if (preg_match('#^(.*)\((.*)\)$#', trim($value), $matches1) and 
                                 preg_match('#^(.*)\((.*)\)$#', trim($dom->nextSibling->nodeValue), $matches2)) {
