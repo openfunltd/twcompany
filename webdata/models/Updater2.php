@@ -258,27 +258,46 @@ class Updater2
 
     public static function updateBussiness($id, $options = array())
     {
+        $found = false;
         $url = "https://findbiz.nat.gov.tw/fts/query/QueryList/queryList.do";
-        $curl = curl_init($url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, "qryCond={$id}&infoType=D&cmpyType=&brCmpyType=&qryType=busmType&busmType=true&factType=&lmtdType=&isAlive=all&busiItemMain=&busiItemSub=&sugCont=&sugEmail=&g-recaptcha-response=");
-        curl_setopt($curl, CURLOPT_REFERER, $url); //'https://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do');
+        for ($retry = 0; $retry < 3; $retry ++) {
+            $curl = curl_init($url);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_FRESH_CONNECT, true);
+            curl_setopt($curl, CURLOPT_FORBID_REUSE, true);
+            curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V6);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, "qryCond={$id}&infoType=D&cmpyType=&brCmpyType=&qryType=busmType&busmType=true&factType=&lmtdType=&isAlive=all&busiItemMain=&busiItemSub=&sugCont=&sugEmail=&g-recaptcha-response=");
+            curl_setopt($curl, CURLOPT_REFERER, $url); //'https://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do');
 
-        if (strpos($content, '很抱歉，我們無法找到符合條件的查詢結果。')) {
-            trigger_error("找不到商業登記: $id", E_USER_WARNING);
-            return;
-        }
-            
-        $content = curl_exec($curl);
-        $content = str_replace('<head>', '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">', $content);
-        $doc = new DOMDocument;
-        @$doc->loadHTML($content);
+            $content = curl_exec($curl);
+            $info = curl_getinfo($curl);
+            error_log("post bussiness {$id}");
+            curl_close($curl);
 
-        if (!$table_dom = $doc->getElementById('eslist-table')) {
-            print_r($content);
-            exit;
+            sleep(2);
+            if (strpos($content, '很抱歉，我們無法找到符合條件的查詢結果。')) {
+                trigger_error("找不到商業登記: $id", E_USER_WARNING);
+                return;
+            }
+
+            $content = str_replace('<head>', '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">', $content);
+            $doc = new DOMDocument;
+            @$doc->loadHTML($content);
+
+            if (!$table_dom = $doc->getElementById('eslist-table')) {
+                $wait = 10;
+                error_log("抓取 {$id} 失敗，等待 {$wait} 秒再重試");
+
+                sleep($wait);
+                continue;
+            }
+            $found = true;
+            break;
         }
-        sleep(3);
+        if (!$found) {
+            //print_r($content);
+            throw new Exception("{$id} 連續三次抓取失敗");
+        }
         $hit_href = array();
         foreach ($table_dom->getElementsByTagName('tbody')->item(0)->getElementsByTagName('tr') as $tr_dom) {
             $td_doms = $tr_dom->getElementsByTagName('td');
