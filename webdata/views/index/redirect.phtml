@@ -3,15 +3,17 @@ if (document.location.protocol == 'https:') {
     document.location.protocol = 'http:'; // 要用 http 商業司那邊才吃的到 referer
 } else {
 
-<?php if (2 == $this->type) { // 商業登記 ?>
-    document.location='http://serv.gcis.nat.gov.tw/moeadsBF/bms/bmsInfoAction.do?method=detail&banNo=' + <?= json_encode($this->id) ?> + '&lAgencyCode=&agencyCode=allbf&showGcisLocation=true&showBusi=true&showFact=false';
-<?php } elseif (3 == $this->type) { // 分公司 ?>
-    document.location='http://serv.gcis.nat.gov.tw/pub/cmpy/branInfoAction.do?method=detail&brBanNo=<?= $this->id ?>';
-    <?php } elseif (1 == $this->type and 'findbiz.nat.gov.tw' == $this->site) { ?>
-        document.location='https://findbiz.nat.gov.tw/fts/query/QueryCmpyDetail/queryCmpyDetail.do?objectId=' + <?= json_encode(base64_encode('HC' . $this->id)) ?> + '&banNo=' + <?= json_encode($this->id) ?>;
-    <?php } else { ?>
-    document.location='http://serv.gcis.nat.gov.tw/pub/cmpy/cmpyInfoAction.do?method=detail&banNo=' + <?= json_encode($this->id) ?>;
-<?php } ?>
+    <?php if (2 == $this->type) { // 商業登記 ?>
+        <?php if ($u = Unit::find($this->id) and $url = $u->getData()->url) { ?>
+            document.location='http://findbiz.nat.gov.tw' + <?= json_encode($url) ?>;
+        <?php } else { ?>
+            document.location='https://findbiz.nat.gov.tw/fts/query/QueryBar/queryInit.do';
+        <?php } ?>
+    <?php } elseif (3 == $this->type) { // 分公司 ?>
+        document.location='https://findbiz.nat.gov.tw/fts/query/QueryBrCmpyDetail/queryBrCmpyDetail.do?objectId=' + <?= json_encode(base64_encode('BC' . $this->id)) ?> + '&brBanNo=' + <?= json_encode($this->id) ?>;
+    <?php } elseif (1 == $this->type) { ?>
+            document.location='https://findbiz.nat.gov.tw/fts/query/QueryCmpyDetail/queryCmpyDetail.do?objectId=' + <?= json_encode(base64_encode('HC' . $this->id)) ?> + '&banNo=' + <?= json_encode($this->id) ?>;
+    <?php } ?>
 
 }
 </script>
