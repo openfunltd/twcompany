@@ -485,7 +485,6 @@ class Updater2
                 curl_setopt($curl, CURLOPT_PROXY, getenv('PROXY_URL'));
             }
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
             curl_setopt($curl, CURLOPT_TIMEOUT, 20);
             curl_setopt($curl, CURLOPT_REFERER, $url); //'https://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do');
             $content = curl_exec($curl);
