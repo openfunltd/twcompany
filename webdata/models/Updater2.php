@@ -36,7 +36,9 @@ class Updater2
                     );
                 } else if (in_array($key, array('負責人姓名', '合夥人姓名'))) {
                     foreach ($td_doms->item(1)->getElementsByTagName('tr') as $name_tr_dom) {
-                        $name = $name_tr_dom->getElementsByTagName('td')->item(0)->nodeValue;
+                        if (!$name = $name_tr_dom->getElementsByTagName('td')->item(0)->nodeValue) {
+                            continue;
+                        }
                         $amount = explode(':', $name_tr_dom->getElementsByTagName('td')->item(1)->nodeValue)[1];
 
                         if (!property_exists($info, '出資額(元)')) {
