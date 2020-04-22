@@ -2,7 +2,7 @@
 
 class SearchLib
 {
-    public function searchCompaniesByFund($name, $page = 1)
+    public static function searchCompaniesByFund($name, $page = 1)
     {
         $curl = curl_init();
         $name = Unit::changeRareWord($name);
@@ -16,7 +16,7 @@ class SearchLib
         return json_decode($ret);
     }
 
-    public function searchCompaniesByPerson($name, $page = 1)
+    public static function searchCompaniesByPerson($name, $page = 1)
     {
         $curl = curl_init();
         $name = Unit::changeRareWord($name);
@@ -30,7 +30,7 @@ class SearchLib
         return json_decode($ret);
     }
 
-    public function searchCompaniesByAddress($address, $page)
+    public static function searchCompaniesByAddress($address, $page)
     {
         $curl = curl_init();
         $address = Unit::changeRareWord($address);
@@ -45,7 +45,7 @@ class SearchLib
         return json_decode($ret);
     }
 
-    public function searchCompaniesByParent($id, $page)
+    public static function searchCompaniesByParent($id, $page)
     {
         $curl = curl_init();
         $id = sprintf("%08d", intval($id));
@@ -65,7 +65,7 @@ class SearchLib
         return json_decode($ret);
     }
 
-    public function searchCompaniesByName($name, $page = 1, $alive_only = false)
+    public static function searchCompaniesByName($name, $page = 1, $alive_only = false)
     {
         $curl = curl_init();
         if (!getenv('SKIP_RAREWORD')) {
@@ -100,7 +100,7 @@ class SearchLib
         return json_decode($ret);
     }
 
-    public function bulkSearchCompany($searchs)
+    public static function bulkSearchCompany($searchs)
     {
         $name_map = array();
         $names = array();
