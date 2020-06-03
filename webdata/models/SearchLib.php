@@ -10,6 +10,7 @@ class SearchLib
         $from = 10 * ($page - 1);
         curl_setopt($curl, CURLOPT_URL, getenv('SEARCH_URL') . '/company/_search?q=' . $q . '&from=' . $from);
         curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_TIMEOUT, 10);
         $ret = curl_exec($curl);
@@ -24,6 +25,7 @@ class SearchLib
         $from = 10 * ($page - 1);
         curl_setopt($curl, CURLOPT_URL, getenv('SEARCH_URL') . '/company/_search?q=' . $q . '&from=' . $from);
         curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_TIMEOUT, 10);
         $ret = curl_exec($curl);
@@ -39,6 +41,7 @@ class SearchLib
         $from = 10 * ($page - 1);
         curl_setopt($curl, CURLOPT_URL, getenv('SEARCH_URL') . '/company/_search?q=' . $q . '&from=' . $from);
         curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_TIMEOUT, 10);
         $ret = curl_exec($curl);
@@ -57,6 +60,7 @@ class SearchLib
         );
         curl_setopt($curl, CURLOPT_URL, getenv('SEARCH_URL') . '/company/_search');
         curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
         curl_Setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
         curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($cmd));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
@@ -94,6 +98,7 @@ class SearchLib
             curl_setopt($curl, CURLOPT_URL, getenv('SEARCH_URL') . '/company/_search?from=' . $from);
         }
         curl_setopt($curl, CURLOPT_HEADER, 0);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curl, CURLOPT_TIMEOUT, 10);
         $ret = curl_exec($curl);
@@ -127,6 +132,7 @@ class SearchLib
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_HEADER, 0);
+            curl_setopt($curl, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($curl, CURLOPT_POSTFIELDS, $request);
             $ret = curl_exec($curl);
