@@ -422,7 +422,82 @@ class Updater2
             }
         }
 
-        $url = "https://findbiz.nat.gov.tw/fts/query/QueryCmpyDetail/queryCmpyDetail.do?objectId=" .  urlencode(base64_encode('HC' . $id)) . '&banNo=' . urlencode($id);
+        $found = false;
+        $url = "https://findbiz.nat.gov.tw/fts/query/QueryList/queryList.do";
+        for ($retry = 0; true; $retry ++) {
+            $curl = curl_init($url);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_FRESH_CONNECT, true);
+            curl_setopt($curl, CURLOPT_FORBID_REUSE, true);
+            curl_setopt($curl, CURLOPT_DNS_USE_GLOBAL_CACHE, false);
+            //curl_setopt($curl, CURLOPT_HTTPHEADER, array("X-Forwarded-Host: 2400:8902::f03c:91ff:fe2b:26ea"));
+            if (getenv('PROXY_URL')) {
+                curl_setopt($curl, CURLOPT_PROXY, getenv('PROXY_URL'));
+            }
+            curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, "qryCond={$id}&infoType=D&cmpyType=true&brCmpyType=&qryType=cmpyType&busmType=&factType=&lmtdType=&isAlive=all&busiItemMain=&busiItemSub=&sugCont=&sugEmail=&g-recaptcha-response=");
+            curl_setopt($curl, CURLOPT_REFERER, $url); //'https://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do');
+
+            $content = curl_exec($curl);
+            $info = curl_getinfo($curl);
+            error_log("post company {$id}");
+            echo json_encode($info) . "\n";
+            curl_close($curl);
+
+            sleep(2);
+            if (strpos($content, '很抱歉，我們無法找到符合條件的查詢結果。')) {
+                trigger_error("找不到商業登記: $id", E_USER_WARNING);
+                sleep(1);
+                return;
+            }
+
+            $content = str_replace('<head>', '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">', $content);
+            $doc = new DOMDocument;
+            @$doc->loadHTML($content);
+
+            if (!$table_dom = $doc->getElementById('eslist-table')) {
+                $wait = 10;
+                error_log("抓取 {$id} 失敗，等待 {$wait} 秒再重試");
+
+                sleep($wait);
+                if ($retry > 3) {
+                    readline('中斷，請讓這個 IP 通過再說');
+                }
+                continue;
+            }
+            $found = true;
+            break;
+        }
+        if (!$found) {
+            //print_r($content);
+            throw new Exception("{$id} 連續三次抓取失敗");
+        }
+        $hit_href = array();
+        foreach ($table_dom->getElementsByTagName('tbody')->item(0)->getElementsByTagName('tr') as $tr_dom) {
+            $td_doms = $tr_dom->getElementsByTagName('td');
+            if ($td_doms->length < 7) {
+                continue;
+            }
+
+            $a_dom = $tr_dom->getElementsByTagName('a')->item(0);
+            $href = preg_replace('#\s*#', '', $a_dom->getAttribute('href'));
+            if (strpos($href, '/fts/query/QueryCmpyDetail/queryCmpyDetail.do') === false) {
+                continue;
+            }
+            $date = $td_doms->item(6)->nodeValue;
+            if ($td_doms->item(6)->getAttribute('data-title') != '核准變更日期') {
+                throw new Exception("預期表格第七格應該是「核准變更日期」");
+            }
+            $hit_href[$href] = $date;
+        }
+        arsort($hit_href);
+        if (count($hit_href) == 0) {
+            throw new Exception("找不到商號");
+        }
+
+        $hit_href = array_keys($hit_href);
+
+        $url = "https://findbiz.nat.gov.tw" . $hit_href[0];
         // 一秒只更新一個檔案
         while (!is_null(self::$_last_fetch) and (microtime(true) - self::$_last_fetch) < 0.5) {
             usleep(1000);
