@@ -8,7 +8,7 @@ Pix_Table::$_save_memory = true;
 if ($_SERVER['argv'][1]) {
     $fp = fopen($_SERVER['argv'][1], 'r');
 } else {
-    system("wget -4 -O bgmopen1.zip https://www.fia.gov.tw/opendata/bgmopen1.zip");
+    system("wget -4 -O bgmopen1.zip https://eip.fia.gov.tw/data/BGMOPEN1.zip");
     system("unzip -o bgmopen1.zip");
     $unzip_filename = 'BGMOPEN1.csv';
     $old_filename = 'bgmopen1.csv';
