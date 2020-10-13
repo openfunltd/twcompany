@@ -28,6 +28,7 @@ class Updater2
                     '核准許可報備日期', '最後核准變更日期', '核准許可日期', '停業日期(起)', '停業日期(迄)',
                     '核准登記日期', '核准設立日期', '最後核准變更日期', '核准報備日期', '核准認許日期', '停業日期(起)', '停業日期(迄)',
                     '核准設立日期', '最後核准變更日期', '停業日期(起)', '停業日期(迄)', '延展開業日期(迄)',
+                    '最近異動日期',
                 ))) {
                     $value = array(
                         'year' => intval($matches[1]) + 1911,
@@ -264,23 +265,30 @@ class Updater2
     {
         $found = false;
         $url = "https://findbiz.nat.gov.tw/fts/query/QueryList/queryList.do";
-        for ($retry = 0; $retry < 3; $retry ++) {
+        for ($retry = 0; true; $retry ++) {
             $curl = curl_init($url);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_FRESH_CONNECT, true);
             curl_setopt($curl, CURLOPT_FORBID_REUSE, true);
-            curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V6);
+            curl_setopt($curl, CURLOPT_DNS_USE_GLOBAL_CACHE, false);
+            //curl_setopt($curl, CURLOPT_HTTPHEADER, array("X-Forwarded-Host: 2400:8902::f03c:91ff:fe2b:26ea"));
+            if (getenv('PROXY_URL')) {
+                curl_setopt($curl, CURLOPT_PROXY, getenv('PROXY_URL'));
+            }
+            curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
             curl_setopt($curl, CURLOPT_POSTFIELDS, "qryCond={$id}&infoType=D&cmpyType=&brCmpyType=&qryType=busmType&busmType=true&factType=&lmtdType=&isAlive=all&busiItemMain=&busiItemSub=&sugCont=&sugEmail=&g-recaptcha-response=");
             curl_setopt($curl, CURLOPT_REFERER, $url); //'https://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do');
 
             $content = curl_exec($curl);
             $info = curl_getinfo($curl);
             error_log("post bussiness {$id}");
+            echo json_encode($info) . "\n";
             curl_close($curl);
 
             sleep(2);
             if (strpos($content, '很抱歉，我們無法找到符合條件的查詢結果。')) {
                 trigger_error("找不到商業登記: $id", E_USER_WARNING);
+                sleep(1);
                 return;
             }
 
@@ -293,6 +301,9 @@ class Updater2
                 error_log("抓取 {$id} 失敗，等待 {$wait} 秒再重試");
 
                 sleep($wait);
+                if ($retry > 3) {
+                    readline('中斷，請讓這個 IP 通過再說');
+                }
                 continue;
             }
             $found = true;
@@ -565,6 +576,7 @@ class Updater2
             }
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_TIMEOUT, 20);
+            curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
             curl_setopt($curl, CURLOPT_REFERER, $url); //'https://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do');
             $content = curl_exec($curl);
             $info = curl_getinfo($curl);
@@ -573,6 +585,7 @@ class Updater2
                 return $content;
             }
             if ($i) {
+                echo json_encode($info) . "\n";
                 sleep($i);
             }
         }
@@ -589,6 +602,7 @@ class Updater2
             curl_setopt($curl, CURLOPT_URL, 'https://findbiz.nat.gov.tw/fts/query/QueryCmpyDetail/queryCmpyDetail.do');
             curl_setopt($curl, CURLOPT_REFERER, 'https://findbiz.nat.gov.tw/fts/query/QueryCmpyDetail/queryCmpyDetail.do');
             curl_setopt($curl, CURLOPT_POST, true);
+            curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
             curl_setopt($curl, CURLOPT_POSTFIELDS, "banNo={$id}&brBanNo=&banKey=&estbId=&objectId=&CPage={$page}&brCmpyPage=Y&eng=false&CPageHistory=&historyPage=&chgAppDate=");
             $content = curl_exec($curl);
             $content = str_replace('<head>', '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">', $content);
