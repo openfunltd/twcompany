@@ -121,7 +121,10 @@ while ($rows = fgetcsv($fp, 0, ',')) {
     }
 }
 file_put_contents('change.log', json_encode($changed_unit));
+$no = 0;
 foreach ($changed_unit as $id => $name) {
+    $no ++;
+    error_log($no . '/' . count($changed_unit));
     $id = sprintf("%08d", $id);
     if (strpos($name, '分公司')) {
         $u = Updater2::updateBranch($id);
