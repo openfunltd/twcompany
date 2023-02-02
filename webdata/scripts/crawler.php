@@ -31,7 +31,9 @@ class CustomCrawler
             $ids = array_unique($ids);
             file_put_contents('ids', implode("\n", $ids));
             $i = 1;
+            $total = count($ids);
             foreach ($ids as $id) {
+                fwrite(STDERR, chr(27) . "k{$i}/{$total}" . chr(27) . "\\");
                 error_log($i . '/' . count($ids));
                 $i ++;
                 $u = Updater2::update($id);
@@ -47,7 +49,9 @@ class CustomCrawler
                 return $this->wrong_argv();
             }
             $i = $pos;
+            $total = count($ids);
             foreach (array_slice($ids, $pos - 1) as $id) {
+                fwrite(STDERR, chr(27) . "k{$i}/{$total}" . chr(27) . "\\");
                 error_log($i . '/' . count($ids));
                 $i ++;
                 $u = Updater2::update($id);
@@ -63,7 +67,9 @@ class CustomCrawler
                 return $this->wrong_argv();
             }
             $i = $pos;
+            $total = count($ids);
             foreach (array_slice($ids, $pos - 1) as $id) {
+                fwrite(STDERR, chr(27) . "k{$i}/{$total}" . chr(27) . "\\");
                 error_log($i . '/' . count($ids));
                 $i ++;
                 $u = Updater2::updateBussiness($id);
@@ -76,7 +82,9 @@ class CustomCrawler
             $ids = array_unique($ids);
             file_put_contents('ids', implode("\n", $ids));
             $i = 1;
+            $total = count($ids);
             foreach ($ids as $id) {
+                fwrite(STDERR, chr(27) . "k{$i}/{$total}" . chr(27) . "\\");
                 error_log($i . '/' . count($ids));
                 $i ++;
                 $u = Updater2::updateBussiness($id);
