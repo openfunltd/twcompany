@@ -261,31 +261,61 @@ class Updater2
         return $info;
     }
 
+    protected static $_curl = null;
+
+    public static function getCURL($reconnect = false)
+    {
+        if (!$reconnect and !is_null(self::$_curl)) {
+            return self::$_curl;
+        }
+        error_log("init curl");
+
+        // 先取得 session
+        $url = 'https://findbiz.nat.gov.tw/fts/query/QueryBar/queryInit.do';
+        $curl = curl_init($url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_FRESH_CONNECT, true);
+        curl_setopt($curl, CURLOPT_FORBID_REUSE, true);
+        curl_setopt($curl, CURLOPT_COOKIEFILE, '');
+        curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:84.0) Gecko/20100101 Firefox/84.0');
+        curl_setopt($curl, CURLOPT_DNS_USE_GLOBAL_CACHE, false);
+        if (getenv('PROXY_URL')) {
+            curl_setopt($curl, CURLOPT_PROXY, getenv('PROXY_URL'));
+        }
+        curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+        curl_exec($curl);
+        $info = curl_getinfo($curl);
+
+        // 再來跳轉到驗證頁面
+        sleep(2);
+        $url = "https://findbiz.nat.gov.tw/fts/query/QueryList/queryList.do";
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($curl, CURLOPT_HEADER, true);
+        curl_setopt($curl, CURLINFO_HEADER_OUT, true);
+        $content = curl_exec($curl);
+        $info = curl_getinfo($curl);
+
+        self::$_curl = $curl;
+        return $curl;
+    }
+
     public static function updateBussiness($id, $options = array())
     {
         $found = false;
         $url = "https://findbiz.nat.gov.tw/fts/query/QueryList/queryList.do";
         for ($retry = 0; true; $retry ++) {
-            $curl = curl_init($url);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl, CURLOPT_FRESH_CONNECT, true);
-            curl_setopt($curl, CURLOPT_FORBID_REUSE, true);
-            curl_setopt($curl, CURLOPT_DNS_USE_GLOBAL_CACHE, false);
-            //curl_setopt($curl, CURLOPT_HTTPHEADER, array("X-Forwarded-Host: 2400:8902::f03c:91ff:fe2b:26ea"));
-            if (getenv('PROXY_URL')) {
-                curl_setopt($curl, CURLOPT_PROXY, getenv('PROXY_URL'));
-            }
-            curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, "qryCond={$id}&infoType=D&cmpyType=&brCmpyType=&qryType=busmType&busmType=true&factType=&lmtdType=&isAlive=all&busiItemMain=&busiItemSub=&sugCont=&sugEmail=&g-recaptcha-response=");
+            $curl = self::getCURL();
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, "errorMsg=&validatorOpen=N&rlPermit=0&userResp=&curPage=0&fhl=zh_TW&qryCond={$id}&infoType=D&cmpyType=&brCmpyType=&qryType=busmType&busmType=true&factType=&lmtdType=&isAlive=all&busiItemMain=&busiItemSub=");
             curl_setopt($curl, CURLOPT_REFERER, $url); //'https://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do');
 
             $content = curl_exec($curl);
             $info = curl_getinfo($curl);
             error_log("post bussiness {$id}");
             echo json_encode($info) . "\n";
-            curl_close($curl);
 
-            sleep(2);
+            sleep(5);
             if (strpos($content, '很抱歉，我們無法找到符合條件的查詢結果。')) {
                 trigger_error("找不到商業登記: $id", E_USER_WARNING);
                 sleep(1);
@@ -299,6 +329,7 @@ class Updater2
             if (!$table_dom = $doc->getElementById('eslist-table')) {
                 $wait = 10;
                 error_log("抓取 {$id} 失敗，等待 {$wait} 秒再重試");
+                $curl = self::getCURL(true);
 
                 sleep($wait);
                 if ($retry > 3) {
@@ -436,29 +467,20 @@ class Updater2
         $found = false;
         $url = "https://findbiz.nat.gov.tw/fts/query/QueryList/queryList.do";
         for ($retry = 0; true; $retry ++) {
-            $curl = curl_init($url);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($curl, CURLOPT_FRESH_CONNECT, true);
-            curl_setopt($curl, CURLOPT_FORBID_REUSE, true);
-            curl_setopt($curl, CURLOPT_DNS_USE_GLOBAL_CACHE, false);
-            //curl_setopt($curl, CURLOPT_HTTPHEADER, array("X-Forwarded-Host: 2400:8902::f03c:91ff:fe2b:26ea"));
-            if (getenv('PROXY_URL')) {
-                curl_setopt($curl, CURLOPT_PROXY, getenv('PROXY_URL'));
-            }
-            curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-            curl_setopt($curl, CURLOPT_POSTFIELDS, "qryCond={$id}&infoType=D&cmpyType=true&brCmpyType=&qryType=cmpyType&busmType=&factType=&lmtdType=&isAlive=all&busiItemMain=&busiItemSub=&sugCont=&sugEmail=&g-recaptcha-response=");
+            $curl = self::getCURL();
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, "errorMsg=&validatorOpen=N&rlPermit=0&userResp=&curPage=0&fhl=zh_TW&qryCond={$id}&infoType=D&qryType=cmpyType&cmpyType=true&brCmpyType=&busmType=&factType=&lmtdType=&isAlive=all&busiItemMain=&busiItemSub=");
             curl_setopt($curl, CURLOPT_REFERER, $url); //'https://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do');
 
             $content = curl_exec($curl);
             $info = curl_getinfo($curl);
             error_log("post company {$id}");
             echo json_encode($info) . "\n";
-            curl_close($curl);
 
-            sleep(2);
+            sleep(5);
+            echo $content;
             if (strpos($content, '很抱歉，我們無法找到符合條件的查詢結果。')) {
                 trigger_error("找不到商業登記: $id", E_USER_WARNING);
-                sleep(1);
                 return;
             }
 
@@ -469,6 +491,7 @@ class Updater2
             if (!$table_dom = $doc->getElementById('eslist-table')) {
                 $wait = 10;
                 error_log("抓取 {$id} 失敗，等待 {$wait} 秒再重試");
+                $curl = self::getCURL(true);
 
                 sleep($wait);
                 if ($retry > 3) {
@@ -577,6 +600,7 @@ class Updater2
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_TIMEOUT, 20);
             curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+            curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:84.0) Gecko/20100101 Firefox/84.0');
             curl_setopt($curl, CURLOPT_REFERER, $url); //'https://gcis.nat.gov.tw/pub/cmpy/cmpyInfoListAction.do');
             $content = curl_exec($curl);
             $info = curl_getinfo($curl);
@@ -603,6 +627,7 @@ class Updater2
             curl_setopt($curl, CURLOPT_REFERER, 'https://findbiz.nat.gov.tw/fts/query/QueryCmpyDetail/queryCmpyDetail.do');
             curl_setopt($curl, CURLOPT_POST, true);
             curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+            curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:84.0) Gecko/20100101 Firefox/84.0');
             curl_setopt($curl, CURLOPT_POSTFIELDS, "banNo={$id}&brBanNo=&banKey=&estbId=&objectId=&CPage={$page}&brCmpyPage=Y&eng=false&CPageHistory=&historyPage=&chgAppDate=");
             $content = curl_exec($curl);
             $content = str_replace('<head>', '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">', $content);
