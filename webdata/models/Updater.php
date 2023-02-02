@@ -541,7 +541,7 @@ class Updater
         }
         $url = "https://serv.gcis.nat.gov.tw/moeadsBF/bms/bmsInfoAction.do?method=detail&banNo={$id}&lAgencyCode=&agencyCode=allbf&showGcisLocation=true&showBusi=true&showFact=true";
         // 一秒只更新一個檔案
-        while (!is_null(self::$_last_fetch) and (microtime(true) - self::$_last_fetch) < 0.5) {
+        while (!is_null(self::$_last_fetch) and (microtime(true) - self::$_last_fetch) < 1.0) {
             usleep(1000);
         }
         self::$_last_fetch = microtime(true);
