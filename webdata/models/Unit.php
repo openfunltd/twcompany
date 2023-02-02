@@ -106,6 +106,7 @@ class UnitRow extends Pix_Table_Row
             $ret = curl_exec($curl);
             $info = curl_getinfo($curl);
             if (!in_array($info['http_code'], array(200, 201, 100))) {
+                sleep(3);
                 continue;
             }
             break;
@@ -217,6 +218,7 @@ class UnitRow extends Pix_Table_Row
         }
 
         // 先刪除舊的資料
+        for ($retry = 0; $retry < 10; $retry ++) {
         $curl = curl_init();
         $url = getenv('SEARCH_URL') . '/name_map/_query';
         curl_setopt($curl, CURLOPT_URL, $url);
@@ -232,7 +234,12 @@ class UnitRow extends Pix_Table_Row
         $ret = curl_exec($curl);
         $info = curl_getinfo($curl);
         if (!in_array($info['http_code'], array(200, 201, 404))) {
-            throw new Exception($info['http_code'] . $ret);
+            if ($retry == 9) {
+                throw new Exception($info['http_code'] . $ret);
+            }
+            continue;
+        }
+        break;
         }
 
         // 新增新的資料
