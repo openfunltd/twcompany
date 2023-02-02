@@ -49,6 +49,8 @@ while ($rows = fgetcsv($fp, 0, ',')) {
 
 $inserting = array();
 $updating = array();
+$update_column = new StdClass;
+$insert_column = new StdClass;
 
 $changed_unit = array();
 $checking = array();
@@ -102,6 +104,50 @@ while ($rows = fgetcsv($fp, 0, ',')) {
                     continue;
                 }
                 $updating[$id] = array($unit_data['value'], $checking[$id]);
+                if (!property_exists($update_column, $unit_data['id'])) {
+                    $update_column->{$unit_data['id']} = array();
+                }
+                $update_column->{$unit_data['id']}[] = $unit_data['column_id'];
+
+                if (!in_array(FIAColumnGroup::getColumnName($unit_data['column_id']), array(
+                    '使用統一發票',
+                    //'行業', // 2023-01-31 大量更新
+                ))) {  // 如果以上欄位變更，不需要去經濟部更新
+                $changed_unit[$unit_data['id']] = $names[$unit_data['id']];
+                }
+            }
+            unset($checking[$id]);
+        }
+        foreach ($checking as $no_column => $v) {
+            list($id, $column_id) = explode('-', $no_column);
+            if (!property_exists($insert_column, $id)) {
+                $insert_column->{$id} = array();
+            }
+            $insert_column->{$id}[] = $column_id;
+            $changed_unit[$id] = $names[$id];
+        }
+        $inserting = array_merge($inserting, $checking);
+        $checking = array();
+        $names = array();
+    }
+}
+if (count($checking)) {
+        error_log(sprintf("No: %s insert=%d update=%d", array_keys($checking)[0], count($inserting), count($updating)));
+
+        $unit_ids = array_unique(array_map(function($a) { return explode('-', $a)[0]; }, array_keys($checking)));
+        $unit_datas = FIAUnitData::search(1)->searchIn('id', $unit_ids);
+        foreach ($unit_datas->toArray() as $unit_data) {
+            $id = $unit_data['id'] . '-' . $unit_data['column_id'];
+            if ($checking[$id] !== $unit_data['value']) {
+                if ($unit_data['column_id'] == 10 and !$checking[$id]) { // 負責人姓氏被拿掉了
+                    unset($checking[$id]);
+                    continue;
+                }
+                $updating[$id] = array($unit_data['value'], $checking[$id]);
+                if (!property_exists($update_column, $unit_data['id'])) {
+                    $update_column->{$unit_data['id']} = array();
+                }
+                $update_column->{$unit_data['id']}[] = $unit_data['column_id'];
 
                 if (!in_array(FIAColumnGroup::getColumnName($unit_data['column_id']), array(
                     '使用統一發票',
@@ -113,18 +159,23 @@ while ($rows = fgetcsv($fp, 0, ',')) {
         }
         foreach ($checking as $no_column => $v) {
             list($id, $column_id) = explode('-', $no_column);
+            if (!property_exists($insert_column, $id)) {
+                $insert_column->{$id} = array();
+            }
+            $insert_column->{$id}[] = $column_id;
             $changed_unit[$id] = $names[$id];
         }
         $inserting = array_merge($inserting, $checking);
         $checking = array();
         $names = array();
     }
-}
 file_put_contents('change.log', json_encode($changed_unit));
 $no = 0;
+$total = count($changed_unit);
 foreach ($changed_unit as $id => $name) {
     $no ++;
-    error_log($no . '/' . count($changed_unit));
+    error_log($no . '/' . $total);
+    fwrite(STDERR, chr(27) . "k{$no}/{$total}" . chr(27) . "\\");
     $id = sprintf("%08d", $id);
     if (strpos($name, '分公司')) {
         $u = Updater2::updateBranch($id);
@@ -135,6 +186,29 @@ foreach ($changed_unit as $id => $name) {
     }
     if ($u) {
         $u->updateSearch();
+    }
+    $id = intval($id);
+    if ($update_column->{$id}) {
+        $change_records = array();
+        $records = array();
+        foreach ($update_column->{$id} as $column_id) {
+            $no_column = $id . '-' . $column_id;
+            $change_records[] = array($id, $now, $column_id, $updating[$no_column][0], $updating[$no_column][1]);
+            $records[] = array($id, $column_id, $updating[$no_column][1]);
+            unset($updating[$no_column]);
+        }
+        FIAUnitChangeLog::bulkInsert(array('id', 'updated_at', 'column_id', 'old_value', 'new_value'), $change_records, array('replace' => true));
+        FIAUnitData::bulkInsert(array('id', 'column_id', 'value'), $records, array('replace' => true));
+    }
+
+    if ($insert_column->{$id}) {
+        $records = array();
+        foreach ($insert_column->{$id} as $column_id) {
+            $no_column = $id . '-' . $column_id;
+            $records[] = array($id, $column_id, $inserting[$no_column]);
+            unset($inserting[$no_column]);
+        }
+        FIAUnitData::bulkInsert(array('id', 'column_id', 'value'), $records, array('replace' => true));
     }
 }
 
