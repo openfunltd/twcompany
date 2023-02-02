@@ -4,10 +4,25 @@ ini_set('memory_limit', '256m');
 include(__DIR__ . '/../init.inc.php');
 Pix_Table::$_save_memory = true;
 Pix_Table::addStaticResultSetHelper('Pix_Array_Volume');
+Pix_Table::enableLog(Pix_Table::LOG_QUERY);
 
 class Dumper
 {
     protected $unit_types = array();
+
+    public static function maskName($str)
+    {
+        if (strlen($str) == 0) {
+            return '';
+        }
+        if (strlen($str) == 1) {
+            return '_';
+        }
+        if (strlen($str) == 2) {
+            return mb_substr($str, 0, 1, 'UTF-8') . '_';
+        }
+        return mb_substr($str, 0, 1, 'UTF-8') . '_' . mb_substr($str, -1, 1, 'UTF-8');
+    }
 
     public function getType($id)
     {
@@ -58,7 +73,27 @@ class Dumper
                 }
                 $unit_id = $unit_data->id;
 
-                $unit->{$columns[$unit_data->column_id]} = json_decode($unit_data->value);
+                $c = $columns[$unit_data->column_id];
+                $v = json_decode($unit_data->value);
+                if (in_array($c, array('負責人姓名', '代表人姓名'))) {
+                    if (!is_scalar($v)) {
+                        //print_r($unit_data->toArray());
+                        //throw new Exception($unit_data->id . ' not scalar');
+                    } else {
+                        $v = self::maskName($v);
+                    }
+                } else if (in_array($c, array('經理人名單', '董監事名單'))) {
+                    foreach ($v as $idx => $eachc) {
+                        $v[$idx]->{'姓名'} = self::maskName($v[$idx]->{'姓名'});
+                    }
+                } else if ($c == '出資額(元)') {
+                    $v_new = new StdClass;
+                    foreach ($v as $name => $nv) {
+                        $v_new->{self::maskName($name)} = $nv;
+                    }
+                    $v = $v_new;
+                }
+                $unit->{$c} = $v;
             }
             if (!is_null($unit_id)) {
                 fwrite($fp[$this->getType($unit_id)], str_pad($unit_id, 8, '0', STR_PAD_LEFT) . ',' . json_encode($unit, JSON_UNESCAPED_UNICODE) . "\n");
