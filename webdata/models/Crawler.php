@@ -2,7 +2,7 @@
 
 class Crawler 
 {
-    public static function fetch($url)
+    public static function fetch($url, $timeout = 10)
     {
         $return_var = 0;
         $output_file = tempnam('', '');
@@ -16,7 +16,7 @@ class Crawler
             }
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-            curl_setopt($curl, CURLOPT_TIMEOUT, 10);
+            curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
             curl_setopt($curl, CURLOPT_FILE, $fp);
             curl_exec($curl);
             $info = curl_getinfo($curl);
@@ -54,7 +54,7 @@ class Crawler
 
     public static function crawlerBussiness($year, $month)
     {
-        $content = file_get_contents('https://serv.gcis.nat.gov.tw/moeadsBF/bms/report.jsp');
+        $content = file_get_contents(self::fetch('https://serv.gcis.nat.gov.tw/moeadsBF/bms/report.jsp'));
         $content = iconv('big5', 'utf-8', $content);
         preg_match('#<select name="area">(.*?)</select>#s', $content, $matches);
         preg_match_all('#<option value="(.*?)">(.*?)</option>#', $matches[1], $matches);
@@ -90,7 +90,7 @@ class Crawler
 
     public static function crawlerMonth($year, $month)
     {
-        $content = file_get_contents('https://serv.gcis.nat.gov.tw/pub/cmpy/reportReg.jsp');
+        $content = file_get_contents(self::fetch('https://serv.gcis.nat.gov.tw/pub/cmpy/reportReg.jsp'));
         $content = iconv('big5', 'utf-8', $content);
         preg_match('#<select name="org">(.*?)</select>#s', $content, $matches);
         preg_match_all('#<option value="(.*?)">(.*?)</option>#', $matches[1], $matches);
@@ -111,7 +111,7 @@ class Crawler
             foreach ($types as $type_id => $type_name) {
                 $yearmonth = sprintf("%03d%02d", $year, $month);
                 $url = "https://serv.gcis.nat.gov.tw/pub/cmpy/reportAction.do?method=report&reportClass=cmpy&subPath=${yearmonth}&fileName=${yearmonth}{$ori_id}{$type_id}.pdf";
-                $file = self::fetch($url);
+                $file = self::fetch($url, 100);
                 if (false === $file) {
                     trigger_error("Fetch failed: {$ori_id}-{$type_id}-{$year}-{$month}", E_USER_WARNING);
                     continue;
