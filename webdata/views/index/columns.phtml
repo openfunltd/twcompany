@@ -6,7 +6,7 @@ $csv = '';
     <table border="1">
     <tr>
         <td>ID</td>
-        <td>欄位名稱</td>
+        <td>經濟部欄位名稱</td>
     </tr>
     <?php foreach (ColumnGroup::search(1) as $columngroup) { ?>
     <?php $csv .= "{$columngroup->id},{$columngroup->name}\n"; ?>
@@ -17,5 +17,19 @@ $csv = '';
     <?php } ?>
 </table>
 <h2>CSV</h2>
-    <textarea rows="6" style="width: 100%"><?= $this->escape($csv) ?></textarea>
+<textarea rows="6" style="width: 100%"><?= $this->escape($csv) ?></textarea>
+<hr>
+<table border="1">
+    <tr>
+        <td>ID</td>
+        <td>財政部欄位名稱</td>
+    </tr>
+    <?php foreach (FIAColumnGroup::search(1) as $columngroup) { ?>
+    <?php $csv .= "{$columngroup->id},{$columngroup->name}\n"; ?>
+    <tr>
+        <td><?= $columngroup->id ?></td>
+        <td><?= $this->escape($columngroup->name) ?></td>
+    </tr>
+    <?php } ?>
+</table>
 <?= $this->partial('/common/footer.phtml', $this) ?>
