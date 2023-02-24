@@ -32,9 +32,9 @@ class ApiController extends Pix_Controller
         $page = intval($_GET['page']) ?: 1;
         $alive_only = $_GET['alive_only'] ? true : false;
         if (preg_match('#^address:(.*)$#', $_GET['q'], $matches)) {
-            $search_ret = (SearchLib::searchCompaniesByAddress($matches[1], $page));
+            $search_ret = (SearchLib::searchCompaniesByAddress($matches[1], $page, $alive_only));
         } else {
-            $search_ret = (SearchLib::searchCompaniesByName($_GET['q'], $page));
+            $search_ret = (SearchLib::searchCompaniesByName($_GET['q'], $page, $alive_only));
         }
         $ret = new StdClass;
         $data = array();
