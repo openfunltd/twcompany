@@ -16,7 +16,11 @@ class ApiController extends Pix_Controller
             if ('行業' != FIAColumnGroup::getColumnName($unitdata->column_id)) {
                 continue;
             }
-            echo implode(';', array_map(function($a) { return $a[1]; }, json_decode($unitdata->value)));
+            if (array_key_exists('onlyone', $_GET)) {
+                echo json_decode($unitdata->value)[0][1];
+            } else {
+                echo implode(';', array_map(function($a) { return $a[1]; }, json_decode($unitdata->value)));
+            }
             exit;
         }
         echo "找不到此統編";
