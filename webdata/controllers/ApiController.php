@@ -8,21 +8,6 @@ class ApiController extends Pix_Controller
         header('Access-Control-Allow-Methods: GET');
     }
 
-    public function bizAction()
-    {
-        list(, /*api*/, /*show*/, $id) = explode('/', $this->getURI());
-
-        foreach (FIAUnitData::search(array('id' => intval($id))) as $unitdata) {
-            if ('行業' != FIAColumnGroup::getColumnName($unitdata->column_id)) {
-                continue;
-            }
-            echo implode(';', array_map(function($a) { return $a[1]; }, json_decode($unitdata->value)));
-            exit;
-        }
-        echo "找不到此統編";
-        exit;
-    }
-
     public function showAction()
     {
         list(, /*api*/, /*show*/, $id) = explode('/', $this->getURI());
