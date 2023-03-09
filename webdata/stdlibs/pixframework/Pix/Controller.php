@@ -116,7 +116,7 @@ class Pix_Controller
      */
     public function redirect($url, $code = 302)
     {
-        $url = preg_replace_callback('#[^A-Za-z0-9&/=\#?()%]*#', function($matches) { return urlencode($matches[0]); }, $url);
+        $url = preg_replace_callback('#[^:A-Za-z0-9&/=\#?()%]*#', function($matches) { return urlencode($matches[0]); }, $url);
         Pix_HttpResponse::redirect($url, $code);
         return $this->noview();
     }
