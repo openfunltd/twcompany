@@ -1,0 +1,45 @@
+<?php
+$csv = '';
+?>
+<?= $this->partial('/common/header.phtml', $this) ?>
+<h1>大量行業別查詢</h1>
+<p>本功能讓你輸入大量統編，幫忙回傳統編資料，請以一行一個統編輸入資料</p>
+<div class="row">
+    <div class="span6">
+        <h3>輸入</h3>
+        <form id="form">
+            <textarea id="input" style="width: 100%; height: 300px"></textarea>
+            <button type="submit">查詢</button>
+        </form>
+    </div>
+    <div class="span6">
+        <h3>結果</h3>
+        <textarea id="output" style="width: 100%; height: 300px">
+        </textarea>
+    </div>
+</div>
+<script>
+$('#form').submit(function(e){
+    e.preventDefault();
+    var ids = $('#input').val();
+    ids = $.trim(ids).split(/\s+/);
+    for (var id of ids) {
+        if (!id.match(/^\d+$/)) {
+            alert(id + ' 不是正確的統編');
+            return;
+        }
+    }
+    $.post('/api/bulkquery', 'ids=' + encodeURIComponent(ids.join(';')), function(d) {
+        var ret = [];
+        for (var id of ids) {
+            if ('undefined' == typeof(d[id]) || 'undefined' == typeof(d[id]['財政部']) || 'undefined' == typeof(d[id]['財政部']['行業'])) {
+                ret.push('找不到此統編');
+                continue;
+            }
+            ret.push(d[id]['財政部']['行業'].map(function(a) { return a[1]; }).join(';'));
+        }
+        $('#output').val(ret.join("\n"));
+    }, 'json');
+});
+</script>
+<?= $this->partial('/common/footer.phtml', $this) ?>

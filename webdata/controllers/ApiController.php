@@ -8,6 +8,28 @@ class ApiController extends Pix_Controller
         header('Access-Control-Allow-Methods: GET');
     }
 
+    public function bulkqueryAction()
+    {
+        $ids = array_slice(explode(';', $_REQUEST['ids']), 0, 1000);
+        $ret = new StdClass;
+        foreach ($ids as $id) {
+            if (!$id = intval($id)) {
+                continue;
+            }
+            if (!$unit = Unit::find(intval($id))) {
+                $data = new StdClass;
+                $data->{'財政部'} = new StdClass;
+                foreach (FIAUnitData::search(array('id' => $id)) as $unitdata) {
+                    $data->{'財政部'}->{FIAColumnGroup::getColumnName($unitdata->column_id)} = json_decode($unitdata->value);
+                }
+                $ret->{$id} = $data;
+            } else {
+                $ret->{$id} = $unit->getData();
+            }
+        }
+        return $this->json($ret);
+    }
+
     public function showAction()
     {
         list(, /*api*/, /*show*/, $id) = explode('/', $this->getURI());
