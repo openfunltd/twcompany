@@ -32,6 +32,7 @@ $('#form').submit(function(e){
     $.post('/api/bulkquery', 'ids=' + encodeURIComponent(ids.join(';')), function(d) {
         var ret = [];
         for (var id of ids) {
+            id = parseInt(id);
             if ('undefined' == typeof(d[id]) || 'undefined' == typeof(d[id]['財政部']) || 'undefined' == typeof(d[id]['財政部']['行業'])) {
                 ret.push('找不到此統編');
                 continue;
