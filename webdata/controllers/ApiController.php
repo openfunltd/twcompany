@@ -10,7 +10,7 @@ class ApiController extends Pix_Controller
 
     public function bulkqueryAction()
     {
-        $ids = array_slice(explode(';', $_REQUEST['ids']), 0, 1000);
+        $ids = array_slice(explode(';', $_REQUEST['ids']), 0, 10000);
         $ret = new StdClass;
         foreach ($ids as $id) {
             if (!$id = intval($id)) {

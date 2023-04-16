@@ -10,6 +10,10 @@ $csv = '';
         <form id="form">
             <textarea id="input" style="width: 100%; height: 300px"></textarea>
             <button type="submit">查詢</button>
+            顯示行業：<select id="type">
+                <option value="all">顯示全部行業</option>
+                <option value="one">顯示第一個行業</option>
+            </select>
         </form>
     </div>
     <div class="span6">
@@ -36,6 +40,9 @@ $('#form').submit(function(e){
             if ('undefined' == typeof(d[id]) || 'undefined' == typeof(d[id]['財政部']) || 'undefined' == typeof(d[id]['財政部']['行業'])) {
                 ret.push('找不到此統編');
                 continue;
+            }
+            if ($('#type').val() == 'one') {
+                d[id]['財政部']['行業'] = [d[id]['財政部']['行業'][0]];
             }
             ret.push(d[id]['財政部']['行業'].map(function(a) { return a[1]; }).join(';'));
         }
