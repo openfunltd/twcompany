@@ -16,9 +16,9 @@ License
 * cd twcompany/webdata
 * cp config.sample.php config.php
   * 修改 DATABASE\_URL 和 SEARCH\_URL
-* php webdata/init-db.php
+* php scripts/init-db.php
   * 建立起需要的資料表
-* php webdata/import-data.php
+* php scripts/import-data.php
   * 從 [資料打包](http://ronnywang-twcompany.s3-website-ap-northeast-1.amazonaws.com/index.html) 下載最新打包檔匯入資料庫
 * 匯入資料庫
   * 準備好你的 elastic index (可能是 http://localhost:9200/company)
