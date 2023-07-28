@@ -97,5 +97,6 @@ class CustomCrawler
     }
 }
 
+file_put_contents("crawl.log", sprintf("%s %s\n", date('c'), json_encode($_SERVER['argv'])), FILE_APPEND);
 $c = new CustomCrawler;
 $c->main($_SERVER['argv']);
