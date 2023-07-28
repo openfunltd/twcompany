@@ -42,6 +42,9 @@ class Elastic
         }
         $prefix = getenv('ELASTIC_PREFIX');
         foreach ($mappings as $mapping) {
+            if (!self::$_db_bulk_pool[$mapping]) {
+                continue;
+            }
             $ret = self::dbQuery("/{$prefix}{$mapping}/_bulk", 'PUT', self::$_db_bulk_pool[$mapping]);
             $ids = [];
             foreach ($ret->items as $command) {
@@ -59,6 +62,7 @@ class Elastic
             error_log(sprintf("bulk commit, update (%d) %s", count($ids), mb_strimwidth(implode(',', $ids), 0, 200)));
             self::$_db_bulk_pool[$mapping] = '';
         }
+        return $ret;
     }
 
     public static function dbBulkInsert($mapping, $id, $data)

@@ -38,7 +38,7 @@ class IndexController extends Pix_Controller
         $ret = (SearchLib::searchCompaniesByFund($name, $page));
 
         $this->view->page = $page;
-        $this->view->max_page = ceil($ret->hits->total / 10);
+        $this->view->max_page = ceil($ret->hits->total->value / 10);
         $this->view->search_word = $name;
         $this->view->search_result = $ret;
     }
@@ -51,7 +51,7 @@ class IndexController extends Pix_Controller
         $ret = (SearchLib::searchCompaniesByParent(intval($id), $page));
 
         $this->view->page = $page;
-        $this->view->max_page = ceil($ret->hits->total / 10);
+        $this->view->max_page = ceil($ret->hits->total->value / 10);
         $this->view->search_word = sprintf("%08d", intval($id));
         $this->view->search_result = $ret;
     }
@@ -65,7 +65,7 @@ class IndexController extends Pix_Controller
         $ret = (SearchLib::searchCompaniesByPerson($name, $page));
 
         $this->view->page = $page;
-        $this->view->max_page = ceil($ret->hits->total / 10);
+        $this->view->max_page = ceil($ret->hits->total->value / 10);
         $this->view->search_word = $name;
         $this->view->search_result = $ret;
     }
@@ -97,12 +97,12 @@ class IndexController extends Pix_Controller
         } else {
             $ret = (SearchLib::searchCompaniesByName($_GET['q'], $page));
         }
-        if ($ret->hits->total == 1) {
+        if ($ret->hits->total->value == 1) {
             return $this->redirect('/id/' . urlencode($ret->hits->hits[0]->_id));
         }
 
         $this->view->page = $page;
-        $this->view->max_page = ceil($ret->hits->total / 10);
+        $this->view->max_page = ceil($ret->hits->total->value / 10);
         $this->view->search_word = $_GET['q'];
         $this->view->search_result = $ret;
     }

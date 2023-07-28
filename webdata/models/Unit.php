@@ -87,6 +87,9 @@ class UnitRow extends Pix_Table_Row
             // 只有分公司名稱的話，就把全稱存進去公司名稱中，並且加上這是分公司，預設不要搜尋到
             $data->{'公司名稱'} = $this->name();
         }
+        if ($data->{'廢止日期'} === '') {
+            unset($data->{'廢止日期'});
+        }
         return $data;
     }
 
@@ -95,24 +98,17 @@ class UnitRow extends Pix_Table_Row
         $data = $this->getSearchData();
 
         for ($i = 0; $i < 3; $i ++) {
-            $curl = curl_init();
-            $url = getenv('SEARCH_URL') . '/company/' . $this->id();
-            curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_HEADER, 0);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($curl, CURLOPT_PROXY, '');
-            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
-            curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
-            $ret = curl_exec($curl);
-            $info = curl_getinfo($curl);
-            if (!in_array($info['http_code'], array(200, 201, 100))) {
+            Elastic::dbBulkInsert('company', $this->id(), $data);
+            $ret = Elastic::dbBulkCommit();
+            $status = $ret->items[0]->update->status;
+            if (!in_array($status, array(200, 201, 100))) {
                 sleep(3);
                 continue;
             }
             break;
         }
         if ($i == 3) {
-            throw new Exception($info['http_code'] . ' ' . $ret);
+            throw new Exception($status . ' ' . $ret);
         }
 
         // 處理名稱搜尋
@@ -219,71 +215,29 @@ class UnitRow extends Pix_Table_Row
 
         // 先刪除舊的資料
         for ($retry = 0; $retry < 10; $retry ++) {
-        $curl = curl_init();
-        $url = getenv('SEARCH_URL') . '/name_map/_query';
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_HEADER, 0);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_PROXY, '');
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
-        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(array(
-            'query' => array(
-                'term' => array('company-id' => $this->id()),
-            )
-        )));
-        $ret = curl_exec($curl);
-        $info = curl_getinfo($curl);
-        if (!in_array($info['http_code'], array(200, 201, 404))) {
-            if ($retry == 9) {
-                throw new Exception($info['http_code'] . $ret);
+            $prefix = getenv('ELASTIC_PREFIX');
+            try {
+                $ret = Elastic::dbQuery("/{$prefix}name_map/_delete_by_query", "POST", json_encode([
+                    'query' => [
+                        'term' => ['company-id' => $this->id()],
+                    ],
+                ]));
+            } catch (Exception $e) {
+                continue;
             }
-            continue;
-        }
-        break;
+            break;
         }
 
         // 新增新的資料
-        $command = '';
         $id = $this->id();
         foreach ($names as $name => $true) {
-            $command .= json_encode(array(
-                'create' => array(
-                    '_id' => $id . '-' . $name,
-                ),
-            ), JSON_UNESCAPED_UNICODE) . "\n";
-            $command .= json_encode(array(
+            Elastic::dbBulkInsert('name_map', "{$id}-{$name}", [
                 'company-name' => $name,
                 'company-id' => $id,
-            ), JSON_UNESCAPED_UNICODE) . "\n";
+            ]);
         }
 
-        if ($command) {
-            $failed_codes = array();
-            $failed_messages = array();
-            for ($retry = 0; $retry < 3; $retry) {
-                $curl = curl_init();
-                $url = getenv('SEARCH_URL') . "/name_map/_bulk";
-                curl_setopt($curl, CURLOPT_URL, $url);
-                curl_setopt($curl, CURLOPT_HEADER, 0);
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($curl, CURLOPT_PROXY, '');
-                curl_setopt($curl, CURLOPT_BINARYTRANSFER, true);
-                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
-                curl_setopt($curl, CURLOPT_POSTFIELDS, $command);
-                $ret = curl_exec($curl);
-                $info = curl_getinfo($curl);
-                curl_close($curl);
-                if (!in_array($info['http_code'], array(200, 201))) {
-                    $failed_codes[] = $info['http_code'];
-                    $failed_messages[] = $ret;
-                    continue;
-                }
-                break;
-            }
-            if ($retry == 3) {
-                throw new Exception("name_map bulk insert failed: " . implode(',', $failed_codes) . ' ' . implode(';', $failed_messages));
-            }
-        }
+        Elastic::dbBulkCommit();
     }
 
     public function id()

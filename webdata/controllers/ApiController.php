@@ -67,7 +67,7 @@ class ApiController extends Pix_Controller
         }
 
         $ret->data = $data;
-        $ret->found = $search_ret->hits->total;
+        $ret->found = $search_ret->hits->total->value;
         return $this->jsonp($ret, strval($_GET['callback']));
     }
 
@@ -84,7 +84,7 @@ class ApiController extends Pix_Controller
         }
 
         $ret->data = $data;
-        $ret->found = $search_ret->hits->total;
+        $ret->found = $search_ret->hits->total->value;
         return $this->jsonp($ret, strval($_GET['callback']));
     }
 
@@ -101,7 +101,7 @@ class ApiController extends Pix_Controller
         }
 
         $ret->data = $data;
-        $ret->found = $search_ret->hits->total;
+        $ret->found = $search_ret->hits->total->value;
         return $this->jsonp($ret, strval($_GET['callback']));
     }
 
@@ -118,7 +118,7 @@ class ApiController extends Pix_Controller
         }
 
         $ret->data = $data;
-        $ret->found = $search_ret->hits->total;
+        $ret->found = $search_ret->hits->total->value;
         return $this->jsonp($ret, strval($_GET['callback']));
     }
 

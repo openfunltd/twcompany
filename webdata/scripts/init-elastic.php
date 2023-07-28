@@ -3,7 +3,8 @@
 include(__DIR__ . '/../init.inc.php');
 
 try {
-    Elastic::dropIndex('');
+    Elastic::dropIndex('company');
+    Elastic::dropIndex('name_map');
 } catch (Exception $e) {
 }
 
@@ -23,8 +24,8 @@ Elastic::createIndex('company', [
         '負責人姓名' => ['type' => 'text', 'analyzer' => 'cjk'],
         '辦事處所在地' => ['type' => 'text', 'analyzer' => 'cjk'],
         '總(本)公司統一編號' => ['type' => 'text', 'analyzer' => 'cjk'],
-        '經理人名單' => ['type' => 'text', 'analyzer' => 'cjk'],
-        '董監事名單' => ['type' => 'text', 'analyzer' => 'cjk'],
+        '經理人名單.姓名' => ['type' => 'text', 'analyzer' => 'cjk'],
+        '董監事名單.姓名' => ['type' => 'text', 'analyzer' => 'cjk'],
     ],
 ]);
 Elastic::createIndex('name_map', [

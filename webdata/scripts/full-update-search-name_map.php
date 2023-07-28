@@ -119,64 +119,11 @@ foreach (Unit::search(1)->volumemode(100000) as $unit) {
     // 新增新的資料
     $id = $unit->id();
     foreach ($names as $name => $true) {
-        $command .= json_encode(array(
-            'update' => array(
-                '_id' => $id . '-' . $name,
-            ),
-        ), JSON_UNESCAPED_UNICODE) . "\n";
-        $command .= json_encode(array(
-            'doc' => array(
-                'company-name' => $name,
-                'company-id' => $id,
-            ),
-            'doc_as_upsert' => true,
-        ), JSON_UNESCAPED_UNICODE) . "\n";
-        $count ++;
+        Elastic::dbBulkInsert('name_map', $id . '-' . $name, [
+            'company-name' => $name,
+            'company-id' => $id,
+        ]);
     }
-
-    if ($count >= 10000) {
-        $url = getenv('SEARCH_URL') . '/name_map/_bulk';
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_HEADER, 0);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_PROXY, '');
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $command);
-        $ret = json_decode(curl_exec($curl));
-        $info = curl_getinfo($curl);
-        if (!in_array($info['http_code'], array(200, 201))) {
-            throw new Exception($info['http_code'] . ' ' . $ret);
-        }
-        error_log("insert {$count} records");
-        $count = 0;
-        $command = '';
-        if ($ret->errors) {
-            print_r($ret);
-            exit;
-        }
-    }
-
 }
 
-if ($count) {
-        $url = getenv('SEARCH_URL') . '/name_map/_bulk';
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_HEADER, 0);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_PROXY, '');
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $command);
-        $ret = json_decode(curl_exec($curl));
-        $info = curl_getinfo($curl);
-        if (!in_array($info['http_code'], array(200, 201))) {
-            throw new Exception($info['http_code'] . ' ' . $ret);
-        }
-        $count = 0;
-        $command = '';
-        if ($ret->errors) {
-            print_r($ret);
-            exit;
-        }
-}
+Elastic::dbBulkCommit();
