@@ -1,6 +1,0 @@
-{
-    "properties" : {
-        "company-name" : {"type" : "string", "index" : "not_analyzed"},
-        "company-id" : {"type" : "string", "index" : "not_analyzed"}
-    }
-}
