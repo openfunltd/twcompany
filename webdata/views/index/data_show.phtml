@@ -48,6 +48,11 @@
 </ul>
 <?php } elseif ('"' == $this->value[0]) { ?>
 <?= $this->escape(json_decode($this->value)) ?>
+<?php } elseif ('{"year":' == substr($this->value, 0, 8)) {
+    $dateObj = json_decode($this->value);
+    $dateStr = $dateObj->year.'年'.$dateObj->month.'月'.$dateObj->day.'日';
+?>
+<?= $this->escape($dateStr) ?>
 <?php } else { ?>
 <?= $this->escape($this->value) ?>
 <?php } ?>
