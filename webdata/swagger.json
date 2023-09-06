@@ -1,0 +1,7 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "台灣公司資料API",
+        "version": "0.0.1"
+    }
+}

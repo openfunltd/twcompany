@@ -10,6 +10,10 @@ class IndexController extends Pix_Controller
     {
     }
 
+    public function swaggerAction()
+    {
+    }
+
     public function changelogAction()
     {
         list(, /*index*/, /*changelog*/, $id) = explode('/', $this->getURI());
