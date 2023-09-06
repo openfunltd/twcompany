@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @OA\Info(title="台灣公司資料API", version="0.0.1")
+ * 
+ */
 class ApiController extends Pix_Controller
 {
     public function init()
