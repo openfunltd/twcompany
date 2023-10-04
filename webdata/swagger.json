@@ -3,5 +3,1785 @@
     "info": {
         "title": "台灣公司資料API",
         "version": "0.0.1"
+    },
+    "paths": {
+        "/api/bulkquery": {
+            "get": {
+                "summary": "依統編批量查詢公司資料",
+                "description": "依統編批量查詢公司資料",
+                "operationId": "6db6c7facd3f13041587c2897d5380d7",
+                "parameters": [
+                    {
+                        "name": "ids",
+                        "in": "query",
+                        "description": "統一編號（以分號分隔）",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "89285269;24960372"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "批量查詢公司資料",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "公司統編號碼": {
+                                            "properties": {
+                                                "公司狀況": {
+                                                    "type": "string",
+                                                    "example": "核准設立"
+                                                },
+                                                "公司名稱": {
+                                                    "type": "string",
+                                                    "example": "ＯＯ有限公司"
+                                                },
+                                                "資本總額(元)": {
+                                                    "type": "string",
+                                                    "example": "1,600,000"
+                                                },
+                                                "代表人姓名": {
+                                                    "type": "string",
+                                                    "example": "王ＯＯ"
+                                                },
+                                                "公司所在地": {
+                                                    "type": "string",
+                                                    "example": "新北市板橋區ＯＯ路１２３號"
+                                                },
+                                                "登記機關": {
+                                                    "type": "string",
+                                                    "example": "新北市政府"
+                                                },
+                                                "核准設立日期": {
+                                                    "properties": {
+                                                        "year": {
+                                                            "type": "integer",
+                                                            "example": 2012
+                                                        },
+                                                        "month": {
+                                                            "type": "integer",
+                                                            "example": 12
+                                                        },
+                                                        "day": {
+                                                            "type": "integer",
+                                                            "example": 21
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "最後核准變更日期": {
+                                                    "properties": {
+                                                        "year": {
+                                                            "type": "integer",
+                                                            "example": 2012
+                                                        },
+                                                        "month": {
+                                                            "type": "integer",
+                                                            "example": 12
+                                                        },
+                                                        "day": {
+                                                            "type": "integer",
+                                                            "example": 21
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "所營事業資料": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "example": [
+                                                        [
+                                                            "I301010",
+                                                            "資訊軟體服務業"
+                                                        ]
+                                                    ]
+                                                },
+                                                "董監事名單": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "序號": {
+                                                                "type": "string",
+                                                                "example": "0001"
+                                                            },
+                                                            "職稱": {
+                                                                "type": "string",
+                                                                "example": "董事"
+                                                            },
+                                                            "姓名": {
+                                                                "type": "string",
+                                                                "example": "王ＯＯ"
+                                                            },
+                                                            "所代表法人": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "string"
+                                                                },
+                                                                "example": [
+                                                                    "89285269（公司統編）",
+                                                                    "ＯＯ有限公司"
+                                                                ]
+                                                            },
+                                                            "出資額": {
+                                                                "type": "string",
+                                                                "example": "1,600,000"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "經理人名單": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "序號": {
+                                                                "type": "string",
+                                                                "example": "0001"
+                                                            },
+                                                            "姓名": {
+                                                                "type": "string",
+                                                                "example": "李ＯＯ"
+                                                            },
+                                                            "到職日期": {
+                                                                "properties": {
+                                                                    "year": {
+                                                                        "type": "integer",
+                                                                        "example": 2012
+                                                                    },
+                                                                    "month": {
+                                                                        "type": "integer",
+                                                                        "example": 12
+                                                                    },
+                                                                    "day": {
+                                                                        "type": "integer",
+                                                                        "example": 21
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "章程所訂外文公司名稱": {
+                                                    "type": "string",
+                                                    "example": "OpenFun Company Limited"
+                                                },
+                                                "複數表決權特別股": {
+                                                    "type": "string",
+                                                    "example": "無"
+                                                },
+                                                "對於特定事項具否決權特別股": {
+                                                    "type": "string",
+                                                    "example": "無"
+                                                },
+                                                "每股金額(元)": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "已發行股份總數(股)": {
+                                                    "type": "string",
+                                                    "example": "3,546,562,881"
+                                                },
+                                                "財政部": {
+                                                    "properties": {
+                                                        "營業人名稱": {
+                                                            "type": "string",
+                                                            "example": "ＯＯ有限公司"
+                                                        },
+                                                        "資本額": {
+                                                            "type": "string",
+                                                            "example": "1600000"
+                                                        },
+                                                        "設立日期": {
+                                                            "properties": {
+                                                                "year": {
+                                                                    "type": "integer",
+                                                                    "example": 2012
+                                                                },
+                                                                "month": {
+                                                                    "type": "integer",
+                                                                    "example": 12
+                                                                },
+                                                                "day": {
+                                                                    "type": "integer",
+                                                                    "example": 21
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        },
+                                                        "使用統一發票": {
+                                                            "type": "string",
+                                                            "example": "Y"
+                                                        },
+                                                        "行業": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            },
+                                                            "example": [
+                                                                "639099",
+                                                                "未分類其他資訊服務"
+                                                            ]
+                                                        },
+                                                        "營業地址": {
+                                                            "type": "string",
+                                                            "example": "新北市板橋區ＯＯ路１２３號"
+                                                        },
+                                                        "負責人姓氏": {
+                                                            "type": "string",
+                                                            "example": "王"
+                                                        },
+                                                        "總機構統一編號": {
+                                                            "type": "string",
+                                                            "example": "89285269"
+                                                        },
+                                                        "組織別名稱": {
+                                                            "type": "string",
+                                                            "example": "有限公司"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "統一編號": {
+                                                    "type": "string",
+                                                    "example": "89285269"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/show/{id}": {
+            "get": {
+                "summary": "查詢公司資料",
+                "description": "查詢公司資料",
+                "operationId": "a9354a1aa0a7c1ca1a24218a0d71fa4d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "統一編號",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "89285269"
+                    },
+                    {
+                        "name": "with_changelog",
+                        "in": "query",
+                        "description": "是否要顯示變更紀錄",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "callback",
+                        "in": "query",
+                        "description": "callback function name",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "查詢公司資料",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "公司狀況": {
+                                                    "type": "string",
+                                                    "example": "核准設立"
+                                                },
+                                                "公司名稱": {
+                                                    "type": "string",
+                                                    "example": "ＯＯ有限公司"
+                                                },
+                                                "資本總額(元)": {
+                                                    "type": "string",
+                                                    "example": "1,600,000"
+                                                },
+                                                "代表人姓名": {
+                                                    "type": "string",
+                                                    "example": "王ＯＯ"
+                                                },
+                                                "公司所在地": {
+                                                    "type": "string",
+                                                    "example": "新北市板橋區ＯＯ路１２３號"
+                                                },
+                                                "登記機關": {
+                                                    "type": "string",
+                                                    "example": "新北市政府"
+                                                },
+                                                "核准設立日期": {
+                                                    "properties": {
+                                                        "year": {
+                                                            "type": "integer",
+                                                            "example": 2012
+                                                        },
+                                                        "month": {
+                                                            "type": "integer",
+                                                            "example": 12
+                                                        },
+                                                        "day": {
+                                                            "type": "integer",
+                                                            "example": 21
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "最後核准變更日期": {
+                                                    "properties": {
+                                                        "year": {
+                                                            "type": "integer",
+                                                            "example": 2012
+                                                        },
+                                                        "month": {
+                                                            "type": "integer",
+                                                            "example": 12
+                                                        },
+                                                        "day": {
+                                                            "type": "integer",
+                                                            "example": 21
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "所營事業資料": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "example": [
+                                                        [
+                                                            "I301010",
+                                                            "資訊軟體服務業"
+                                                        ]
+                                                    ]
+                                                },
+                                                "董監事名單": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "序號": {
+                                                                "type": "string",
+                                                                "example": "0001"
+                                                            },
+                                                            "職稱": {
+                                                                "type": "string",
+                                                                "example": "董事"
+                                                            },
+                                                            "姓名": {
+                                                                "type": "string",
+                                                                "example": "王ＯＯ"
+                                                            },
+                                                            "所代表法人": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "string"
+                                                                },
+                                                                "example": [
+                                                                    "89285269（公司統編）",
+                                                                    "ＯＯ有限公司"
+                                                                ]
+                                                            },
+                                                            "出資額": {
+                                                                "type": "string",
+                                                                "example": "1,600,000"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "經理人名單": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "序號": {
+                                                                "type": "string",
+                                                                "example": "0001"
+                                                            },
+                                                            "姓名": {
+                                                                "type": "string",
+                                                                "example": "李ＯＯ"
+                                                            },
+                                                            "到職日期": {
+                                                                "properties": {
+                                                                    "year": {
+                                                                        "type": "integer",
+                                                                        "example": 2012
+                                                                    },
+                                                                    "month": {
+                                                                        "type": "integer",
+                                                                        "example": 12
+                                                                    },
+                                                                    "day": {
+                                                                        "type": "integer",
+                                                                        "example": 21
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "章程所訂外文公司名稱": {
+                                                    "type": "string",
+                                                    "example": "OpenFun Company Limited"
+                                                },
+                                                "複數表決權特別股": {
+                                                    "type": "string",
+                                                    "example": "無"
+                                                },
+                                                "對於特定事項具否決權特別股": {
+                                                    "type": "string",
+                                                    "example": "無"
+                                                },
+                                                "每股金額(元)": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "已發行股份總數(股)": {
+                                                    "type": "string",
+                                                    "example": "3,546,562,881"
+                                                },
+                                                "財政部": {
+                                                    "properties": {
+                                                        "營業人名稱": {
+                                                            "type": "string",
+                                                            "example": "ＯＯ有限公司"
+                                                        },
+                                                        "資本額": {
+                                                            "type": "string",
+                                                            "example": "1600000"
+                                                        },
+                                                        "設立日期": {
+                                                            "properties": {
+                                                                "year": {
+                                                                    "type": "integer",
+                                                                    "example": 2012
+                                                                },
+                                                                "month": {
+                                                                    "type": "integer",
+                                                                    "example": 12
+                                                                },
+                                                                "day": {
+                                                                    "type": "integer",
+                                                                    "example": 21
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        },
+                                                        "使用統一發票": {
+                                                            "type": "string",
+                                                            "example": "Y"
+                                                        },
+                                                        "行業": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            },
+                                                            "example": [
+                                                                "639099",
+                                                                "未分類其他資訊服務"
+                                                            ]
+                                                        },
+                                                        "營業地址": {
+                                                            "type": "string",
+                                                            "example": "新北市板橋區ＯＯ路１２３號"
+                                                        },
+                                                        "負責人姓氏": {
+                                                            "type": "string",
+                                                            "example": "王"
+                                                        },
+                                                        "總機構統一編號": {
+                                                            "type": "string",
+                                                            "example": "89285269"
+                                                        },
+                                                        "組織別名稱": {
+                                                            "type": "string",
+                                                            "example": "有限公司"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "統一編號": {
+                                                    "type": "string",
+                                                    "example": "89285269"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/search": {
+            "get": {
+                "summary": "依名稱或地址搜尋公司",
+                "description": "依名稱或地址搜尋公司",
+                "operationId": "b64769e59ecd8a94b8bba13554360ecf",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "搜尋字串（預設依名稱搜尋，字串前綴加上 'address:' 則改為依地址搜尋）",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "examples": {
+                            "byName": {
+                                "summary": "依名稱搜尋",
+                                "value": "歐噴"
+                            },
+                            "byAddress": {
+                                "summary": "依地址搜尋",
+                                "value": "address:新北市板橋區"
+                            }
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "頁數",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    },
+                    {
+                        "name": "alive_only",
+                        "in": "query",
+                        "description": "只搜尋存續公司（此變數目前不會在依地址搜尋時生效）",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "callback",
+                        "in": "query",
+                        "description": "callback function name",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "依名稱或地址搜尋公司",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "description": "公司資料",
+                                                "properties": {
+                                                    "公司狀況": {
+                                                        "type": "string",
+                                                        "example": "核准設立"
+                                                    },
+                                                    "公司名稱": {
+                                                        "type": "string",
+                                                        "example": "ＯＯ有限公司"
+                                                    },
+                                                    "資本總額(元)": {
+                                                        "type": "string",
+                                                        "example": "1,600,000"
+                                                    },
+                                                    "代表人姓名": {
+                                                        "type": "string",
+                                                        "example": "王ＯＯ"
+                                                    },
+                                                    "公司所在地": {
+                                                        "type": "string",
+                                                        "example": "新北市板橋區ＯＯ路１２３號"
+                                                    },
+                                                    "登記機關": {
+                                                        "type": "string",
+                                                        "example": "新北市政府"
+                                                    },
+                                                    "核准設立日期": {
+                                                        "properties": {
+                                                            "year": {
+                                                                "type": "integer",
+                                                                "example": 2012
+                                                            },
+                                                            "month": {
+                                                                "type": "integer",
+                                                                "example": 12
+                                                            },
+                                                            "day": {
+                                                                "type": "integer",
+                                                                "example": 21
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "最後核准變更日期": {
+                                                        "properties": {
+                                                            "year": {
+                                                                "type": "integer",
+                                                                "example": 2012
+                                                            },
+                                                            "month": {
+                                                                "type": "integer",
+                                                                "example": 12
+                                                            },
+                                                            "day": {
+                                                                "type": "integer",
+                                                                "example": 21
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "所營事業資料": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "example": [
+                                                            [
+                                                                "I301010",
+                                                                "資訊軟體服務業"
+                                                            ]
+                                                        ]
+                                                    },
+                                                    "董監事名單": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "序號": {
+                                                                    "type": "string",
+                                                                    "example": "0001"
+                                                                },
+                                                                "職稱": {
+                                                                    "type": "string",
+                                                                    "example": "董事"
+                                                                },
+                                                                "姓名": {
+                                                                    "type": "string",
+                                                                    "example": "王ＯＯ"
+                                                                },
+                                                                "所代表法人": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "example": [
+                                                                        "89285269（公司統編）",
+                                                                        "ＯＯ有限公司"
+                                                                    ]
+                                                                },
+                                                                "出資額": {
+                                                                    "type": "string",
+                                                                    "example": "1,600,000"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "經理人名單": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "序號": {
+                                                                    "type": "string",
+                                                                    "example": "0001"
+                                                                },
+                                                                "姓名": {
+                                                                    "type": "string",
+                                                                    "example": "李ＯＯ"
+                                                                },
+                                                                "到職日期": {
+                                                                    "properties": {
+                                                                        "year": {
+                                                                            "type": "integer",
+                                                                            "example": 2012
+                                                                        },
+                                                                        "month": {
+                                                                            "type": "integer",
+                                                                            "example": 12
+                                                                        },
+                                                                        "day": {
+                                                                            "type": "integer",
+                                                                            "example": 21
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "章程所訂外文公司名稱": {
+                                                        "type": "string",
+                                                        "example": "OpenFun Company Limited"
+                                                    },
+                                                    "複數表決權特別股": {
+                                                        "type": "string",
+                                                        "example": "無"
+                                                    },
+                                                    "對於特定事項具否決權特別股": {
+                                                        "type": "string",
+                                                        "example": "無"
+                                                    },
+                                                    "每股金額(元)": {
+                                                        "type": "integer",
+                                                        "example": 10
+                                                    },
+                                                    "已發行股份總數(股)": {
+                                                        "type": "string",
+                                                        "example": "3,546,562,881"
+                                                    },
+                                                    "財政部": {
+                                                        "properties": {
+                                                            "營業人名稱": {
+                                                                "type": "string",
+                                                                "example": "ＯＯ有限公司"
+                                                            },
+                                                            "資本額": {
+                                                                "type": "string",
+                                                                "example": "1600000"
+                                                            },
+                                                            "設立日期": {
+                                                                "properties": {
+                                                                    "year": {
+                                                                        "type": "integer",
+                                                                        "example": 2012
+                                                                    },
+                                                                    "month": {
+                                                                        "type": "integer",
+                                                                        "example": 12
+                                                                    },
+                                                                    "day": {
+                                                                        "type": "integer",
+                                                                        "example": 21
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "使用統一發票": {
+                                                                "type": "string",
+                                                                "example": "Y"
+                                                            },
+                                                            "行業": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "string"
+                                                                },
+                                                                "example": [
+                                                                    "639099",
+                                                                    "未分類其他資訊服務"
+                                                                ]
+                                                            },
+                                                            "營業地址": {
+                                                                "type": "string",
+                                                                "example": "新北市板橋區ＯＯ路１２３號"
+                                                            },
+                                                            "負責人姓氏": {
+                                                                "type": "string",
+                                                                "example": "王"
+                                                            },
+                                                            "總機構統一編號": {
+                                                                "type": "string",
+                                                                "example": "89285269"
+                                                            },
+                                                            "組織別名稱": {
+                                                                "type": "string",
+                                                                "example": "有限公司"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "統一編號": {
+                                                        "type": "string",
+                                                        "example": "89285269"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "found": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/fund": {
+            "get": {
+                "summary": "依董監事名單中「所代表法人」搜尋公司",
+                "description": "依董監事名單中「所代表法人」搜尋公司",
+                "operationId": "3b3354bd03ab741f1ea6ef896aa77cc5",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "搜尋字串",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "王道商業銀行"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "頁數",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    },
+                    {
+                        "name": "callback",
+                        "in": "query",
+                        "description": "callback function name",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "依董監事名單中所代表法人搜尋公司",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "description": "公司資料",
+                                                "properties": {
+                                                    "公司狀況": {
+                                                        "type": "string",
+                                                        "example": "核准設立"
+                                                    },
+                                                    "公司名稱": {
+                                                        "type": "string",
+                                                        "example": "ＯＯ有限公司"
+                                                    },
+                                                    "資本總額(元)": {
+                                                        "type": "string",
+                                                        "example": "1,600,000"
+                                                    },
+                                                    "代表人姓名": {
+                                                        "type": "string",
+                                                        "example": "王ＯＯ"
+                                                    },
+                                                    "公司所在地": {
+                                                        "type": "string",
+                                                        "example": "新北市板橋區ＯＯ路１２３號"
+                                                    },
+                                                    "登記機關": {
+                                                        "type": "string",
+                                                        "example": "新北市政府"
+                                                    },
+                                                    "核准設立日期": {
+                                                        "properties": {
+                                                            "year": {
+                                                                "type": "integer",
+                                                                "example": 2012
+                                                            },
+                                                            "month": {
+                                                                "type": "integer",
+                                                                "example": 12
+                                                            },
+                                                            "day": {
+                                                                "type": "integer",
+                                                                "example": 21
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "最後核准變更日期": {
+                                                        "properties": {
+                                                            "year": {
+                                                                "type": "integer",
+                                                                "example": 2012
+                                                            },
+                                                            "month": {
+                                                                "type": "integer",
+                                                                "example": 12
+                                                            },
+                                                            "day": {
+                                                                "type": "integer",
+                                                                "example": 21
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "所營事業資料": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "example": [
+                                                            [
+                                                                "I301010",
+                                                                "資訊軟體服務業"
+                                                            ]
+                                                        ]
+                                                    },
+                                                    "董監事名單": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "序號": {
+                                                                    "type": "string",
+                                                                    "example": "0001"
+                                                                },
+                                                                "職稱": {
+                                                                    "type": "string",
+                                                                    "example": "董事"
+                                                                },
+                                                                "姓名": {
+                                                                    "type": "string",
+                                                                    "example": "王ＯＯ"
+                                                                },
+                                                                "所代表法人": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "example": [
+                                                                        "89285269（公司統編）",
+                                                                        "ＯＯ有限公司"
+                                                                    ]
+                                                                },
+                                                                "出資額": {
+                                                                    "type": "string",
+                                                                    "example": "1,600,000"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "經理人名單": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "序號": {
+                                                                    "type": "string",
+                                                                    "example": "0001"
+                                                                },
+                                                                "姓名": {
+                                                                    "type": "string",
+                                                                    "example": "李ＯＯ"
+                                                                },
+                                                                "到職日期": {
+                                                                    "properties": {
+                                                                        "year": {
+                                                                            "type": "integer",
+                                                                            "example": 2012
+                                                                        },
+                                                                        "month": {
+                                                                            "type": "integer",
+                                                                            "example": 12
+                                                                        },
+                                                                        "day": {
+                                                                            "type": "integer",
+                                                                            "example": 21
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "章程所訂外文公司名稱": {
+                                                        "type": "string",
+                                                        "example": "OpenFun Company Limited"
+                                                    },
+                                                    "複數表決權特別股": {
+                                                        "type": "string",
+                                                        "example": "無"
+                                                    },
+                                                    "對於特定事項具否決權特別股": {
+                                                        "type": "string",
+                                                        "example": "無"
+                                                    },
+                                                    "每股金額(元)": {
+                                                        "type": "integer",
+                                                        "example": 10
+                                                    },
+                                                    "已發行股份總數(股)": {
+                                                        "type": "string",
+                                                        "example": "3,546,562,881"
+                                                    },
+                                                    "財政部": {
+                                                        "properties": {
+                                                            "營業人名稱": {
+                                                                "type": "string",
+                                                                "example": "ＯＯ有限公司"
+                                                            },
+                                                            "資本額": {
+                                                                "type": "string",
+                                                                "example": "1600000"
+                                                            },
+                                                            "設立日期": {
+                                                                "properties": {
+                                                                    "year": {
+                                                                        "type": "integer",
+                                                                        "example": 2012
+                                                                    },
+                                                                    "month": {
+                                                                        "type": "integer",
+                                                                        "example": 12
+                                                                    },
+                                                                    "day": {
+                                                                        "type": "integer",
+                                                                        "example": 21
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "使用統一發票": {
+                                                                "type": "string",
+                                                                "example": "Y"
+                                                            },
+                                                            "行業": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "string"
+                                                                },
+                                                                "example": [
+                                                                    "639099",
+                                                                    "未分類其他資訊服務"
+                                                                ]
+                                                            },
+                                                            "營業地址": {
+                                                                "type": "string",
+                                                                "example": "新北市板橋區ＯＯ路１２３號"
+                                                            },
+                                                            "負責人姓氏": {
+                                                                "type": "string",
+                                                                "example": "王"
+                                                            },
+                                                            "總機構統一編號": {
+                                                                "type": "string",
+                                                                "example": "89285269"
+                                                            },
+                                                            "組織別名稱": {
+                                                                "type": "string",
+                                                                "example": "有限公司"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "統一編號": {
+                                                        "type": "string",
+                                                        "example": "89285269"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "found": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/name": {
+            "get": {
+                "summary": "依姓名搜尋公司",
+                "description": "依代表人、經理人、董監事、負責人的人名搜尋公司",
+                "operationId": "7ef05a51d5d7055c43c32b4e3b916350",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "搜尋字串",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "張國煒"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "頁數",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    },
+                    {
+                        "name": "callback",
+                        "in": "query",
+                        "description": "callback function name",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "依姓名搜尋公司",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "description": "公司資料",
+                                                "properties": {
+                                                    "公司狀況": {
+                                                        "type": "string",
+                                                        "example": "核准設立"
+                                                    },
+                                                    "公司名稱": {
+                                                        "type": "string",
+                                                        "example": "ＯＯ有限公司"
+                                                    },
+                                                    "資本總額(元)": {
+                                                        "type": "string",
+                                                        "example": "1,600,000"
+                                                    },
+                                                    "代表人姓名": {
+                                                        "type": "string",
+                                                        "example": "王ＯＯ"
+                                                    },
+                                                    "公司所在地": {
+                                                        "type": "string",
+                                                        "example": "新北市板橋區ＯＯ路１２３號"
+                                                    },
+                                                    "登記機關": {
+                                                        "type": "string",
+                                                        "example": "新北市政府"
+                                                    },
+                                                    "核准設立日期": {
+                                                        "properties": {
+                                                            "year": {
+                                                                "type": "integer",
+                                                                "example": 2012
+                                                            },
+                                                            "month": {
+                                                                "type": "integer",
+                                                                "example": 12
+                                                            },
+                                                            "day": {
+                                                                "type": "integer",
+                                                                "example": 21
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "最後核准變更日期": {
+                                                        "properties": {
+                                                            "year": {
+                                                                "type": "integer",
+                                                                "example": 2012
+                                                            },
+                                                            "month": {
+                                                                "type": "integer",
+                                                                "example": 12
+                                                            },
+                                                            "day": {
+                                                                "type": "integer",
+                                                                "example": 21
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "所營事業資料": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "example": [
+                                                            [
+                                                                "I301010",
+                                                                "資訊軟體服務業"
+                                                            ]
+                                                        ]
+                                                    },
+                                                    "董監事名單": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "序號": {
+                                                                    "type": "string",
+                                                                    "example": "0001"
+                                                                },
+                                                                "職稱": {
+                                                                    "type": "string",
+                                                                    "example": "董事"
+                                                                },
+                                                                "姓名": {
+                                                                    "type": "string",
+                                                                    "example": "王ＯＯ"
+                                                                },
+                                                                "所代表法人": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "example": [
+                                                                        "89285269（公司統編）",
+                                                                        "ＯＯ有限公司"
+                                                                    ]
+                                                                },
+                                                                "出資額": {
+                                                                    "type": "string",
+                                                                    "example": "1,600,000"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "經理人名單": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "序號": {
+                                                                    "type": "string",
+                                                                    "example": "0001"
+                                                                },
+                                                                "姓名": {
+                                                                    "type": "string",
+                                                                    "example": "李ＯＯ"
+                                                                },
+                                                                "到職日期": {
+                                                                    "properties": {
+                                                                        "year": {
+                                                                            "type": "integer",
+                                                                            "example": 2012
+                                                                        },
+                                                                        "month": {
+                                                                            "type": "integer",
+                                                                            "example": 12
+                                                                        },
+                                                                        "day": {
+                                                                            "type": "integer",
+                                                                            "example": 21
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "章程所訂外文公司名稱": {
+                                                        "type": "string",
+                                                        "example": "OpenFun Company Limited"
+                                                    },
+                                                    "複數表決權特別股": {
+                                                        "type": "string",
+                                                        "example": "無"
+                                                    },
+                                                    "對於特定事項具否決權特別股": {
+                                                        "type": "string",
+                                                        "example": "無"
+                                                    },
+                                                    "每股金額(元)": {
+                                                        "type": "integer",
+                                                        "example": 10
+                                                    },
+                                                    "已發行股份總數(股)": {
+                                                        "type": "string",
+                                                        "example": "3,546,562,881"
+                                                    },
+                                                    "財政部": {
+                                                        "properties": {
+                                                            "營業人名稱": {
+                                                                "type": "string",
+                                                                "example": "ＯＯ有限公司"
+                                                            },
+                                                            "資本額": {
+                                                                "type": "string",
+                                                                "example": "1600000"
+                                                            },
+                                                            "設立日期": {
+                                                                "properties": {
+                                                                    "year": {
+                                                                        "type": "integer",
+                                                                        "example": 2012
+                                                                    },
+                                                                    "month": {
+                                                                        "type": "integer",
+                                                                        "example": 12
+                                                                    },
+                                                                    "day": {
+                                                                        "type": "integer",
+                                                                        "example": 21
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "使用統一發票": {
+                                                                "type": "string",
+                                                                "example": "Y"
+                                                            },
+                                                            "行業": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "string"
+                                                                },
+                                                                "example": [
+                                                                    "639099",
+                                                                    "未分類其他資訊服務"
+                                                                ]
+                                                            },
+                                                            "營業地址": {
+                                                                "type": "string",
+                                                                "example": "新北市板橋區ＯＯ路１２３號"
+                                                            },
+                                                            "負責人姓氏": {
+                                                                "type": "string",
+                                                                "example": "王"
+                                                            },
+                                                            "總機構統一編號": {
+                                                                "type": "string",
+                                                                "example": "89285269"
+                                                            },
+                                                            "組織別名稱": {
+                                                                "type": "string",
+                                                                "example": "有限公司"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "統一編號": {
+                                                        "type": "string",
+                                                        "example": "89285269"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "found": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/branch": {
+            "get": {
+                "summary": "依母公司統編搜尋分公司",
+                "description": "依母公司統編搜尋分公司",
+                "operationId": "7536d0cf9d933899001608dfa89cf05a",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "搜尋字串",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "11768704"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "頁數",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": 1
+                    },
+                    {
+                        "name": "callback",
+                        "in": "query",
+                        "description": "callback function name",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "依統一編號搜尋分公司",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "description": "公司資料",
+                                                "properties": {
+                                                    "公司狀況": {
+                                                        "type": "string",
+                                                        "example": "核准設立"
+                                                    },
+                                                    "公司名稱": {
+                                                        "type": "string",
+                                                        "example": "ＯＯ有限公司"
+                                                    },
+                                                    "資本總額(元)": {
+                                                        "type": "string",
+                                                        "example": "1,600,000"
+                                                    },
+                                                    "代表人姓名": {
+                                                        "type": "string",
+                                                        "example": "王ＯＯ"
+                                                    },
+                                                    "公司所在地": {
+                                                        "type": "string",
+                                                        "example": "新北市板橋區ＯＯ路１２３號"
+                                                    },
+                                                    "登記機關": {
+                                                        "type": "string",
+                                                        "example": "新北市政府"
+                                                    },
+                                                    "核准設立日期": {
+                                                        "properties": {
+                                                            "year": {
+                                                                "type": "integer",
+                                                                "example": 2012
+                                                            },
+                                                            "month": {
+                                                                "type": "integer",
+                                                                "example": 12
+                                                            },
+                                                            "day": {
+                                                                "type": "integer",
+                                                                "example": 21
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "最後核准變更日期": {
+                                                        "properties": {
+                                                            "year": {
+                                                                "type": "integer",
+                                                                "example": 2012
+                                                            },
+                                                            "month": {
+                                                                "type": "integer",
+                                                                "example": 12
+                                                            },
+                                                            "day": {
+                                                                "type": "integer",
+                                                                "example": 21
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "所營事業資料": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "example": [
+                                                            [
+                                                                "I301010",
+                                                                "資訊軟體服務業"
+                                                            ]
+                                                        ]
+                                                    },
+                                                    "董監事名單": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "序號": {
+                                                                    "type": "string",
+                                                                    "example": "0001"
+                                                                },
+                                                                "職稱": {
+                                                                    "type": "string",
+                                                                    "example": "董事"
+                                                                },
+                                                                "姓名": {
+                                                                    "type": "string",
+                                                                    "example": "王ＯＯ"
+                                                                },
+                                                                "所代表法人": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "example": [
+                                                                        "89285269（公司統編）",
+                                                                        "ＯＯ有限公司"
+                                                                    ]
+                                                                },
+                                                                "出資額": {
+                                                                    "type": "string",
+                                                                    "example": "1,600,000"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "經理人名單": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "序號": {
+                                                                    "type": "string",
+                                                                    "example": "0001"
+                                                                },
+                                                                "姓名": {
+                                                                    "type": "string",
+                                                                    "example": "李ＯＯ"
+                                                                },
+                                                                "到職日期": {
+                                                                    "properties": {
+                                                                        "year": {
+                                                                            "type": "integer",
+                                                                            "example": 2012
+                                                                        },
+                                                                        "month": {
+                                                                            "type": "integer",
+                                                                            "example": 12
+                                                                        },
+                                                                        "day": {
+                                                                            "type": "integer",
+                                                                            "example": 21
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "章程所訂外文公司名稱": {
+                                                        "type": "string",
+                                                        "example": "OpenFun Company Limited"
+                                                    },
+                                                    "複數表決權特別股": {
+                                                        "type": "string",
+                                                        "example": "無"
+                                                    },
+                                                    "對於特定事項具否決權特別股": {
+                                                        "type": "string",
+                                                        "example": "無"
+                                                    },
+                                                    "每股金額(元)": {
+                                                        "type": "integer",
+                                                        "example": 10
+                                                    },
+                                                    "已發行股份總數(股)": {
+                                                        "type": "string",
+                                                        "example": "3,546,562,881"
+                                                    },
+                                                    "財政部": {
+                                                        "properties": {
+                                                            "營業人名稱": {
+                                                                "type": "string",
+                                                                "example": "ＯＯ有限公司"
+                                                            },
+                                                            "資本額": {
+                                                                "type": "string",
+                                                                "example": "1600000"
+                                                            },
+                                                            "設立日期": {
+                                                                "properties": {
+                                                                    "year": {
+                                                                        "type": "integer",
+                                                                        "example": 2012
+                                                                    },
+                                                                    "month": {
+                                                                        "type": "integer",
+                                                                        "example": 12
+                                                                    },
+                                                                    "day": {
+                                                                        "type": "integer",
+                                                                        "example": 21
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "使用統一發票": {
+                                                                "type": "string",
+                                                                "example": "Y"
+                                                            },
+                                                            "行業": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "type": "string"
+                                                                },
+                                                                "example": [
+                                                                    "639099",
+                                                                    "未分類其他資訊服務"
+                                                                ]
+                                                            },
+                                                            "營業地址": {
+                                                                "type": "string",
+                                                                "example": "新北市板橋區ＯＯ路１２３號"
+                                                            },
+                                                            "負責人姓氏": {
+                                                                "type": "string",
+                                                                "example": "王"
+                                                            },
+                                                            "總機構統一編號": {
+                                                                "type": "string",
+                                                                "example": "89285269"
+                                                            },
+                                                            "組織別名稱": {
+                                                                "type": "string",
+                                                                "example": "有限公司"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "統一編號": {
+                                                        "type": "string",
+                                                        "example": "89285269"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "found": {
+                                            "type": "integer",
+                                            "example": "1"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/bulksearch": {
+            "get": {
+                "summary": "批量依公司名稱查詢統編",
+                "description": "批量依公司名稱查詢統編",
+                "operationId": "850efabb01970d6938ebe290356d6444",
+                "parameters": [
+                    {
+                        "name": "names",
+                        "in": "query",
+                        "description": "公司名稱（以逗號分隔）",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "example": "中華航空股份有限公司,星宇航空股份有限公司"
+                    },
+                    {
+                        "name": "callback",
+                        "in": "query",
+                        "description": "callback function name",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "批量依公司名稱查詢統編",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "description": "個別查詢結果",
+                                        "properties": {
+                                            "query": {
+                                                "type": "string"
+                                            },
+                                            "result": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                },
+                                "example": [
+                                    {
+                                        "query": "中華航空股份有限公司",
+                                        "result": "59566000"
+                                    },
+                                    {
+                                        "query": "星宇航空股份有限公司",
+                                        "result": "82249999"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
