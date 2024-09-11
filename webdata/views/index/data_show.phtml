@@ -2,7 +2,7 @@
 <a href="/name/<?= urlencode(json_decode($this->value)) ?>"><?= $this->escape(json_decode($this->value)) ?></a>
 <?php } elseif (11 == $this->column_id and 'fia' != $this->type) { // 董監事名單 ?>
 <ol>
-    <?php foreach (json_decode($this->value) as $row) { ?>
+    <?php foreach (json_decode($this->value) ?? [] as $row) { ?>
     <li value="<?= $this->escape($row->{'序號'}) ?>">
     <?= $this->escape($row->{'職稱'}) ?>
     , 姓名: 
@@ -25,7 +25,7 @@
 </ol>
 <?php } elseif (12 == $this->column_id and 'fia' != $this->type) { // 經理人名單 ?>
 <ol>
-    <?php foreach (json_decode($this->value) as $row) { ?>
+    <?php foreach (json_decode($this->value) ?? [] as $row) { ?>
     <li value="<?= $this->escape($row->{'序號'}) ?>">
     姓名: 
     <a href="/name/<?= urlencode($row->{'姓名'}) ?>"><?= $this->escape($row->{'姓名'}) ?></a>
