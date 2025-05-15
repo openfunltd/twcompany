@@ -92,6 +92,10 @@ class ApiController extends Pix_Controller
      */
     public function bulkqueryAction()
     {
+        OpenFunAPIHelper::checkUsage([
+            'project' => 'company',
+            'class' => "bulkquery",
+        ]);
         $ids = array_slice(explode(';', $_REQUEST['ids']), 0, 10000);
         $ret = new StdClass;
         foreach ($ids as $id) {
@@ -109,6 +113,9 @@ class ApiController extends Pix_Controller
                 $ret->{$id} = $unit->getData();
             }
         }
+        OpenFunAPIHelper::apiDone([
+            'size' => strlen(json_encode($ret, JSON_UNESCAPED_UNICODE)),
+        ]);
         return $this->json($ret);
     }
 
@@ -194,6 +201,11 @@ class ApiController extends Pix_Controller
     {
         list(, /*api*/, /*show*/, $id) = explode('/', $this->getURI());
 
+        OpenFunAPIHelper::checkUsage([
+            'project' => 'company',
+            'class' => "show",
+        ]);
+
         $ret = new StdClass;
         if (!$unit = Unit::find(intval($id))) {
             $data = new StdClass;
@@ -202,10 +214,16 @@ class ApiController extends Pix_Controller
                 $data->{'財政部'}->{FIAColumnGroup::getColumnName($unitdata->column_id)} = json_decode($unitdata->value);
             }
             $ret->data = $data;
+            OpenFunAPIHelper::apiDone([
+                'size' => strlen(json_encode($ret, JSON_UNESCAPED_UNICODE)),
+            ]);
             return $this->jsonp($ret, strval($_GET['callback']));
         }
 
         $ret->data = $unit->getData($_GET['with_changelog']);
+        OpenFunAPIHelper::apiDone([
+            'size' => strlen(json_encode($ret, JSON_UNESCAPED_UNICODE)),
+        ]);
         return $this->jsonp($ret, strval($_GET['callback']));
     }
 
@@ -298,6 +316,10 @@ class ApiController extends Pix_Controller
      */
     public function searchAction()
     {
+        OpenFunAPIHelper::checkUsage([
+            'project' => 'company',
+            'class' => "search",
+        ]);
         $page = intval($_GET['page']) ?: 1;
         $alive_only = $_GET['alive_only'] ? true : false;
         if (preg_match('#^address:(.*)$#', $_GET['q'], $matches)) {
@@ -315,6 +337,9 @@ class ApiController extends Pix_Controller
 
         $ret->data = $data;
         $ret->found = $search_ret->hits->total->value;
+        OpenFunAPIHelper::apiDone([
+            'size' => strlen(json_encode($ret, JSON_UNESCAPED_UNICODE)),
+        ]);
         return $this->jsonp($ret, strval($_GET['callback']));
     }
 
@@ -401,6 +426,10 @@ class ApiController extends Pix_Controller
      */
     public function fundAction()
     {
+        OpenFunAPIHelper::checkUsage([
+            'project' => 'company',
+            'class' => "fund",
+        ]);
         $page = intval($_GET['page']) ?: 1;
         $search_ret = SearchLib::searchCompaniesByFund($_GET['q'], $page);
         $ret = new StdClass;
@@ -413,6 +442,9 @@ class ApiController extends Pix_Controller
 
         $ret->data = $data;
         $ret->found = $search_ret->hits->total->value;
+        OpenFunAPIHelper::apiDone([
+            'size' => strlen(json_encode($ret, JSON_UNESCAPED_UNICODE)),
+        ]);
         return $this->jsonp($ret, strval($_GET['callback']));
     }
 
@@ -499,6 +531,10 @@ class ApiController extends Pix_Controller
      */
     public function nameAction()
     {
+        OpenFunAPIHelper::checkUsage([
+            'project' => 'company',
+            'class' => "name",
+        ]);
         $page = intval($_GET['page']) ?: 1;
         $search_ret = SearchLib::searchCompaniesByPerson($_GET['q'], $page);
         $ret = new StdClass;
@@ -511,6 +547,9 @@ class ApiController extends Pix_Controller
 
         $ret->data = $data;
         $ret->found = $search_ret->hits->total->value;
+        OpenFunAPIHelper::apiDone([
+            'size' => strlen(json_encode($ret, JSON_UNESCAPED_UNICODE)),
+        ]);
         return $this->jsonp($ret, strval($_GET['callback']));
     }
 
@@ -597,6 +636,10 @@ class ApiController extends Pix_Controller
      */
     public function branchAction()
     {
+        OpenFunAPIHelper::checkUsage([
+            'project' => 'company',
+            'class' => "branch",
+        ]);
         $page = intval($_GET['page']) ?: 1;
         $search_ret = SearchLib::searchCompaniesByParent($_GET['q'], $page);
         $ret = new StdClass;
@@ -609,6 +652,9 @@ class ApiController extends Pix_Controller
 
         $ret->data = $data;
         $ret->found = $search_ret->hits->total->value;
+        OpenFunAPIHelper::apiDone([
+            'size' => strlen(json_encode($ret, JSON_UNESCAPED_UNICODE)),
+        ]);
         return $this->jsonp($ret, strval($_GET['callback']));
     }
 
@@ -631,9 +677,16 @@ class ApiController extends Pix_Controller
      */
     public function bulksearchAction()
     {
+        OpenFunAPIHelper::checkUsage([
+            'project' => 'company',
+            'class' => "bulksearch",
+        ]);
         $ret = SearchLib::bulkSearchCompany(array(
             'name' => explode(',', $_REQUEST['names']),
         ));
+        OpenFunAPIHelper::apiDone([
+            'size' => strlen(json_encode($ret, JSON_UNESCAPED_UNICODE)),
+        ]);
         return $this->jsonp($ret, strval($_GET['callback']));
     }
 }
