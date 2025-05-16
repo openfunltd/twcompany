@@ -24,7 +24,71 @@ class OpenFunAPIHelper
     public static function checkUsage($options)
     {
         self::$_api_options = $options;
+        if ($_GET['token'] ?? false) {
+            $token = $_GET['token'];
+            $token_data = self::getTokenData($token);
+        }
         // TODO: 檢查是否有到用量限制
+    }
+
+    public static function errorJson($message)
+    {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'error' => true,
+            'message' => $message,
+        ]);
+        exit;
+    }
+
+    public static function getTokenData($token)
+    {
+        $db = self::getDb();
+        $sql = "SELECT * FROM token WHERE token = :token";
+        $stmt = $db->prepare($sql);
+        $stmt->execute([':token' => $token]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) {
+            $project = self::$_api_options['project'] ?? 'unknown';
+            $class = self::$_api_options['class'] ?? 'unknown';
+            $counts = [];
+            $counts[] = ['error', "token-not-found", 1];
+            $counts[] = ['error-ip', "token-not-found:ip:{$_SERVER['REMOTE_ADDR']}", 1];
+            self::counterInc($counts);
+            return self::errorJson('Token not found');
+        }
+        self::$_api_options['token_id'] = $row['id'];
+        self::$_api_options['token_user_id'] = $row['user_id'];
+        $config = json_decode($row['config']);
+        if ($config->type == 'referer' and $_SERVER['HTTP_REFERER'] ?? false) {
+            $match = false;
+            $referer_obj = parse_url($_SERVER['HTTP_REFERER']);
+            foreach ($config->referer as $referer) {
+                if (strpos($referer, '/') === false) {
+                    $domain = $referer;
+                    $path = '';
+                } else {
+                    $domain = explode('/', $referer, 2)[0];
+                    $path = substr($referer, strpos($referer, '/'));
+                }
+                if ($domain !== $referer_obj['host']) {
+                    continue;
+                }
+                if (strlen($path) and isset($referer_obj['path']) and strpos($referer_obj['path'], $path) !== 0) {
+                    continue;
+                }
+                $match = true;
+            }
+            if (!$match) {
+                $project = self::$_api_options['project'] ?? 'unknown';
+                $class = self::$_api_options['class'] ?? 'unknown';
+                $counts = [];
+                $counts[] = ['error', "token-referer-not-match", 1];
+                $counts[] = ['error-ip', "token-referer-not-match:ip:{$_SERVER['REMOTE_ADDR']}", 1];
+                self::counterInc($counts);
+                return self::errorJson('Token referer not match');
+            }
+        }
     }
 
     public static function apiDone($options)
@@ -35,17 +99,25 @@ class OpenFunAPIHelper
         $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
         $referer = $_SERVER['HTTP_REFERER'] ?? 'unknown';
         $counts = [];
-        $counts[] = ['project-count', "project-count:{$project}", 1];
-        $counts[] = ['project-size', "project-size:{$project}", $size];
-        $counts[] = ['call-count-class', "call-count:{$project}:class:{$class}", 1];
-        $counts[] = ['call-size-class', "call-size:{$project}:class:{$class}", $size];
-        $counts[] = ['call-count-ip', "call-count:{$project}:ip:{$ip}", 1];
-        $counts[] = ['call-size-ip', "call-size:{$project}:ip:{$ip}", $size];
-
-        if (preg_match('/^https?:\/\/([^\/]+)(.*)$/', $referer, $matches)) {
-            $domain = $matches[1];
-            $counts[] = ['call-count-referer', "call-count:{$project}:referer:{$domain}", 1];
-            $counts[] = ['call-size-referer', "call-size:{$project}:referer:{$domain}", $size];
+        $counts[] = ['project-count', "project-count", 1];
+        $counts[] = ['project-size', "project-size", $size];
+        $counts[] = ['call-count-class', "call-count:class:{$class}", 1];
+        $counts[] = ['call-size-class', "call-size:class:{$class}", $size];
+        if (self::$_api_options['token_id'] ?? false) {
+            $token_id = self::$_api_options['token_id'];
+            $token_user_id = self::$_api_options['token_user_id'];
+            $counts[] = ['call-count-token', "call-count:token:{$token_id}", 1];
+            $counts[] = ['call-size-token', "call-size:token:{$token_id}", $size];
+            $counts[] = ['call-count-token-user', "call-count:token-user:{$token_user_id}", 1];
+            $counts[] = ['call-size-token-user', "call-size:token-user:{$token_user_id}", $size];
+        } else {
+            $counts[] = ['call-count-ip', "call-count:ip:{$ip}", 1];
+            $counts[] = ['call-size-ip', "call-size:ip:{$ip}", $size];
+            if (preg_match('/^https?:\/\/([^\/]+)(.*)$/', $referer, $matches)) {
+                $domain = $matches[1];
+                $counts[] = ['call-count-referer', "call-count:referer:{$domain}", 1];
+                $counts[] = ['call-size-referer', "call-size:referer:{$domain}", $size];
+            }
         }
         self::counterInc($counts);
     }
@@ -157,9 +229,11 @@ class OpenFunAPIHelper
 
     public static function counterInc_exec($counts)
     {
+        $project = self::$_api_options['project'] ?? 'unknown';
         $start_time = microtime(true);
         // 先抓取所有 value ，來取得他的 id
         $map = [];
+        $map[$project] = null;
         foreach ($counts as $count_list) {
             list($group_val, $count_val, $count) = $count_list;
             $map[$group_val] = null;
@@ -169,18 +243,19 @@ class OpenFunAPIHelper
 
         // 取得 id 之後，開始寫入資料
         $db = self::getDb();
-        $sql = "INSERT INTO counter (id, group_id, count) VALUES ";
+        $sql = "INSERT INTO counter (project_id, id, group_id, count) VALUES ";
         $terms = [];
         $params = [];
+        $params[':project_id'] = $map[$project];
         foreach ($counts as $idx => $count_list) {
             list($group_val, $count_val, $count) = $count_list;
-            $terms[] = "(:id_{$idx}, :group_id_{$idx}, :count_{$idx})";
+            $terms[] = "(:project_id, :id_{$idx}, :group_id_{$idx}, :count_{$idx})";
             $params[":id_{$idx}"] = $map[$count_val];
             $params[":group_id_{$idx}"] = $map[$group_val];
             $params[":count_{$idx}"] = $count;
         }
         $sql .= implode(',', $terms);
-        $sql .= " ON CONFLICT (id) DO UPDATE SET count = counter.count + EXCLUDED.count";
+        $sql .= " ON CONFLICT (project_id, id) DO UPDATE SET count = counter.count + EXCLUDED.count";
         $stmt = $db->prepare($sql);
         $stmt->execute($params);
 
@@ -189,19 +264,20 @@ class OpenFunAPIHelper
             'hourly' => date('YmdH'),
             'daily' => date('Ymd'),
         ] as $period => $time) {
-            $sql = "INSERT INTO counter_{$period} (id, group_id, count, time) VALUES ";
+            $sql = "INSERT INTO counter_{$period} (project_id, id, group_id, count, time) VALUES ";
             $terms = [];
             $params = [];
+            $params[':project_id'] = $map[$project];
             foreach ($counts as $idx => $count_list) {
                 list($group_val, $count_val, $count) = $count_list;
-                $terms[] = "(:id_{$idx}, :group_id_{$idx}, :count_{$idx}, :time_{$idx})";
+                $terms[] = "(:project_id, :id_{$idx}, :group_id_{$idx}, :count_{$idx}, :time_{$idx})";
                 $params[":id_{$idx}"] = $map[$group_val];
                 $params[":group_id_{$idx}"] = $map[$count_val];
                 $params[":count_{$idx}"] = $count;
                 $params[":time_{$idx}"] = $time;
             }
             $sql .= implode(',', $terms);
-            $sql .= " ON CONFLICT (id, time) DO UPDATE SET count = counter_{$period}.count + EXCLUDED.count";
+            $sql .= " ON CONFLICT (project_id, id, time) DO UPDATE SET count = counter_{$period}.count + EXCLUDED.count";
             $stmt = $db->prepare($sql);
             $stmt->execute($params);
         }
