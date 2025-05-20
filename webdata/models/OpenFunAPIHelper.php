@@ -271,8 +271,8 @@ class OpenFunAPIHelper
             foreach ($counts as $idx => $count_list) {
                 list($group_val, $count_val, $count) = $count_list;
                 $terms[] = "(:project_id, :id_{$idx}, :group_id_{$idx}, :count_{$idx}, :time_{$idx})";
-                $params[":id_{$idx}"] = $map[$group_val];
-                $params[":group_id_{$idx}"] = $map[$count_val];
+                $params[":id_{$idx}"] = $map[$count_val];
+                $params[":group_id_{$idx}"] = $map[$group_val];
                 $params[":count_{$idx}"] = $count;
                 $params[":time_{$idx}"] = $time;
             }
